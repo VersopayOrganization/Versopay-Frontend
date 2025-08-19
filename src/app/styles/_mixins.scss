@@ -1,0 +1,39 @@
+@use './_tokens' as *;
+
+@mixin card {
+  background: $color-card;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: $radius-xl;
+  box-shadow: $shadow-elev;
+}
+
+@mixin btn-primary {
+  background: $color-accent;
+  color: #111;
+  border: 0;
+  border-radius: $radius-md;
+  padding: .75rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform $duration-fast $easing, filter $duration-fast $easing;
+
+  &:hover  { filter: brightness(1.05); }
+  &:active { transform: translateY(1px); }
+  &:disabled { filter: grayscale(.3); opacity: .7; cursor: not-allowed; }
+}
+
+@mixin input {
+  width: 100%;
+  background: $color-input-bg;
+  color: $color-fg;
+  border: 1px solid $color-input-border;
+  border-radius: $radius-md;
+  padding: .7rem .9rem;
+  transition: border-color $duration-fast $easing, box-shadow $duration-fast $easing;
+
+  &:focus {
+    outline: none;
+    border-color: $color-accent;
+    box-shadow: $focus-ring;
+  }
+}

@@ -1,1 +1,45 @@
-/* You can add global styles to this file, and also import other style files */
+@use './app/styles/_tokens' as *;
+
+/* CSS variables globais (runtime) */
+:root {
+  --bg: #{$color-bg};
+  --fg: #{$color-fg};
+  --accent: #{$color-accent};
+  --muted: #{$color-muted};
+
+  --space-2: #{$space-2};
+  --space-3: #{$space-3};
+  --space-4: #{$space-4};
+  --space-5: #{$space-5};
+
+  --radius-sm: #{$radius-sm};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+  --radius-xl: #{$radius-xl};
+
+  --shadow-md: #{$shadow-elev};
+  --container-card-w: #{$container-card-w};
+  --font-hero: #{$font-size-hero};
+  --gradient-login: #{$gradient-login};
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: Inter, Roboto, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+a {
+  color: var(--accent);
+}
+
+.destaque {
+  color: $color-accent;
+}
