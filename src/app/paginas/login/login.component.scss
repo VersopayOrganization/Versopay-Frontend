@@ -1,0 +1,84 @@
+@use '../../styles/_tokens' as *;
+@use '../../styles/_mixins' as *;
+
+.login-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: $gradient-login, $color-bg;
+  color: $color-fg;
+  padding: $space-5 $space-4;
+  gap: $space-4;
+}
+
+.hero {
+  text-align: center;
+}
+
+.hero h1 {
+  margin: .4rem 0;
+  font-size: $font-size-base;
+}
+
+.hero p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.card {
+  width: min($container-card-w, 94vw);
+  @include card;
+  padding: $space-5;
+}
+
+label {
+  display: block;
+  margin: $space-3 0 .35rem;
+}
+
+input[type="email"],
+input[type="password"] {
+  @include input;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: .5rem 0 1rem;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  color: $color-muted;
+}
+
+.link {
+  color: $color-accent;
+  text-decoration: none;
+}
+
+.btn {
+  width: 100%;
+  @include btn-primary;
+}
+
+.signup {
+  margin-top: .75rem;
+  color: $color-muted;
+}
+
+footer {
+  margin-top: 1 rem;
+  color: $color-muted;
+  font-size: $font-size-sm;
+}
+
+#email,
+#password {
+  width: 93%;
+}
