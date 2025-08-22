@@ -194,9 +194,19 @@ input[type="checkbox"]:checked::before {
     transform: rotate(360deg);
   }
 }
+
 //////////////////////////
 
 .link {
   font-weight: 700;
   font-size: 18px;
+}
+
+
+
+/* Responsivo (mobile: empilha) */
+@media (max-width: 980px) {
+  input {
+    width: 100%;
+  }
 }
