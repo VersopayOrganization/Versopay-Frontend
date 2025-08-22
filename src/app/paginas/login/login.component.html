@@ -17,15 +17,13 @@
     <p class="subtitle">Bora escalar? 🚀 Conecte-se e<br />vamos crescer juntos.</p>
 
     <form (ngSubmit)="submit()" #f="ngForm" novalidate>
-      <label class="field">
+      <fieldset>
         <input name="email" type="email" [(ngModel)]="email" placeholder="E-mail" required />
-      </label>
+      </fieldset>
 
-      <label class="field">
-        <div class="password">
-          <input name="password" type="password" [(ngModel)]="password" placeholder="Senha" required />
-        </div>
-      </label>
+      <fieldset>
+        <input name="password" type="password" [(ngModel)]="password" placeholder="Senha" required />
+      </fieldset>
 
       <div class="row">
         <label class="remember">
@@ -46,10 +44,12 @@
   </main>
 
   <!-- Overlay de loading -->
-  <div class="loading" *ngIf="loading">
-    <img src="assets/icons/logo-verso.svg" class="spinner" alt="VersoPay" />
-  </div>
+   @if (loading) {
+     <div class="loading">
+       <img src="assets/icons/logo-verso.svg" class="spinner" alt="VersoPay" />
+     </div>
+  }
 
   <!-- Toast simples -->
-  <div class="toast" >testando essa porra</div>
+  <div class="toast">testando essa porra</div>
 </div>
