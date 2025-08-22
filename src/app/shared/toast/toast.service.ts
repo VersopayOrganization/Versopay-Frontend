@@ -12,6 +12,7 @@ export class ToastService {
         icon: true,
         durationMs: 4000,
         closable: true,
+        offset: 0,
     };
 
     show(opts: ToastOptions) {
@@ -23,9 +24,7 @@ export class ToastService {
             icon: opts.type === 'plain' ? (opts.icon ?? false) : (opts.icon ?? true),
         };
         this._toasts.update(list => [t, ...list]);
-        if (t.durationMs > 0) {
-            setTimeout(() => this.close(id), t.durationMs);
-        }
+        if (t.durationMs > 0) setTimeout(() => this.close(id), t.durationMs);
         return id;
     }
 

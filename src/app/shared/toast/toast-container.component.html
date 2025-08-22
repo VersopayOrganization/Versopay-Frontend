@@ -1,5 +1,6 @@
 <div class="vp-toast-slot" *ngFor="let pos of positions" [ngClass]="slotClass(pos)">
-    <div class="vp-toast" *ngFor="let t of byPosition(pos)()" [ngClass]="['is-'+t.type, animClass(pos)]">
+    <div class="vp-toast" *ngFor="let t of byPosition(pos)()" [ngClass]="['is-'+t.type, animClass(pos)]"
+        [ngStyle]="itemStyle(t, pos)">
         @if (t.icon) {
         <div class="vp-icon">
             @if (t.type==='error' || t.type==='warning') {

@@ -24,7 +24,12 @@ export class LoginComponent {
 
   async submit() {
     if (!this.email || !this.password) {
-      this.toast.error('Todos os campos são obrigatórios.', 'bottom-left');
+      this.toast.show({
+        message: 'Todos os campos são obrigatórios.',
+        type: 'error',
+        position: 'bottom-left',
+        offset: { x: 40, y: 40 }
+      });
       return;
     }
 
