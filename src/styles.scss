@@ -64,6 +64,7 @@ fieldset {
   color: $color-roxo-marca;
 }
 
+//  ESTILIZAÇÃO INPUT
 input {
   width: 450px;
   border: 1px solid $color-cinza-fraco;
@@ -82,14 +83,54 @@ input {
 
 input[type="checkbox"] {
   width: auto;
-  border: none;
+  color: #17171f;
 
   &:focus {
     box-shadow: none;
-    border: none;
   }
 }
 
+//////////////////////////
+
+//  ESTILIZAÇÃO CHECKBOX
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin: 0;
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border: 1px solid $color-cinza-fraco;
+  border-radius: 6px;
+  display: inline-grid;
+  place-content: center;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Estilo quando marcado */
+input[type="checkbox"]:checked {
+  background-color: #7e5bed7a;
+  border-color: $color-roxo-marca;
+}
+
+/* O "check" dentro do quadrado */
+input[type="checkbox"]::before {
+  content: "✔";
+  color: $color-roxo-marca;
+  font-size: 14px;
+  transform: scale(0);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Aparece o check */
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+//////////////////////////
+
+//  ESTILIZAÇÃO BUTTON PADRÃO
 .btn {
   width: 100%;
   border: 0;
@@ -114,6 +155,8 @@ input[type="checkbox"] {
     cursor: not-allowed;
   }
 }
+
+//////////////////////////
 
 .link {
   font-weight: 700;

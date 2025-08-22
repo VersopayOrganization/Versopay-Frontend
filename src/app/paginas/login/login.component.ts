@@ -14,7 +14,7 @@ import { AuthService, LoginPayload } from '../../auth/auth.service';
 export class LoginComponent {
   email = '';
   password = '';
-  remember = true;
+  remember = false;
   backgroundImage = `url('assets/images/fundo-login.png')`;
   loading = false;
   toastMsg: string | null = null;
