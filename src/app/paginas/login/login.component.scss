@@ -5,7 +5,7 @@
   height: 100%;
   display: grid;
   grid-template-columns: 1.1fr 1fr;
-  background: #fff;
+  background: $color-branco;
 }
 
 .hero {
@@ -28,7 +28,7 @@
     letter-spacing: -3%;
     font-family: 'inter', sans-serif;
     font-size: 40px;
-    color: #ECECEC;
+    color: $color-cinza-texto;
 
     b {
       font-weight: 700;
@@ -79,6 +79,10 @@
   font-size: 18px;
   font-weight: 400;
   color: $color-cinza-fraco;
+}
+
+.recuperar-senha {
+  text-decoration: underline;
 }
 
 .signup {

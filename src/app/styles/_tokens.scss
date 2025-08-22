@@ -1,11 +1,15 @@
 /* Cores */
-$color-bg:            #0e0e0e;
-$color-fg:            #eaeaea;
-$color-roxo-marca:        #7E5BED;
-$color-cinza-fraco:         #7D7D7D;
-$color-card:          #121212;
-$color-input-bg:      #0f0f0f;
-$color-input-border:  #2a2a2a;
+$color-bg: #0e0e0e;
+$color-fg: #eaeaea;
+$color-branco: #fff;
+$color-cinza-texto: #ECECEC;
+$color-roxo-marca: #7E5BED;
+$color-roxo-border: #8a5cf6;
+$color-roxo-claro: #a77df8;
+$color-cinza-fraco: #7D7D7D;
+$color-card: #121212;
+$color-input-bg: #0f0f0f;
+$color-input-border: #2a2a2a;
 
 /* Espaçamentos */
 $space-2: .5rem;
@@ -15,22 +19,22 @@ $space-5: 1.25rem;
 
 /* Raios e sombras */
 $radius-sm: .5rem;
-$radius-md: .625rem;    // ~10px
-$radius-lg: 1rem;       // 16px
-$radius-xl: 1.25rem;    // 20px
-$shadow-elev: 0 10px 24px rgba(0,0,0,.35);            // sombra de elevação
-$focus-ring:  0 0 0 3px rgba(255,216,77,.25);         // anel de foco
+$radius-md: .625rem; // ~10px
+$radius-lg: 1rem; // 16px
+$radius-xl: 1.25rem; // 20px
+$shadow-elev: 0 10px 24px rgba(0, 0, 0, .35); // sombra de elevação
+$focus-ring: 0 0 0 3px rgba(255, 216, 77, .25); // anel de foco
 
 /* Tipografia / tamanhos */
-$font-size-sm:   .9rem;
+$font-size-sm: .9rem;
 $font-size-base: 1rem;
-$font-size-lg:   1.1rem;
+$font-size-lg: 1.1rem;
 $font-size-hero: 1.6rem;
 
 /* Larguras e gradientes */
 $container-card-w: 420px;
-$gradient-login: radial-gradient(1200px 600px at 50% -10%, rgba(255,216,77,.1), transparent 60%);
+$gradient-login: radial-gradient(1200px 600px at 50% -10%, rgba(255, 216, 77, .1), transparent 60%);
 
 /* Animações */
 $duration-fast: 150ms;
-$easing: cubic-bezier(.2,.8,.2,1);
+$easing: cubic-bezier(.2, .8, .2, 1);

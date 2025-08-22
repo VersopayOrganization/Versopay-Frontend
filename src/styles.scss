@@ -75,7 +75,7 @@ input {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &:focus {
-    border-color: #8a5cf6;
+    border-color: $color-roxo-border;
     box-shadow: 0 0 0 3px rgba(138, 92, 246, .18);
   }
 }
@@ -96,7 +96,7 @@ input[type="checkbox"] {
   border-radius: 10px;
   color: #fff;
   cursor: pointer;
-  background: linear-gradient(270deg, #7E5BED, #a77df8);
+  background: linear-gradient(270deg, $color-roxo-marca, $color-roxo-claro);
   font-size: 18px;
   transition: transform 0.05s ease, filter 0.15s ease;
   font-weight: 700;
