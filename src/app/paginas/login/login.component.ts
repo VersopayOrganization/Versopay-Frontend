@@ -38,10 +38,10 @@ export class LoginComponent {
 
       const ok = await this.auth.login(payload);
       if (ok) this.router.navigateByUrl('/dashboard');
-      else this.toast.error('E-mail ou senha inválidos.', 'top-center');
+      else this.toast.error('E-mail ou senha inválidos.', 'bottom-left');
 
     } catch (e: any) {
-      this.toast.error(e?.error?.message ?? 'Falha ao autenticar', 'top-center');
+      this.toast.error(e?.error?.message ?? 'Falha ao autenticar', 'bottom-left');
     } finally {
       this.loading = false;
     }
