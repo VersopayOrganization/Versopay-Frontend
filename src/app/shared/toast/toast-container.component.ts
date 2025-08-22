@@ -12,7 +12,6 @@ import { ToastOptions, ToastPosition } from './toast.model';
 })
 export class ToastContainerComponent {
     private svc = inject(ToastService);
-    private edge = 16;
 
     positions: ToastPosition[] = [
         'top-left', 'top-right', 'bottom-left', 'bottom-right', 'top-center', 'bottom-center'
