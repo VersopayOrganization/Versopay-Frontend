@@ -137,7 +137,7 @@ input[type="checkbox"]:checked::before {
   border-radius: 10px;
   color: #fff;
   cursor: pointer;
-  background: linear-gradient(270deg, $color-roxo-marca, $color-roxo-claro);
+  background: linear-gradient(270deg, $color-roxo-escuro, $color-roxo-claro);
   font-size: 18px;
   transition: transform 0.05s ease, filter 0.15s ease;
   font-weight: 700;
@@ -147,6 +147,10 @@ input[type="checkbox"]:checked::before {
 
   &:active {
     transform: translateY(1px);
+  }
+
+  &:hover {
+    background: linear-gradient(210deg, $color-roxo-escuro 0%, #000 100%);
   }
 
   &:disabled {
