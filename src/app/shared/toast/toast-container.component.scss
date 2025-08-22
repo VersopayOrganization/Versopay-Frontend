@@ -189,3 +189,26 @@
         opacity: 1
     }
 }
+
+/* MOBILE PARA FICAR CENTRALIZADO NO TOPO */
+@media (max-width: 768px) {
+    .vp-toast-slot {
+        top: 16px !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: translateX(-50%) !important;
+
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .vp-toast {
+        margin: 0 !important;
+    }
+
+    .vp-msg {
+        font-size: 15px;
+    }
+
+}
