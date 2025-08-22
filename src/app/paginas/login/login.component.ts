@@ -1,42 +1,52 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService, LoginPayload } from '../../auth/auth.service';
 
 @Component({
   standalone: true,
   selector: 'vp-login',
   imports: [CommonModule, FormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
-  email = signal('');
-  password = signal('');
-  remember = signal(true);
-  loading = signal(false);
-  error = signal<string | null>(null);
-  logo='assets/icons/logo-verso.svg';
+  email = '';
+  password = '';
+  remember = true;
+  backgroundImage = `url('assets/images/fundo-login.png')`;
+  loading = false;
+  toastMsg: string | null = null;
 
-  year = new Date().getFullYear();
+  constructor(private auth: AuthService, private router: Router) { }
 
-  constructor(private auth: AuthService, private router: Router) {}
+  private toast(msg: string) {
+    this.toastMsg = msg;
+    setTimeout(() => (this.toastMsg = null), 3500);
+  }
 
   async submit() {
-    if (!this.email() || !this.password()) {
-      this.error.set('Informe e-mail e senha.');
+    if (!this.email || !this.password) {
+      this.toast('Todos os campos são obrigatórios.');
       return;
     }
-    this.loading.set(true);
-    this.error.set(null);
+
+    this.loading = true;
     try {
-      this.auth.login({ email: this.email() }, this.remember());
-      this.router.navigateByUrl('/dashboard');
+      const payload: LoginPayload = {
+        email: this.email,
+        senha: this.password,
+        lembrar7Dias: this.remember,
+      };
+
+      const ok = await this.auth.login(payload);
+      if (ok) this.router.navigateByUrl('/dashboard');
+      else this.toast('E-mail ou senha inválidos.');
     } catch (e: any) {
-      this.error.set(e?.message ?? 'Falha ao autenticar');
+      this.toast(e?.error?.message ?? 'Falha ao autenticar');
     } finally {
-      this.loading.set(false);
+      this.loading = false;
     }
   }
 }

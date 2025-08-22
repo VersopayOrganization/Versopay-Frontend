@@ -4,8 +4,7 @@
 :root {
   --bg: #{$color-bg};
   --fg: #{$color-fg};
-  --accent: #{$color-accent};
-  --muted: #{$color-muted};
+  --accent: #{$color-roxo-marca};
 
   --space-2: #{$space-2};
   --space-3: #{$space-3};
@@ -28,6 +27,10 @@ body {
   height: 100%;
 }
 
+* {
+  font-family: 'inter', sans-serif;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -38,8 +41,39 @@ body {
 
 a {
   color: var(--accent);
+  cursor: pointer;
 }
 
 .destaque {
-  color: $color-accent;
+  color: $color-roxo-marca;
+}
+
+.btn {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(270deg, #7E5BED, #a77df8);
+  font-size: 18px;
+  transition: transform 0.05s ease, filter 0.15s ease;
+  font-weight: 700;
+  line-height: 156%;
+  height: 50px;
+  margin-top: 25px;
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    filter: grayscale(.3);
+    opacity: .75;
+    cursor: not-allowed;
+  }
+}
+
+.link {
+  font-weight: 700;
+  font-size: 18px;
 }
