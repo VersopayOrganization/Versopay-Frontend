@@ -94,58 +94,6 @@
   color: $color-cinza-fraco;
 }
 
-/* Overlay de loading */
-.loading {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 71%);
-  display: grid;
-  place-items: center;
-  z-index: 999;
-}
-
-.spinner {
-  width: 150px;
-  height: 150px;
-  animation: bounce 1.2s ease-in-out infinite;
-}
-
-/* Keyframes do efeito "bounce/pulse" */
-@keyframes bounce {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.9;
-  }
-
-  50% {
-    transform: scale(1.15);
-    opacity: 1;
-  }
-}
-
-@keyframes sp {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Toast */
-.toast {
-  position: fixed;
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #ff4d6d;
-  color: #fff;
-  padding: 10px 14px;
-  border-radius: 10px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, .25);
-  z-index: 1000;
-  font-weight: 600;
-}
-
 /* Responsivo (mobile: empilha) */
 @media (max-width: 980px) {
   .auth {

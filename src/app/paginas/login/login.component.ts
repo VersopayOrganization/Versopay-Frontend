@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, LoginPayload } from '../../auth/auth.service';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   standalone: true,
@@ -19,16 +20,11 @@ export class LoginComponent {
   loading = false;
   toastMsg: string | null = null;
 
-  constructor(private auth: AuthService, private router: Router) { }
-
-  private toast(msg: string) {
-    this.toastMsg = msg;
-    setTimeout(() => (this.toastMsg = null), 3500);
-  }
+  constructor(private auth: AuthService, private router: Router, private toast: ToastService) { }
 
   async submit() {
     if (!this.email || !this.password) {
-      this.toast('Todos os campos são obrigatórios.');
+      this.toast.error('Todos os campos são obrigatórios.', 'bottom-left');
       return;
     }
 
@@ -42,9 +38,10 @@ export class LoginComponent {
 
       const ok = await this.auth.login(payload);
       if (ok) this.router.navigateByUrl('/dashboard');
-      else this.toast('E-mail ou senha inválidos.');
+      else this.toast.error('E-mail ou senha inválidos.', 'top-center');
+
     } catch (e: any) {
-      this.toast(e?.error?.message ?? 'Falha ao autenticar');
+      this.toast.error(e?.error?.message ?? 'Falha ao autenticar', 'top-center');
     } finally {
       this.loading = false;
     }

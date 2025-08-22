@@ -158,6 +158,44 @@ input[type="checkbox"]:checked::before {
 
 //////////////////////////
 
+// Overlay de loading
+.loading {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 71%);
+  display: grid;
+  place-items: center;
+  z-index: 999;
+}
+
+.spinner {
+  width: 150px;
+  height: 150px;
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+/* Keyframes do efeito "bounce/pulse" */
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes sp {
+  to {
+    transform: rotate(360deg);
+  }
+}
+//////////////////////////
+
 .link {
   font-weight: 700;
   font-size: 18px;
