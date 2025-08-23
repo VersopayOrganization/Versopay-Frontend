@@ -85,7 +85,7 @@ export class CadastrarComponent {
 
       const ok = await this.usuarioService.create(payload);
       if (ok) this.router.navigateByUrl('/dashboard');
-      else this.toast.show({message: 'Cadastro realizado com sucesso! Faça login para continuar.', type: 'success', position: 'bottom-left', offset: { x: 40, y: 40 }});
+      else this.toast.show({message: 'Falha ao cadastrar. Tente novamente.', type: 'error', position: 'bottom-left', offset: { x: 40, y: 40 }});
     } catch (err: any) {
       const msg = err?.error?.message ?? 'Falha ao cadastrar. Tente novamente.';
       this.toast.show({message: msg, type: 'error', position: 'bottom-left', offset: { x: 40, y: 40 }});
