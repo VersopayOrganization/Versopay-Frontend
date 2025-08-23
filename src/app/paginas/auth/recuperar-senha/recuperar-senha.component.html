@@ -1,0 +1,42 @@
+<div class="auth">
+    <aside class="hero" [style.background-image]="backgroundImage">
+        <div class="hero__content">
+            <h2>
+                Sua <b>operação de alta performance</b><br />
+                merece uma <b>ferramenta de pagamentos</b><br />
+                que entrega <b>potência máxima</b>.
+            </h2>
+        </div>
+    </aside>
+
+    <main class="panel">
+        <section class="cadastro-card">
+
+          <form (ngSubmit)="submit()" #f="ngForm" novalidate>
+            <h4>Redefina sua senha</h4>
+            <p class="redefinir-senha">Enviaremos instruções para redefinir sua senha por e-mail. Se você não tiver mais acesso ao seu e-mail, pode tentar a <span class="sublinhado">recuperação de conta</span>.</p>
+
+            <fieldset>
+                <input name="email" type="email" [(ngModel)]="email" placeholder="E-mail" required />
+            </fieldset>
+
+            <div class="row">
+                <label class="concordar-termos">
+                    <input type="checkbox" [(ngModel)]="concordarTermos" name="concordarTermos" />
+                    Concordo com Termos de Uso e Política de
+                    Privacidade da Verso Pay.
+                </label>
+            </div>
+
+            <button class="btn" [disabled]="loading">Redefinir a senha</button>
+
+            <div class="login">
+                <a class="voltar-login" (click)="navegarPagina('/auth/login')">Retornar a tela de Login</a>
+            </div>
+          </form>
+
+          <img class="logo" src="assets/icons/logo-tela-login.svg" alt="VersoPay" />
+
+        </section>
+    </main>
+</div>
