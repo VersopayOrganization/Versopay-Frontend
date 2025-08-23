@@ -1,0 +1,58 @@
+<div class="auth">
+    <aside class="hero" [style.background-image]="backgroundImage">
+        <div class="hero__content">
+            <h2>
+                Sua <b>operação de alta performance</b><br />
+                merece uma <b>ferramenta de pagamentos</b><br />
+                que entrega <b>potência máxima</b>.
+            </h2>
+        </div>
+    </aside>
+
+    <main class="panel">
+        <section class="cadastro-card">
+            <img class="logo" src="assets/icons/logo-tela-login.svg" alt="VersoPay" />
+
+            <form (ngSubmit)="submit()" #f="ngForm" novalidate>
+                <fieldset>
+                    <input name="nome" type="text" [(ngModel)]="nome" placeholder="Nome" required />
+                </fieldset>
+
+                <fieldset>
+                    <input name="email" type="email" [(ngModel)]="email" placeholder="E-mail" required />
+                </fieldset>
+
+                <fieldset>
+                    <input name="senha" type="password" [(ngModel)]="senha" placeholder="Senha" required />
+                </fieldset>
+
+                <fieldset>
+                    <input name="confirmacaoSenha" type="password" [(ngModel)]="confirmacaoSenha"
+                        placeholder="Confirmar senha" required />
+                </fieldset>
+
+                <p class="senha-dica">
+                    Ela deve ter entre 8 e 70 caracteres, ser diferente das utilizadas anteriormente
+                    e incluir letra maiúscula (A–Z), letra minúscula (a–z), número (0–9) e
+                    símbolo especial (!@#$%&).
+                </p>
+
+                <div class="row">
+                    <label class="concordar-termos">
+                        <input type="checkbox" [(ngModel)]="concordarTermos" name="concordarTermos" />
+                        Ao se inscrever, você está criando uma conta
+                        e concorda com os Termos de Uso e a
+                        Política de Privacidade da Verso Pay.
+                    </label>
+                </div>
+
+                <button class="btn" [disabled]="loading">Registrar</button>
+
+                <div class="login">
+                    Já tem uma conta? <a class="link" href="/auth/login">faça login</a>
+                </div>
+            </form>
+
+        </section>
+    </main>
+</div>

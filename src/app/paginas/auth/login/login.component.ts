@@ -14,16 +14,15 @@ import { ToastService } from '../../../shared/toast/toast.service';
 })
 export class LoginComponent {
   email = '';
-  password = '';
+  senha = '';
   remember = false;
   backgroundImage = `url('assets/images/fundo-login.png')`;
   loading = false;
-  toastMsg: string | null = null;
 
   constructor(private auth: AuthService, private router: Router, private toast: ToastService) { }
 
   async submit() {
-    if (!this.email || !this.password) {
+    if (!this.email || !this.senha) {
       this.toast.show({
         message: 'Todos os campos são obrigatórios.',
         type: 'error',
@@ -37,7 +36,7 @@ export class LoginComponent {
     try {
       const payload: LoginPayload = {
         email: this.email,
-        senha: this.password,
+        senha: this.senha,
         lembrar7Dias: this.remember,
       };
 

@@ -10,7 +10,6 @@
   </aside>
 
   <main class="panel">
-    <!-- CARD só para mobile -->
     <section class="login-card">
       <img class="logo" src="assets/icons/logo-tela-login.svg" alt="VersoPay" />
 
@@ -24,7 +23,7 @@
         </fieldset>
 
         <fieldset>
-          <input name="password" type="password" [(ngModel)]="password" placeholder="Senha" required />
+          <input name="senha" type="password" [(ngModel)]="senha" placeholder="Senha" required />
         </fieldset>
 
         <div class="row">
@@ -39,7 +38,7 @@
         <button class="btn" [disabled]="loading">Entrar</button>
 
         <div class="signup">
-          Ainda não tem uma conta? <a class="link" href="#">Inscreva-se</a>
+          Ainda não tem uma conta? <a class="link" href="/auth/cadastrar">Inscreva-se</a>
         </div>
       </form>
     </section>
