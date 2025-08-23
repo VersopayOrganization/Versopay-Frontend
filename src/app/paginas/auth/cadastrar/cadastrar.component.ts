@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ToastService } from '../../../shared/toast/toast.service';
+import { UsuarioService } from '../../../services/usuario.service';
 
 type RegistrarPayload = {
   nome: string;
@@ -20,66 +21,53 @@ type RegistrarPayload = {
 })
 export class CadastrarComponent {
   backgroundImage = `url('assets/images/fundo-login.png')`;
-
   nome = '';
   email = '';
   senha = '';
   confirmacaoSenha = '';
   concordarTermos = false;
   loading = false;
-
-  senhaErrors: string[] = [];
-
-  // se você já usa environments, troque por environment.apiUrl
-  private readonly API = '/api/Usuarios';
+  erroToasterSenha: string = '';
 
   constructor(
-    private http: HttpClient,
     private toast: ToastService,
-    private router: Router
+    private router: Router,
+    private usuarioService: UsuarioService
   ) { }
 
-  /** Valida a senha e retorna uma lista de mensagens de erro (se houver) */
-  private validarSenha(senha: string): string[] {
-    const errs: string[] = [];
-    if (senha.length < 8) errs.push('A senha deve conter no mínimo 8 caracteres.');
-    if (senha.length > 70) errs.push('A senha deve conter no máximo 70 caracteres.');
-    if (!/[A-Z]/.test(senha)) errs.push('A senha deve conter pelo menos uma letra maiúscula.');
-    if (!/[a-z]/.test(senha)) errs.push('A senha deve conter pelo menos uma letra minúscula.');
-    if (!/\d/.test(senha)) errs.push('A senha deve conter pelo menos um número.');
-    if (!/[!@#$%&]/.test(senha)) errs.push('A senha deve conter pelo menos um caracter especial.');
-    return errs;
+  private validarSenha(senha: string) {
+    if (senha.length < 8) return this.erroToasterSenha ='A senha deve conter no mínimo 8 caracteres.';
+    if (senha.length > 70) return this.erroToasterSenha = 'A senha deve conter no máximo 70 caracteres.';
+    if (!/[A-Z]/.test(senha)) return this.erroToasterSenha = 'A senha deve conter pelo menos uma letra maiúscula.';
+    if (!/[a-z]/.test(senha)) return this.erroToasterSenha = 'A senha deve conter pelo menos uma letra minúscula.';
+    if (!/\d/.test(senha)) return this.erroToasterSenha = 'A senha deve conter pelo menos um número.';
+    if (!/[!@#$%&]/.test(senha)) return this.erroToasterSenha = 'A senha deve conter pelo menos um caracter especial.';
+    return
   }
 
   async submit() {
-    // campos obrigatórios
     if (!this.nome || !this.email || !this.senha || !this.confirmacaoSenha) {
-      this.toast.error('Todos os campos são obrigatórios.', 'top-center');
+      this.toast.show({message:'Todos os campos são obrigatórios.', type: 'warning', position: 'bottom-left', offset: { x: 40, y: 40 }});
       return;
     }
 
-    // termos
     if (!this.concordarTermos) {
-      this.toast.error('Você precisa concordar com os Termos de Uso e a Política de Privacidade.', 'top-center');
+      this.toast.show({message:'Você precisa concordar com os Termos de Uso e a Política de Privacidade.', type: 'warning', position: 'bottom-left', offset: { x: 40, y: 40 }});
       return;
     }
 
-    // senha = confirmação
     if (this.senha !== this.confirmacaoSenha) {
-      this.toast.error('A confirmação de senha não confere.', 'top-center');
+      this.toast.show({message:'As senhas precisam ser igual.', type: 'warning', position: 'bottom-left', offset: { x: 40, y: 40 }});
       return;
     }
 
-    // validações de complexidade
-    this.senhaErrors = this.validarSenha(this.senha);
-    if (this.senhaErrors.length) {
-      // mostra via toast (além da lista opcional abaixo do campo)
-      this.toast.error(this.senhaErrors.join('\n'), 'top-center');
+    if (this.validarSenha(this.senha)) {
+      this.toast.show({message:this.erroToasterSenha, type: 'warning', position: 'bottom-left', offset: { x: 40, y: 40 }});
       return;
     }
 
-    // tudo ok → chama a API
     this.loading = true;
+
     try {
       const payload: RegistrarPayload = {
         nome: this.nome.trim(),
@@ -87,13 +75,12 @@ export class CadastrarComponent {
         senha: this.senha
       };
 
-      // await this.http.post(this.API, payload, { withCredentials: true }).toPromise();
-
-      this.toast.success('Cadastro realizado com sucesso! Faça login para continuar.', 'top-center');
-      // this.router.navigateByUrl('/auth/login');
+      const ok = await this.usuarioService.create(payload);
+      if (ok) this.router.navigateByUrl('/dashboard');
+      else this.toast.show({message: 'Cadastro realizado com sucesso! Faça login para continuar.', type: 'success', position: 'bottom-left', offset: { x: 40, y: 40 }});
     } catch (err: any) {
-      const msg = err?.error?.message ?? 'Falha ao registrar. Tente novamente.';
-      this.toast.error(msg, 'top-center');
+      const msg = err?.error?.message ?? 'Falha ao cadastrar. Tente novamente.';
+      this.toast.show({message: msg, type: 'error', position: 'bottom-left', offset: { x: 40, y: 40 }});
     } finally {
       this.loading = false;
     }

@@ -78,8 +78,8 @@
     color: #111;
     display: grid;
     place-items: center;
-    width: 22px;
-    height: 22px;
+    width: 45px;
+    height: 45px;
 }
 
 .vp-msg {
@@ -93,7 +93,7 @@
     border: 0;
     background: transparent;
     color: #111;
-    font-size: 25px;
+    font-size: 30px;
     line-height: 1;
     cursor: pointer;
     padding: 0 4px;
@@ -101,18 +101,18 @@
 
 /* temas */
 .is-error {
-    background: #f9d7d7;
-    color: #1a1a1a;
+    background: red;
+    color: #FFFF;
 }
 
 .is-warning {
-    background: #ffe6c2;
-    color: #1a1a1a;
+    background: #EDBDBD;
+    color: #1B1B1B;
 }
 
 .is-info {
     background: #e1d2ff;
-    color: #1a1a1a;
+    color: #1B1B1B;
 }
 
 .is-success {

@@ -2,16 +2,13 @@ import { Injectable, computed, signal, inject, PLATFORM_ID } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environment';
+import { AuthUser } from '../models/auth/auth-user.dto';
+import { LoginPayload } from '../models/auth/login-payload.dto';
+import { AuthResponseDto } from '../models/auth/auth-response.dto';
 
-export type AuthUser = { id: string; email: string; name?: string; roles?: string[] };
+const API_BASE = `${environment.apiUrl}/api/auth/login`;
+
 type Persist = { user: AuthUser; token: string; exp: number };
-
-export type LoginPayload = { email: string; senha: string; lembrar7Dias: boolean };
-export type AuthResponseDto = {
-  accessToken: string;
-  expiresAtUtc: string; // ISO
-  usuario: { id: number; nome: string; email: string; isAdmin: boolean };
-};
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -59,14 +56,12 @@ export class AuthService {
     this.session?.removeItem('vp_auth');
   }
 
-  // ---------- API ----------
   async login(payload: LoginPayload): Promise<boolean> {
-    const url = `${environment.apiUrl}/api/auth/login`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     try {
       const resp = await this.http
-        .post<AuthResponseDto>(url, payload, { headers, withCredentials: true })
+        .post<AuthResponseDto>(API_BASE, payload, { headers, withCredentials: true })
         .toPromise();
 
       if (!resp) return false;

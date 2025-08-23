@@ -19,7 +19,7 @@ export class LoginComponent {
   backgroundImage = `url('assets/images/fundo-login.png')`;
   loading = false;
 
-  constructor(private auth: AuthService, private router: Router, private toast: ToastService) { }
+  constructor(private authService: AuthService, private router: Router, private toast: ToastService) { }
 
   async submit() {
     if (!this.email || !this.senha) {
@@ -40,7 +40,7 @@ export class LoginComponent {
         lembrar7Dias: this.remember,
       };
 
-      const ok = await this.auth.login(payload);
+      const ok = await this.authService.login(payload);
       if (ok) this.router.navigateByUrl('/dashboard');
       else
         this.toast.show({
