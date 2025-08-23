@@ -43,7 +43,7 @@
                 <button class="btn" [disabled]="loading">Registrar</button>
 
                 <div class="login">
-                    Já tem uma conta? <a class="link" href="/auth/login">faça login</a>
+                    Já tem uma conta? <a class="link" (click)="navegarPagina('/auth/login')">faça login</a>
                 </div>
             </form>
 

@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { UsuarioService } from '../../../services/usuario.service';
+import { Utils } from '../../../shared/utils.service';
 
 type RegistrarPayload = {
   nome: string;
@@ -33,7 +34,8 @@ export class CadastrarComponent {
   constructor(
     private toast: ToastService,
     private router: Router,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private utils: Utils
   ) { }
 
   private validarSenha(senha: string) {
@@ -44,6 +46,10 @@ export class CadastrarComponent {
     if (!/\d/.test(senha)) return this.erroToasterSenha = 'A senha deve conter pelo menos um número.';
     if (!/[!@#$%&]/.test(senha)) return this.erroToasterSenha = 'A senha deve conter pelo menos um caracter especial.';
     return
+  }
+
+  navegarPagina(rota: string) {
+    this.utils.navegarPagina(rota);
   }
 
   async submit() {

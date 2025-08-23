@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/auth.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { LoginPayload } from '../../../models/auth/login-payload.dto';
+import { Utils } from '../../../shared/utils.service';
 
 @Component({
   standalone: true,
@@ -20,7 +21,16 @@ export class LoginComponent {
   backgroundImage = `url('assets/images/fundo-login.png')`;
   loading = false;
 
-  constructor(private authService: AuthService, private router: Router, private toast: ToastService) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private toast: ToastService,
+    private utils: Utils
+  ) { }
+
+  navegarPagina(rota: string) {
+    this.utils.navegarPagina(rota);
+  }
 
   async submit() {
     if (!this.email || !this.senha) {
@@ -42,7 +52,7 @@ export class LoginComponent {
       };
 
       const ok = await this.authService.login(payload);
-      if (ok) this.router.navigateByUrl('/dashboard');
+      if (ok) this.navegarPagina('/dashboard')
       else
         this.toast.show({
           message: 'E-mail ou senha inválidos.',
