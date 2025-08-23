@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, LoginPayload } from '../../../auth/auth.service';
+import { AuthService } from '../../../auth/auth.service';
 import { ToastService } from '../../../shared/toast/toast.service';
+import { LoginPayload } from '../../../models/auth/login-payload.dto';
 
 @Component({
   standalone: true,

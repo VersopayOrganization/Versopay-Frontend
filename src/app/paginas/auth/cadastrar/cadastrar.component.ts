@@ -10,6 +10,7 @@ type RegistrarPayload = {
   nome: string;
   email: string;
   senha: string;
+  confirmarSenha: string;
 };
 
 @Component({
@@ -72,7 +73,8 @@ export class CadastrarComponent {
       const payload: RegistrarPayload = {
         nome: this.nome.trim(),
         email: this.email.trim().toLowerCase(),
-        senha: this.senha
+        senha: this.senha,
+        confirmarSenha: this.confirmacaoSenha
       };
 
       const ok = await this.usuarioService.create(payload);

@@ -13,7 +13,7 @@ export class UsuarioService {
 
   async create(payload: UsuarioCreateDto): Promise<UsuarioResponseDto> {
     try {
-      const obs = this.http.post<UsuarioResponseDto>(API_BASE, payload, {
+      const obs = this.http.post<UsuarioResponseDto>(API_BASE + '/cadastro-inicial', payload, {
         withCredentials: true,
       });
       return await firstValueFrom(obs);
