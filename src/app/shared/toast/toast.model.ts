@@ -1,4 +1,4 @@
-export type ToastType = 'error' | 'info' | 'success' | 'warning' | 'plain';
+export type ToastType = 'error' | 'info' | 'success' | 'success-email' | 'warning' | 'plain';
 
 export type ToastPosition =
     | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
