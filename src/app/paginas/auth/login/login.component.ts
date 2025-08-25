@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, LoginPayload } from '../../../auth/auth.service';
+import { AuthService } from '../../../auth/auth.service';
 import { ToastService } from '../../../shared/toast/toast.service';
+import { LoginPayload } from '../../../models/auth/login-payload.dto';
 
 @Component({
   standalone: true,
@@ -14,16 +15,15 @@ import { ToastService } from '../../../shared/toast/toast.service';
 })
 export class LoginComponent {
   email = '';
-  password = '';
+  senha = '';
   remember = false;
   backgroundImage = `url('assets/images/fundo-login.png')`;
   loading = false;
-  toastMsg: string | null = null;
 
-  constructor(private auth: AuthService, private router: Router, private toast: ToastService) { }
+  constructor(private authService: AuthService, private router: Router, private toast: ToastService) { }
 
   async submit() {
-    if (!this.email || !this.password) {
+    if (!this.email || !this.senha) {
       this.toast.show({
         message: 'Todos os campos são obrigatórios.',
         type: 'error',
@@ -37,11 +37,11 @@ export class LoginComponent {
     try {
       const payload: LoginPayload = {
         email: this.email,
-        senha: this.password,
+        senha: this.senha,
         lembrar7Dias: this.remember,
       };
 
-      const ok = await this.auth.login(payload);
+      const ok = await this.authService.login(payload);
       if (ok) this.router.navigateByUrl('/dashboard');
       else
         this.toast.show({
