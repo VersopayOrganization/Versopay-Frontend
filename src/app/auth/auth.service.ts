@@ -100,19 +100,6 @@ export class AuthService {
     });
   }
 
-  async esqueciSenha(payload: any) {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    try {
-      const resp = this.http
-      .post(API_BASE+'/esqueci-senha', payload, { headers, withCredentials: true })
-      .toPromise();
-
-        return await resp;
-    } catch(err) {
-      throw err;
-    }
-  }
-
   get token(): string | null {
     if (!this.isBrowser) return null;
     const raw = this.local?.getItem('vp_auth') ?? this.session?.getItem('vp_auth');

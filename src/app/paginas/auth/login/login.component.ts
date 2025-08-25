@@ -61,8 +61,9 @@ export class LoginComponent {
           offset: { x: 40, y: 40 }
         });
 
-    } catch (e: any) {
-      this.toast.error(e?.error?.message ?? 'Falha ao autenticar', 'bottom-left');
+    } catch (err: any) {
+      const msg = err.message ?? 'Falha ao logar. Tente novamente.';
+      this.toast.show({ message: msg, type: 'error', position: 'bottom-left', offset: { x: 40, y: 40 } });
     } finally {
       this.loading = false;
     }
