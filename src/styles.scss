@@ -4,8 +4,7 @@
 :root {
   --bg: #{$color-bg};
   --fg: #{$color-fg};
-  --accent: #{$color-accent};
-  --muted: #{$color-muted};
+  --accent: #{$color-roxo-marca};
 
   --space-2: #{$space-2};
   --space-3: #{$space-3};
@@ -30,6 +29,19 @@ body {
 
 body {
   margin: 0;
+  overflow: hidden;
+}
+
+:root {
+  --vh: 100dvh;
+}
+
+* {
+  font-family: 'inter', sans-serif;
+}
+
+body {
+  margin: 0;
   background: var(--bg);
   color: var(--fg);
   font-family: Inter, Roboto, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
@@ -38,8 +50,167 @@ body {
 
 a {
   color: var(--accent);
+  cursor: pointer;
+}
+
+fieldset {
+  display: block;
+  margin-bottom: 18px;
+  padding: 0;
+  border: none;
 }
 
 .destaque {
-  color: $color-accent;
+  color: $color-roxo-marca;
+}
+
+//  ESTILIZAÇÃO INPUT
+input {
+  width: 450px;
+  border: 1px solid $color-cinza-fraco;
+  color: #17171f;
+  border-radius: 10px;
+  padding: 12px 14px;
+  outline: none;
+  height: 25px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus {
+    border-color: $color-roxo-border;
+    box-shadow: 0 0 0 3px rgba(138, 92, 246, .18);
+  }
+}
+
+input[type="checkbox"] {
+  width: auto;
+  color: #17171f;
+
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+//////////////////////////
+
+//  ESTILIZAÇÃO CHECKBOX
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin: 0;
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border: 1px solid $color-cinza-fraco;
+  border-radius: 6px;
+  display: inline-grid;
+  place-content: center;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Estilo quando marcado */
+input[type="checkbox"]:checked {
+  background-color: #7e5bed7a;
+  border-color: $color-roxo-marca;
+}
+
+/* O "check" dentro do quadrado */
+input[type="checkbox"]::before {
+  content: "✔";
+  color: $color-roxo-marca;
+  font-size: 14px;
+  transform: scale(0);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Aparece o check */
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+//////////////////////////
+
+//  ESTILIZAÇÃO BUTTON PADRÃO
+.btn {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(270deg, $color-roxo-escuro, $color-roxo-claro);
+  font-size: 18px;
+  transition: transform 0.05s ease, filter 0.15s ease;
+  font-weight: 700;
+  line-height: 156%;
+  height: 50px;
+  margin-top: 25px;
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:hover {
+    background: linear-gradient(210deg, $color-roxo-escuro 0%, #000 100%);
+  }
+
+  &:disabled {
+    filter: grayscale(.3);
+    opacity: .75;
+    cursor: not-allowed;
+  }
+}
+
+//////////////////////////
+
+// Overlay de loading
+.loading {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 71%);
+  display: grid;
+  place-items: center;
+  z-index: 999;
+}
+
+.spinner {
+  width: 150px;
+  height: 150px;
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+/* Keyframes do efeito "bounce/pulse" */
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes sp {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+//////////////////////////
+
+.link {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+
+
+/* Responsivo (mobile: empilha) */
+@media (max-width: 980px) {
+  input {
+    width: 92%;
+  }
 }
