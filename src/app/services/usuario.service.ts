@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { UsuarioCreateDto } from '../models/usuarios/usuario-create.dto';
 import { UsuarioResponseDto } from '../models/usuarios/usuario-response.dto';
@@ -65,5 +65,18 @@ export class UsuarioService {
       return new Error(msg);
     }
     return new Error('Erro inesperado ao chamar o servidor.');
+  }
+
+  async esqueciSenha(payload: any) {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    try {
+      const resp = this.http
+        .post(API_BASE + '/esqueci-senha', payload, { headers, withCredentials: true })
+        .toPromise();
+
+      return await resp;
+    } catch (err) {
+      throw err;
+    }
   }
 }
