@@ -5,8 +5,9 @@ import { environment } from '../../environment';
 import { AuthUser } from '../models/auth/auth-user.dto';
 import { LoginPayload } from '../models/auth/login-payload.dto';
 import { AuthResponseDto } from '../models/auth/auth-response.dto';
+import { firstValueFrom } from 'rxjs';
 
-const API_BASE = `${environment.apiUrl}/api/auth/login`;
+const API_BASE = `${environment.apiUrl}/api/auth`;
 
 type Persist = { user: AuthUser; token: string; exp: number };
 
@@ -61,7 +62,7 @@ export class AuthService {
 
     try {
       const resp = await this.http
-        .post<AuthResponseDto>(API_BASE, payload, { headers, withCredentials: true })
+        .post<AuthResponseDto>(API_BASE+'/login', payload, { headers, withCredentials: true })
         .toPromise();
 
       if (!resp) return false;
@@ -97,6 +98,19 @@ export class AuthService {
         if (this.isBrowser) location.assign('/auth/login');
       }
     });
+  }
+
+  async esqueciSenha(payload: any) {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    try {
+      const resp = this.http
+      .post(API_BASE+'/esqueci-senha', payload, { headers, withCredentials: true })
+      .toPromise();
+
+        return await resp;
+    } catch(err) {
+      throw err;
+    }
   }
 
   get token(): string | null {

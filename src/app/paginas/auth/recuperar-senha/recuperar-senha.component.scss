@@ -56,12 +56,31 @@
   align-items: center;
 }
 
+h4 {
+  text-align: center;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 156%;
+  color: #1f1f1f;
+  margin: 0;
+}
+
+.redefinir-senha {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 156%;
+  color: $color-cinza-fraco;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
 .logo {
   width: 220px;
   height: 100%;
   display: flex;
   place-self: center;
-  margin-bottom: 50px;
+  margin-top: 50px;
 }
 
 .subtitle {
@@ -90,12 +109,14 @@
   line-height: 156%;
 }
 
-.recuperar-senha {
+.voltar-login {
   text-decoration: underline;
+  margin-top: -20px;
+  color: $color-cinza-fraco;
 }
 
 .login {
-  margin-top: 20px;
+  margin-top: 15px;
   text-align: center;
   font-weight: 400;
   font-size: 18px;
@@ -173,15 +194,7 @@ form {
     margin: 4px 0 14px;
   }
 
-  .remember {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-    color: $color-cinza-fraco;
-  }
-
-  .recuperar-senha {
+  .voltar-login {
     text-decoration: underline;
     font-size: 16px;
   }
@@ -212,8 +225,17 @@ form {
     justify-self: center;
   }
 
+  h4 {
+    font-size: 18px;
+  }
+
+  .redefinir-senha {
+    font-size: 16px;
+  }
+
   .logo {
-    margin-bottom: 35px !important;
+    margin-top: 30px !important;
+    margin-bottom: 0 !important;
     width: 154px !important;
   }
 }

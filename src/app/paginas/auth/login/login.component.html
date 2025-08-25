@@ -32,13 +32,13 @@
             Lembrar-me
           </label>
 
-          <a class="link recuperar-senha" routerLink="/auth/forgot">Recuperar senha</a>
+          <a class="link recuperar-senha" (click)="navegarPagina('/auth/recuperar-senha')">Recuperar senha</a>
         </div>
 
         <button class="btn" [disabled]="loading">Entrar</button>
 
         <div class="signup">
-          Ainda não tem uma conta? <a class="link" href="/auth/cadastrar">Inscreva-se</a>
+          Ainda não tem uma conta? <a class="link" (click)="navegarPagina('/auth/cadastrar')">Inscreva-se</a>
         </div>
       </form>
     </section>
