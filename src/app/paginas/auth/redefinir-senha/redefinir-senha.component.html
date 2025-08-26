@@ -1,1 +1,46 @@
-<p>redefinir-senha works!</p>
+<div class="auth">
+    <aside class="hero" [style.background-image]="backgroundImage">
+        <div class="hero__content">
+            <h2>
+                Sua <b>operação de alta performance</b><br />
+                merece uma <b>ferramenta de pagamentos</b><br />
+                que entrega <b>potência máxima</b>.
+            </h2>
+        </div>
+    </aside>
+
+    <main class="panel">
+        <section class="cadastro-card">
+            <form (ngSubmit)="submit()" #f="ngForm" novalidate>
+                <h4>Crie uma nova senha</h4>
+                <p class="redefinir-senha"
+                    [innerHTML]="'Ela deve ter entre 8 e 70 caracteres, ser diferente das utilizadas anteriormente e incluir letra maiúscula (A-Z), letra minúscula (a-z), número (0-9) e símbolo especial (!@#$%&).'">
+                <fieldset>
+                    <input name="senha" type="password" [(ngModel)]="senha" placeholder="Nova Senha" required />
+                </fieldset>
+
+                <fieldset>
+                    <input name="confirmarSenha" type="password" [(ngModel)]="confirmarSenha"
+                        placeholder="Confirmar a Senha" required />
+                </fieldset>
+
+                <div class="row" style="margin: -17px 0 -6px;">
+                    <label class="concordar-termos">
+                        <input type="checkbox" [(ngModel)]="concordarTermos" name="concordarTermos" />
+                        Concordo com Termos de Uso e Política de
+                        Privacidade da Verso Pay.
+                    </label>
+                </div>
+
+                <button class="btn" [disabled]="loading">Alterar senha</button>
+
+                <div class="login">
+                    <a class="voltar-login" (click)="navegarPagina('/auth/login')">Já sabe sua senha? Entrar</a>
+                </div>
+            </form>
+
+            <img class="logo" src="assets/icons/logo-tela-login.svg" alt="VersoPay" />
+
+        </section>
+    </main>
+</div>

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { UsuarioCreateDto } from '../models/usuarios/usuario-create.dto';
 import { UsuarioResponseDto } from '../models/usuarios/usuario-response.dto';
@@ -77,6 +77,31 @@ export class UsuarioService {
       return await resp;
     } catch (err) {
       throw err;
+    }
+  }
+
+  async reseterSenha(payload: any) {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    try {
+      const resp = this.http
+        .post(API_BASE + '/resetar-senha', payload, { headers, withCredentials: true })
+        .toPromise();
+
+      return await resp;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async validarTokenResetSenha(token: string): Promise<boolean> {
+    try {
+      const params = new HttpParams().set('token', token);
+      await firstValueFrom(
+        this.http.get(`${API_BASE}/resetar-senha/validar`, { params, withCredentials: true })
+      );
+      return true;
+    } catch {
+      return false;
     }
   }
 }
