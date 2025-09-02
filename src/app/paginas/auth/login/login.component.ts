@@ -129,77 +129,66 @@ export class LoginComponent {
 
   async submit() {
     if (!this.email || !this.senha) {
-      this.toast.show({
-        message: 'Todos os campos são obrigatórios.',
-        type: 'error',
-        position: 'bottom-left',
-        offset: { x: 40, y: 40 }
-      });
+      this.toast.error('Todos os campos são obrigatórios.');
       return;
     }
 
     this.loading = true;
     try {
-      // 1) inicia o 2FA
-      const start = await this.authService.start2fa({
+      const res = await this.authService.loginSmart({
         email: this.email,
         senha: this.senha,
         lembrar7Dias: this.remember,
       });
 
-      // guarda challenge e vai para passo "código"
-      this.challengeId = start!.challengeId;
-      this.maskedEmail = start!.maskedEmail;
+      if (res.status === 200) {
+        // já logado (bypass válido)
+        this.router.navigateByUrl('/dashboard');
+        return;
+      }
+
+      // 202 → precisa de 2FA
+      this.challengeId = res.body.challengeId;
+      this.maskedEmail = res.body.maskedEmail;
       this.step = 'code';
       setTimeout(() => this.otpInputs?.first?.nativeElement.focus(), 0);
 
       this.toast.show({
-        message: 'Verifique seu e-mail.',
+        message: 'Enviamos um código para seu e-mail.',
         type: 'success-email',
         position: 'bottom-left',
         offset: { x: 40, y: 40 }
       });
-
     } catch (e: any) {
-
-      this.toast.show({
-        message: e?.error?.message ?? 'E-mail ou senha inválidos.',
-        type: 'info',
-        position: 'bottom-left',
-        offset: { x: 40, y: 40 }
-      });
+      this.toast.error(e?.error?.message ?? 'E-mail ou senha inválidos.');
     } finally {
       this.loading = false;
     }
   }
 
   async confirmarCodigo() {
-    if (!this.challengeId || !this.code || this.code.length < 6) {
+    if (!this.challengeId || !this.otp.every(d => d.length === 1)) {
       this.toast.error('Informe o código de 6 dígitos.');
       return;
     }
 
     this.loading = true;
     try {
-      // 2) confirma o código (seta cookie de bypass)
       const resp = await this.authService.confirm2fa(this.challengeId, this.code);
-      if (resp?.status !== 204) throw new Error('Código inválido');
+      if (resp.status !== 204) throw new Error('Código inválido');
 
-      // 3) faz o login final para obter o access token
-      const logged = await this.authService.login({
+      // login final para receber tokens
+      await this.authService.loginFinal({
         email: this.email,
         senha: this.senha,
         lembrar7Dias: this.remember,
       });
 
       this.router.navigateByUrl('/dashboard');
-
     } catch (e: any) {
-      const msg = e?.error?.message ?? 'Código inválido ou expirado.';
-      this.toast.error(msg);
+      this.toast.error(e?.error?.message ?? 'Código inválido ou expirado.');
     } finally {
       this.loading = false;
     }
   }
-
 }

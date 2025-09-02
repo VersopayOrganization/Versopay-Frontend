@@ -46,7 +46,7 @@
 
       @if(step === 'code') {
       <h4>Confirmação de Segurança</h4>
-      <p>Insira o código enviado para o seu e-mail <b>{{ maskedEmail }}</b>.</p>
+      <p>Insira o código enviado para o seu e-mail.</p>
 
       <div class="otp">
         <input #otpBox class="otp__box" *ngFor="let d of otp; let i = index" type="tel" inputmode="numeric"
@@ -54,7 +54,7 @@
           (keydown)="onOtpKeydown(i, $event)" (input)="onOtpInput(i, $event)" (paste)="onOtpPaste(i, $event)"
           [value]="otp[i]" />
       </div>
-      
+
       <button class="btn" [disabled]="loading || code.length !== 6" (click)="confirmarCodigo()">
         Autorizar
       </button>
