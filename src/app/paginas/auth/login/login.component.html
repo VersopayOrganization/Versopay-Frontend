@@ -11,6 +11,7 @@
 
   <main class="panel">
     <section class="login-card">
+      @if(step !== 'code') {
       <img class="logo" src="assets/icons/logo-tela-login.svg" alt="VersoPay" />
 
       <p class="subtitle">
@@ -41,6 +42,30 @@
           Ainda não tem uma conta? <a class="link" (click)="navegarPagina('/auth/cadastrar')">Inscreva-se</a>
         </div>
       </form>
+      }
+
+      @if(step === 'code') {
+      <h4>Confirmação de Segurança</h4>
+      <p>Insira o código enviado para o seu e-mail.</p>
+
+      <div class="otp">
+        <input #otpBox class="otp__box" *ngFor="let d of otp; let i = index" type="tel" inputmode="numeric"
+          pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" (focus)="onOtpFocus(i)"
+          (keydown)="onOtpKeydown(i, $event)" (input)="onOtpInput(i, $event)" (paste)="onOtpPaste(i, $event)"
+          [value]="otp[i]" />
+      </div>
+
+      <button class="btn" [disabled]="loading || code.length !== 6" (click)="confirmarCodigo()">
+        Autorizar
+      </button>
+
+      <div class="login">
+        <a class="voltar-login" (click)="step='login'">Retornar a tela de Login</a>
+      </div>
+
+      <img class="logo-token" src="assets/icons/logo-tela-login.svg" alt="VersoPay" />
+      }
+
     </section>
   </main>
 </div>
