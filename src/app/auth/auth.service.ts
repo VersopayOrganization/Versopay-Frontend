@@ -5,7 +5,7 @@ import { environment } from '../../environment';
 import { AuthUser } from '../models/auth/auth-user.dto';
 import { LoginPayload } from '../models/auth/login-payload.dto';
 import { AuthResponseDto } from '../models/auth/auth-response.dto';
-import { firstValueFrom } from 'rxjs';
+import { DeviceTrustChallengeDto } from '../models/auth/device-trust.dtos';
 
 const API_BASE = `${environment.apiUrl}/api/auth`;
 
@@ -57,27 +57,46 @@ export class AuthService {
     this.session?.removeItem('vp_auth');
   }
 
-  async login(payload: LoginPayload): Promise<boolean> {
+  /** PASSO 1: inicia 2FA (gera challenge e envia código por e-mail) */
+  start2fa(payload: LoginPayload) {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<DeviceTrustChallengeDto>(
+      `${API_BASE}/login/2fa/start`,
+      payload,
+      { headers, withCredentials: true }
+    ).toPromise();
+  }
 
+  /** PASSO 2: confirma o código (204 NoContent = OK, cookie de bypass setado) */
+  confirm2fa(challengeId: string, code: string) {
+    const body = { challengeId, code };
+    return this.http.post(
+      `${API_BASE}/login/2fa/confirm`,
+      body,
+      { withCredentials: true, observe: 'response' }
+    ).toPromise(); // status 204 esperado
+  }
+
+  /** PASSO 3: login final para receber o access token e persistir */
+  async login(payload: LoginPayload): Promise<AuthResponseDto | null> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     try {
       const resp = await this.http
-        .post<AuthResponseDto>(API_BASE+'/login', payload, { headers, withCredentials: true })
+        .post<AuthResponseDto>(`${API_BASE}/login`, payload, { headers, withCredentials: true })
         .toPromise();
 
-      if (!resp) return false;
+      if (!resp) return null;
       this.persist(resp, payload.lembrar7Dias);
-      return true;
-    } catch (err) {
-      return false;
+      return resp;
+    } catch {
+      return null;
     }
   }
 
   async refresh(): Promise<boolean> {
-    const url = `${environment.apiUrl}/api/auth/refresh`;
     try {
       const resp = await this.http
-        .post<AuthResponseDto>(url, {}, { withCredentials: true })
+        .post<AuthResponseDto>(`${environment.apiUrl}/api/auth/refresh`, {}, { withCredentials: true })
         .toPromise();
       if (!resp) return false;
 
@@ -91,8 +110,7 @@ export class AuthService {
   }
 
   logout() {
-    const url = `${environment.apiUrl}/api/auth/logout`;
-    this.http.post(url, {}, { withCredentials: true }).subscribe({
+    this.http.post(`${environment.apiUrl}/api/auth/logout`, {}, { withCredentials: true }).subscribe({
       complete: () => {
         this.clear();
         if (this.isBrowser) location.assign('/auth/login');
