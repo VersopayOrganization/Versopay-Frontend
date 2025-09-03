@@ -1,0 +1,74 @@
+<div class="layout">
+    <vp-sidebar [mini]="mini" (toggle)="toggleMini()"></vp-sidebar>
+
+    <main class="main">
+        <header class="top">
+            <div>
+                <h2>Olá, {{ userName() }}</h2>
+                <p>Bora escalar?!</p>
+            </div>
+
+            <div class="top__right">
+                <div class="progress">
+                    <div class="bar"><span style="width:62%"></span></div>
+                    <small>R$ 62.567 / R$ 100.000</small>
+                </div>
+
+                <button class="eye" (click)="toggleHide()">
+                    {{ hideAmounts() ? '👁️‍🗨️' : '👁️' }}
+                </button>
+                <img class="avatar" src="assets/images/avatar.png" alt="user" />
+            </div>
+        </header>
+
+        <section class="filters">
+            <div class="datepick">
+                <label>de</label>
+                <input type="date" [value]="dateFmt(from)" (change)="onDateChange()" />
+                <label>até</label>
+                <input type="date" [value]="dateFmt(to)" (change)="onDateChange()" />
+            </div>
+            <div class="quick">
+                <button [class.on]="range==='today'" (click)="setQuickRange('today')">Hoje</button>
+                <button [class.on]="range==='yesterday'" (click)="setQuickRange('yesterday')">Ontem</button>
+                <button [class.on]="range==='7d'" (click)="setQuickRange('7d')">7 dias</button>
+                <button [class.on]="range==='15d'" (click)="setQuickRange('15d')">15 dias</button>
+                <button [class.on]="range==='30d'" (click)="setQuickRange('30d')">30 dias</button>
+            </div>
+        </section>
+
+        <h3 class="title">DASHBOARD <span class="peek" (click)="toggleHide()">👁️</span></h3>
+
+        <section class="kpis">
+            <div class="kpi">
+                <span class="kpi__label">Faturamento</span>
+                <strong class="kpi__val">{{ mask(kpis.faturamento) }}</strong>
+                <small>67% Cartão | 33% Pix</small>
+            </div>
+
+            <div class="kpi">
+                <span class="kpi__label">Saldo Disponível •</span>
+                <strong class="kpi__val">{{ mask(kpis.saldoDisponivel) }}</strong>
+                <small>&nbsp;</small>
+            </div>
+
+            <div class="kpi">
+                <span class="kpi__label">Saldo Pendente •</span>
+                <strong class="kpi__val">{{ mask(kpis.saldoPendente) }}</strong>
+                <small>&nbsp;</small>
+            </div>
+        </section>
+
+        <section class="card chart">
+            <header>GRÁFICO DE FATURAMENTO</header>
+            <canvas #chartCanvas height="120"></canvas>
+        </section>
+
+        <section class="cards">
+            <div class="mini"><span>97,6% Aprovação Cartão</span><small>873 Pedidos | R$ 28.321,71</small></div>
+            <div class="mini"><span>92,5% Conversão Pix</span><small>683 Pedidos | R$ 28.321,71</small></div>
+            <div class="mini"><span>2,6% MED</span><small>13 Pedidos | R$ 721,71</small></div>
+            <div class="mini"><span>0,6% Chargeback</span><small>5 Pedidos | R$ 219,32</small></div>
+        </section>
+    </main>
+</div>
