@@ -184,7 +184,7 @@ export class LoginComponent {
         lembrar7Dias: this.remember,
       });
 
-      this.router.navigateByUrl('/dashboard');
+      this.utils.navegarPagina('/sistema');
     } catch (e: any) {
       this.toast.error(e?.error?.message ?? 'Código inválido ou expirado.');
     } finally {
