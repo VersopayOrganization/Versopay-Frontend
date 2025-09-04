@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, ViewChild, computed, inject, sign
 import { CommonModule } from '@angular/common';
 import { format, startOfToday, subDays } from 'date-fns';
 import Chart from 'chart.js/auto';
-import { SidebarComponent } from '../siderbar.component';
+import { SidebarComponent } from '../../../shared/siderbar/siderbar.component';
 import { AuthService } from '../../../auth/auth.service';
 import { MockDashService, SeriesPoint } from '../mock-data.service';
 
