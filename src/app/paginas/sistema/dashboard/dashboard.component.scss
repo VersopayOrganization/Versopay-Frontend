@@ -1,8 +1,11 @@
+@use '../../../styles/_tokens' as *;
+@use '../../../styles/_mixins' as *;
+
 .layout {
     display: grid;
     grid-template-columns: auto 1fr;
     min-height: 100dvh;
-    background: #0f0b1b
+    background: $color-roxo-fundo-dash
 }
 
 .main {

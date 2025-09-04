@@ -1,72 +1,75 @@
-  .sb {
-      width: 240px;
-      background: #0b0814;
-      color: #cfcde3;
-      min-height: 100dvh;
-      padding: 16px;
-      transition: width .2s
-  }
+ @use "../../styles/_tokens" as *;
+ @use "../../styles/_mixins" as *;
 
-  .sb--mini {
-      width: 72px
-  }
+ .sb {
+     width: 240px;
+     background: $color-roxo-siderbar;
+     color: #cfcde3;
+     min-height: 100dvh;
+     padding: 16px;
+     transition: width .2s
+ }
 
-  .sb__brand {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px
-  }
+ .sb--mini {
+     width: 72px
+ }
 
-  .sb__brand img {
-      height: 24px;
-      filter: brightness(3)
-  }
+ .sb__brand {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     margin-bottom: 18px
+ }
 
-  .sb--mini .sb__brand img {
-      display: none
-  }
+ .sb__brand img {
+     height: 24px;
+     filter: brightness(3)
+ }
 
-  .sb__toggle {
-      background: #2a2049;
-      color: #cfcde3;
-      border: 0;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      cursor: pointer
-  }
+ .sb--mini .sb__brand img {
+     display: none
+ }
 
-  .sb__nav {
-      display: flex;
-      flex-direction: column;
-      gap: 6px
-  }
+ .sb__toggle {
+     background: #2a2049;
+     color: #cfcde3;
+     border: 0;
+     border-radius: 50%;
+     width: 30px;
+     height: 30px;
+     cursor: pointer
+ }
 
-  .sb__item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 10px;
-      border-radius: 10px;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit
-  }
+ .sb__nav {
+     display: flex;
+     flex-direction: column;
+     gap: 6px
+ }
 
-  .sb__item:hover {
-      background: #1a1230
-  }
+ .sb__item {
+     display: flex;
+     align-items: center;
+     gap: 12px;
+     padding: 12px 10px;
+     border-radius: 10px;
+     cursor: pointer;
+     text-decoration: none;
+     color: inherit
+ }
 
-  .sb__item.active {
-      background: #26194a
-  }
+ .sb__item:hover {
+     background: #1a1230
+ }
 
-  .sb--mini .t {
-      display: none
-  }
+ .sb__item.active {
+     background: #26194a
+ }
 
-  .i {
-      width: 22px;
-      text-align: center
-  }
+ .sb--mini .t {
+     display: none
+ }
+
+ .i {
+     width: 22px;
+     text-align: center
+ }
