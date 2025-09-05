@@ -10,13 +10,11 @@
 
             <div class="top__right">
                 <div class="progress">
-                    <div class="bar"><span style="width:62%"></span></div>
                     <small>R$ 62.567 / R$ 100.000</small>
+                    <div class="bar"><span style="width:72%"></span></div>
                 </div>
 
-                <button class="eye" (click)="toggleHide()">
-                    {{ hideAmounts() ? '👁️‍🗨️' : '👁️' }}
-                </button>
+                <img class="notification" src="assets/icons/notificacao.svg" alt="notificacao" />
                 <img class="avatar" src="assets/images/avatar.png" alt="user" />
             </div>
         </header>
@@ -58,8 +56,8 @@
 
             <!-- Filtros -->
             <section class="filters">
+                <h5>Filtrar data:</h5>
                 <div class="datepick">
-                    <label>de</label>
                     <input type="date" [value]="dateFmt(from)" (change)="onDateChange()" />
                     <label>até</label>
                     <input type="date" [value]="dateFmt(to)" (change)="onDateChange()" />

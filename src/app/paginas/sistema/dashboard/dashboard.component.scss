@@ -26,16 +26,23 @@
 
 .top h2 {
     margin: 0 0 2px;
-    font-size: 28px
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 156%;
 }
 
 .top p {
-    margin: 10px 0 0 0;
     color: #FFFFFF;
-    font-size: 18px
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 156%;
+    margin: 0;
 }
 
 .top__right {
+    background: #12082C;
+    border-radius: 10px;
+    padding: 16px;
     display: flex;
     align-items: center;
     gap: 14px
@@ -58,7 +65,12 @@
 .progress small {
     display: block;
     text-align: right;
-    color: #b7b0d6
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 156%;
+    font-weight: 400;
+    margin-bottom: 8px;
 }
 
 .eye {
@@ -70,7 +82,14 @@
     cursor: pointer
 }
 
+.notification {
+    cursor: pointer;
+    width: 26px;
+    height: 26px;
+}
+
 .avatar {
+    cursor: pointer;
     width: 34px;
     height: 34px;
     border-radius: 50%
@@ -80,7 +99,10 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 18px 0 10px
+    margin: 35px 0 10px;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 156%;
 }
 
 .peek {
@@ -89,30 +111,44 @@
 
 .filters {
     display: flex;
-    align-items: center;
     gap: 12px;
     margin: 8px 0 18px;
     flex-direction: column;
+
+    >h5 {
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 156%;
+        color: #FFF;
+        text-transform: uppercase;
+        margin: 0;
+    }
 }
 
 .datepick {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #1a1230;
-    padding: 8px 10px;
-    border-radius: 10px
 }
 
 .datepick label {
-    color: #9b95ba;
-    font-size: 12px
+    color: #FFF;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 156%;
 }
 
 .datepick input {
     background: transparent;
     border: 0;
-    color: #e9e7ff
+    color: #FFF;
+    width: 126px;
+    height: 40px;
+    border: 1px solid #200F48;
+    border-radius: 5px;
+    padding: 5px 14px;
+    display: flex;
+    justify-content: center;
 }
 
 .quick {
@@ -121,12 +157,13 @@
 }
 
 .quick button {
-    background: #1a1230;
-    color: #cfcde3;
+    background: transparent;
+    color: #FFF;
     border: 0;
     padding: 8px 12px;
-    border-radius: 10px;
-    cursor: pointer
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid #200F48;
 }
 
 .quick button.on,
@@ -143,10 +180,14 @@
 .kpi {
     background: $color-roxo-fundo-dash;
     border: 1px solid #200F48;
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 16px;
     max-width: 295px;
     width: 295px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 111px;
 
     >small {
         font-size: 12px;

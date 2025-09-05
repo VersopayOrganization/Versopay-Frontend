@@ -1,7 +1,12 @@
 <aside class="sb" [class.sb--mini]="mini">
     <div class="sb__brand">
-        <img src="assets/icons/logo-versopay.svg" alt="VersoPay" />
-        <button class="sb__toggle" (click)="toggle.emit()">&raquo;</button>
+        <img class="logo-completa" src="assets/icons/logo-versopay.svg" alt="VersoPay" />
+        <img class="logo-icon" src="assets/icons/logo-verso.svg" alt="icon-VersoPay" />
+
+        <button class="sb__toggle" (click)="toggle.emit()">
+            <img class="arrow-left" src="assets/icons/arrow-left.svg" alt="arrow-left" />
+            <img class="arrow-right" src="assets/icons/arrow-right.svg" alt="arrow-left" />
+        </button>
     </div>
 
     <nav class="sb__nav">
