@@ -21,7 +21,15 @@
 
         <h3 class="title">
             DASHBOARD
-            <span class="peek" (click)="toggleHide()">👁️</span>
+            <span class="peek" (click)="toggleHide()">
+                @if(!this.hideAmounts()) {
+                <img src="assets/icons/olho-aberto.svg" alt="olho-aberto" />
+                }
+
+                @if(this.hideAmounts()) {
+                <img src="assets/icons/olho-fechado.svg" alt="olho-fechado" />
+                }
+            </span>
         </h3>
 
         <!-- KPIs -->
