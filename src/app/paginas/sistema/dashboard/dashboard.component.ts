@@ -1,5 +1,15 @@
-import { AfterViewInit, Component, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    ViewChild,
+    computed,
+    inject,
+    signal,
+    OnDestroy,
+    PLATFORM_ID,
+} from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { format, startOfToday, subDays } from 'date-fns';
 import Chart from 'chart.js/auto';
 import { SidebarComponent } from '../../../shared/siderbar/siderbar.component';
@@ -13,9 +23,12 @@ type RangeKey = 'today' | 'yesterday' | '7d' | '15d' | '30d' | 'custom';
     selector: 'vp-dashboard',
     imports: [CommonModule, SidebarComponent],
     templateUrl: './dashboard.component.html',
-    styleUrls: ['./dashboard.component.scss']
+    styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements AfterViewInit {
+export class DashboardComponent implements AfterViewInit, OnDestroy {
+    private platformId = inject(PLATFORM_ID);
+    private isBrowser = isPlatformBrowser(this.platformId);
+
     private mock = inject(MockDashService);
     private auth = inject(AuthService);
 
@@ -28,36 +41,63 @@ export class DashboardComponent implements AfterViewInit {
     // user
     userName = computed(() => this.auth.user()?.name ?? 'Usuário');
 
-    // state
-    hideAmounts = signal<boolean>(localStorage.getItem('vp_hide_amounts') === '1');
+    // 👁️ visibilidade dos valores — NÃO leia localStorage direto no SSR
+    hideAmounts = signal<boolean>(false);
+
+    // range
     range: RangeKey = '7d';
     from = subDays(startOfToday(), 6);
     to = startOfToday();
 
-    // data
+    // dados
     kpis = this.mock.getKpis(this.from, this.to);
     series: SeriesPoint[] = this.mock.getSeries(this.from, this.to);
 
-    ngAfterViewInit() {
-        this.buildChart();
+    constructor() {
+        // carrega preferência do olho só no browser
+        if (this.isBrowser) {
+            this.hideAmounts.set(localStorage.getItem('vp_hide_amounts') === '1');
+        }
     }
 
-    toggleMini() { this.mini = !this.mini; }
+    ngAfterViewInit() {
+        // só cria o Chart no browser (no SSR não há canvas)
+        if (!this.isBrowser) return;
+        // espera o layout aplicar altura do wrapper
+        setTimeout(() => this.buildChart(), 0);
+    }
+
+    ngOnDestroy() {
+        if (this.chart) this.chart.destroy();
+    }
+
+    toggleMini() {
+        this.mini = !this.mini;
+    }
 
     toggleHide() {
         const v = !this.hideAmounts();
         this.hideAmounts.set(v);
-        localStorage.setItem('vp_hide_amounts', v ? '1' : '0');
+        if (this.isBrowser) {
+            localStorage.setItem('vp_hide_amounts', v ? '1' : '0');
+        }
     }
 
     setQuickRange(key: RangeKey) {
         this.range = key;
         const today = startOfToday();
-        const map: Record<Exclude<RangeKey, 'custom'>, number> = { today: 0, yesterday: 1, '7d': 6, '15d': 14, '30d': 29 };
-        if (key === 'custom') return;
-        const back = map[key];
-        this.from = subDays(today, back);
-        this.to = key === 'yesterday' ? subDays(today, 1) : today;
+        const map: Record<Exclude<RangeKey, 'custom'>, number> = {
+            today: 0,
+            yesterday: 1,
+            '7d': 6,
+            '15d': 14,
+            '30d': 29,
+        };
+        if (key !== 'custom') {
+            const back = map[key];
+            this.from = subDays(today, back);
+            this.to = key === 'yesterday' ? subDays(today, 1) : today;
+        }
         this.reloadData();
     }
 
@@ -70,40 +110,112 @@ export class DashboardComponent implements AfterViewInit {
     private reloadData() {
         this.kpis = this.mock.getKpis(this.from, this.to);
         this.series = this.mock.getSeries(this.from, this.to);
-        this.updateChart();
+        if (this.isBrowser) this.updateChart();
     }
 
     private buildChart() {
-        const ctx = this.chartEl.nativeElement.getContext('2d')!;
+        const canvas = this.chartEl.nativeElement;
+        const ctx = canvas.getContext('2d')!;
+        const h = canvas.parentElement?.clientHeight ?? 400;
+
+        // gradiente
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, 'rgb(41, 22, 64)');
+        grad.addColorStop(1, 'rgb(11, 6, 17)');
+
+        const labels = this.series.map((p) => p.x);
+        const data = this.series.map((p) => p.y);
+
         this.chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: this.series.map(p => p.x),
-                datasets: [{
-                    label: 'Faturamento',
-                    data: this.series.map(p => p.y),
-                    fill: true,
-                    tension: .35
-                }]
+                labels,
+                datasets: [
+                    {
+                        label: 'Faturamento',
+                        data,
+                        fill: true,
+                        backgroundColor: grad,
+                        borderColor: '#cdbff8',
+                        borderWidth: 4,
+                        pointRadius: 4,
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: '#cdbff8',
+                        tension: 0.35,
+                    },
+                ],
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-                interaction: { mode: 'index', intersect: false },
-                scales: { y: { beginAtZero: true } }
-            }
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        intersect: false,
+                        mode: 'index',
+                        callbacks: {
+                            title: (it) => String(it[0].label),
+                            label: (it: any) =>
+                                new Intl.NumberFormat('pt-BR', {
+                                    style: 'currency',
+                                    currency: 'BRL',
+                                }).format(it[0].parsed.y ?? 0),
+                        },
+                    },
+                },
+                interaction: { intersect: false, mode: 'index' },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.06)' },
+                        ticks: {
+                            color: '#b9b3d6',
+                            maxRotation: 0,
+                            autoSkip: true,
+                            callback: function (_, idx) {
+                                return String(this.getLabelForValue(idx));
+                            },
+                        },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.06)' },
+                        ticks: {
+                            color: '#b9b3d6',
+                            stepSize: 1000,
+                            maxTicksLimit: 4,
+                            callback: (v: any) =>
+                                Number(v) >= 1000 ? `${Math.round(Number(v) / 1000)}k` : `${v}`,
+                        },
+                        suggestedMax: this.roundMaxToK(data),
+                    },
+                },
+            },
         });
     }
 
     private updateChart() {
-        this.chart.data.labels = this.series.map(p => p.x);
-        (this.chart.data.datasets[0].data as number[]) = this.series.map(p => p.y);
+        if (!this.chart) return;
+        const labels = this.series.map((p) => p.x);
+        const data = this.series.map((p) => p.y);
+        this.chart.data.labels = labels;
+        (this.chart.data.datasets[0].data as number[]) = data;
+        (this.chart.options.scales! as any).y.suggestedMax = this.roundMaxToK(data);
         this.chart.update();
     }
 
-    mask(v: number) {
-        return this.hideAmounts() ? '••••••' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    private roundMaxToK(arr: number[]) {
+        const m = Math.max(...arr, 0);
+        const k = Math.ceil(m / 1000) * 1000;
+        return k + 500;
     }
 
-    dateFmt(d: Date) { return format(d, 'yyyy-MM-dd'); } // para input[type=date]
+    mask(v: number) {
+        return this.hideAmounts()
+            ? '••••••'
+            : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    dateFmt(d: Date) {
+        return format(d, 'yyyy-MM-dd');
+    }
 }
