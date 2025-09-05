@@ -175,11 +175,29 @@
     line-height: 156%;
 }
 
+.card.chart {
+    /* seus estilos do card aqui */
+}
+
+.chart__wrap {
+    position: relative;
+    height: 420px;
+    /* ajuste aqui a altura que você quer */
+}
+
+.chart__wrap canvas {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+
 .card {
-    background: #140f25;
-    border: 1px solid rgba(255, 255, 255, .06);
+    border: 1px solid #200F48;
     border-radius: 12px;
-    padding: 16px
+    padding: 16px;
 }
 
 .card header {
