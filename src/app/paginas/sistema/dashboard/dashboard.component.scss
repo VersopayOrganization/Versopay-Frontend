@@ -176,13 +176,31 @@
 }
 
 .card.chart {
-    /* seus estilos do card aqui */
+    >header {
+        color: #FFF;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 156%;
+        margin-bottom: 4px;
+    }
+
+    >p {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 156%;
+        color: #FFF;
+        margin: 0;
+
+        &.anterior {
+            color: #FFFFFF99;
+        }
+    }
 }
 
 .chart__wrap {
     position: relative;
     height: 420px;
-    /* ajuste aqui a altura que você quer */
+    margin-top: 25px;
 }
 
 .chart__wrap canvas {

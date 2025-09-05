@@ -113,6 +113,13 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         if (this.isBrowser) this.updateChart();
     }
 
+    private fmtDayMonth(value: any): string {
+        const [day, month] = value.split('/');
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const idx = parseInt(month, 10) - 1;
+        return `${day} ${meses[idx] ?? ''}`;
+    }
+
     private buildChart() {
         const canvas = this.chartEl.nativeElement;
         const ctx = canvas.getContext('2d')!;
@@ -123,8 +130,11 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         grad.addColorStop(0, 'rgb(41, 22, 64)');
         grad.addColorStop(1, 'rgb(11, 6, 17)');
 
-        const labels = this.series.map((p) => p.x);
+        const labels = this.series.map(p => this.fmtDayMonth(p.x as any as Date));
+        console.log('labels', labels);
+
         const data = this.series.map((p) => p.y);
+        console.log('data', data);
 
         this.chart = new Chart(ctx, {
             type: 'line',
