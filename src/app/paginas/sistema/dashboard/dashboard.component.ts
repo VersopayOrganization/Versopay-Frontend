@@ -168,7 +168,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
                     x: {
                         grid: { color: 'rgba(255,255,255,0.06)' },
                         ticks: {
-                            color: '#b9b3d6',
+                            color: '#FFF',
                             maxRotation: 0,
                             autoSkip: true,
                             callback: function (_, idx) {
@@ -180,9 +180,9 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
                         beginAtZero: true,
                         grid: { color: 'rgba(255,255,255,0.06)' },
                         ticks: {
-                            color: '#b9b3d6',
+                            color: '#FFF',
                             stepSize: 1000,
-                            maxTicksLimit: 4,
+                            maxTicksLimit: 5,
                             callback: (v: any) =>
                                 Number(v) >= 1000 ? `${Math.round(Number(v) / 1000)}k` : `${v}`,
                         },
