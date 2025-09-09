@@ -230,4 +230,18 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     dateFmt(d: Date) {
         return format(d, 'yyyy-MM-dd');
     }
+
+    openPicker(el: HTMLInputElement | null | undefined) {
+        if (!el) return;
+
+        // browsers modernos (Chromium/Firefox recentes)
+        if (typeof el.showPicker === 'function') {
+            el.showPicker();
+            return;
+        }
+
+        // fallback (Safari/antigos): focar e simular click
+        el.focus();
+        el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    }
 }
