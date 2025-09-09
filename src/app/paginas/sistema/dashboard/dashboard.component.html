@@ -15,7 +15,15 @@
                 </div>
 
                 <img class="notification" src="assets/icons/notificacao.svg" alt="notificacao" />
-                <img class="avatar" src="assets/images/avatar.png" alt="user" />
+
+                @if (user.img) {
+                    <img class="avatar" src="assets/images/avatar.png" alt="user" />
+                }
+
+                @if (!user.img) {
+                    <p class="avatar">GM</p>
+                }
+
             </div>
         </header>
 
