@@ -32,6 +32,8 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     private mock = inject(MockDashService);
     private auth = inject(AuthService);
 
+    user: any;
+
     @ViewChild('chartCanvas') chartEl!: ElementRef<HTMLCanvasElement>;
     chart!: Chart;
 
@@ -64,7 +66,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         // só cria o Chart no browser (no SSR não há canvas)
         if (!this.isBrowser) return;
         // espera o layout aplicar altura do wrapper
-        setTimeout(() => this.buildChart(), 0);
+        setTimeout(() => this.buildChart(), 1);
     }
 
     ngOnDestroy() {
