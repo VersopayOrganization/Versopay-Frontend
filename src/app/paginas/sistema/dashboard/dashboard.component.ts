@@ -12,6 +12,7 @@ import {
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { format, startOfToday, subDays } from 'date-fns';
 import Chart from 'chart.js/auto';
+
 import { SidebarComponent } from '../../../shared/siderbar/siderbar.component';
 import { AuthService } from '../../../auth/auth.service';
 import { MockDashService, SeriesPoint } from '../mock-data.service';
@@ -32,41 +33,25 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     private mock = inject(MockDashService);
     private auth = inject(AuthService);
 
-    user: any;
-
     @ViewChild('chartCanvas') chartEl!: ElementRef<HTMLCanvasElement>;
     chart!: Chart;
-
-    // sidebar
     mini = false;
-
-    // user
     userName = computed(() => this.auth.user()?.name ?? 'Usuário');
-
-    // 👁️ visibilidade dos valores — NÃO leia localStorage direto no SSR
-    hideAmounts = signal<boolean>(false);
-
-    // range
+    esconderValores = signal<boolean>(false);
     range: RangeKey = '7d';
     from = subDays(startOfToday(), 6);
     to = startOfToday();
-
-    // dados
     kpis = this.mock.getKpis(this.from, this.to);
     series: SeriesPoint[] = this.mock.getSeries(this.from, this.to);
 
     constructor() {
-        // carrega preferência do olho só no browser
-        if (this.isBrowser) {
-            this.hideAmounts.set(localStorage.getItem('vp_hide_amounts') === '1');
-        }
+        if (this.isBrowser) this.esconderValores.set(localStorage.getItem('vp_hide_amounts') === '1');
     }
 
     ngAfterViewInit() {
-        // só cria o Chart no browser (no SSR não há canvas)
         if (!this.isBrowser) return;
-        // espera o layout aplicar altura do wrapper
-        setTimeout(() => this.buildChart(), 1);
+        // dá tempo do layout aplicar altura do card
+        setTimeout(() => this.buildChart(), 100);
     }
 
     ngOnDestroy() {
@@ -78,23 +63,18 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     }
 
     toggleHide() {
-        const v = !this.hideAmounts();
-        this.hideAmounts.set(v);
-        if (this.isBrowser) {
-            localStorage.setItem('vp_hide_amounts', v ? '1' : '0');
-        }
+        const v = !this.esconderValores();
+        this.esconderValores.set(v);
+        if (this.isBrowser) localStorage.setItem('vp_hide_amounts', v ? '1' : '0');
     }
 
     setQuickRange(key: RangeKey) {
         this.range = key;
         const today = startOfToday();
         const map: Record<Exclude<RangeKey, 'custom'>, number> = {
-            today: 0,
-            yesterday: 1,
-            '7d': 6,
-            '15d': 14,
-            '30d': 29,
+            today: 0, yesterday: 1, '7d': 6, '15d': 14, '30d': 29
         };
+
         if (key !== 'custom') {
             const back = map[key];
             this.from = subDays(today, back);
@@ -115,78 +95,89 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         if (this.isBrowser) this.updateChart();
     }
 
-    private fmtDayMonth(value: any): string {
-        const [day, month] = value.split('/');
-        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        const idx = parseInt(month, 10) - 1;
-        return `${day} ${meses[idx] ?? ''}`;
+    /** dd/MM -> "5 set" */
+    private fmtDayMonth(value: string): string {
+        const [d, m] = value.split('/');
+        const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+        return `${parseInt(d, 10)} ${meses[+m - 1] ?? ''}`;
+    }
+
+    private padSeriesForLine(src: SeriesPoint[]): SeriesPoint[] {
+        if (src.length >= 2) return src;
+        if (!src.length) return src;
+        const only = src[0];
+        const prev = subDays(this.from, 1);
+        return [
+            { x: format(prev, 'dd/MM'), y: only.y },
+            { x: String(only.x), y: only.y }
+        ];
+    }
+
+    private getSeriesForChart() {
+        const padded = this.padSeriesForLine(this.series);
+        return {
+            labels: padded.map(p => this.fmtDayMonth(String(p.x))),
+            data: padded.map(p => p.y)
+        };
     }
 
     private buildChart() {
-        const canvas = this.chartEl.nativeElement;
-        const ctx = canvas.getContext('2d')!;
-        const h = canvas.parentElement?.clientHeight ?? 400;
+        const canvas = this.chartEl?.nativeElement;
+        if (!canvas) return;
 
-        // gradiente
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+
+        const ctx = canvas.getContext('2d')!;
+        const h = canvas.parentElement?.clientHeight ?? 360;
+
         const grad = ctx.createLinearGradient(0, 0, 0, h);
         grad.addColorStop(0, 'rgb(41, 22, 64)');
         grad.addColorStop(1, 'rgb(11, 6, 17)');
 
-        const labels = this.series.map(p => this.fmtDayMonth(p.x as any as Date));
-        console.log('labels', labels);
-
-        const data = this.series.map((p) => p.y);
-        console.log('data', data);
+        const { labels, data } = this.getSeriesForChart();
 
         this.chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels,
-                datasets: [
-                    {
-                        label: 'Faturamento',
-                        data,
-                        fill: true,
-                        backgroundColor: grad,
-                        borderColor: '#cdbff8',
-                        borderWidth: 4,
-                        pointRadius: 4,
-                        pointHoverRadius: 5,
-                        pointBackgroundColor: '#cdbff8',
-                        tension: 0.35,
-                    },
-                ],
+                datasets: [{
+                    label: 'Faturamento',
+                    data,
+                    fill: true,
+                    backgroundColor: grad,
+                    borderColor: '#cdbff8',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#9376f0',
+                    tension: 0.35,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHitRadius: 24,
+                    showLine: true
+                }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: false,
+                interaction: { mode: 'nearest', intersect: false, axis: 'x' },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        intersect: false,
-                        mode: 'index',
+                        enabled: true,
+                        displayColors: false,
                         callbacks: {
-                            title: (it) => String(it[0].label),
-                            label: (it: any) =>
-                                new Intl.NumberFormat('pt-BR', {
-                                    style: 'currency',
-                                    currency: 'BRL',
-                                }).format(it[0].parsed.y ?? 0),
-                        },
-                    },
+                            title: (items) => items[0]?.label ?? '',
+                            label: (ctx) => new Intl.NumberFormat('pt-BR', {
+                                style: 'currency', currency: 'BRL'
+                            }).format(ctx.parsed.y ?? 0)
+                        }
+                    }
                 },
-                interaction: { intersect: false, mode: 'index' },
                 scales: {
                     x: {
                         grid: { color: 'rgba(255,255,255,0.06)' },
-                        ticks: {
-                            color: '#FFF',
-                            maxRotation: 0,
-                            autoSkip: true,
-                            callback: function (_, idx) {
-                                return String(this.getLabelForValue(idx));
-                            },
-                        },
+                        ticks: { color: '#FFF', maxRotation: 0, autoSkip: true }
                     },
                     y: {
                         beginAtZero: true,
@@ -196,19 +187,18 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
                             stepSize: 1000,
                             maxTicksLimit: 5,
                             callback: (v: any) =>
-                                Number(v) >= 1000 ? `${Math.round(Number(v) / 1000)}k` : `${v}`,
+                                Number(v) >= 1000 ? `${Math.round(Number(v) / 1000)}k` : `${v}`
                         },
                         suggestedMax: this.roundMaxToK(data),
-                    },
-                },
-            },
+                    }
+                }
+            }
         });
     }
 
     private updateChart() {
-        if (!this.chart) return;
-        const labels = this.series.map((p) => p.x);
-        const data = this.series.map((p) => p.y);
+        if (!this.chart) { this.buildChart(); return; }
+        const { labels, data } = this.getSeriesForChart();
         this.chart.data.labels = labels;
         (this.chart.data.datasets[0].data as number[]) = data;
         (this.chart.options.scales! as any).y.suggestedMax = this.roundMaxToK(data);
@@ -221,26 +211,18 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         return k + 500;
     }
 
+
     mask(v: number) {
-        return this.hideAmounts()
+        return this.esconderValores()
             ? '••••••'
             : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    dateFmt(d: Date) {
-        return format(d, 'yyyy-MM-dd');
-    }
+    dateFmt(d: Date) { return format(d, 'yyyy-MM-dd'); }
 
     openPicker(el: HTMLInputElement | null | undefined) {
         if (!el) return;
-
-        // browsers modernos (Chromium/Firefox recentes)
-        if (typeof el.showPicker === 'function') {
-            el.showPicker();
-            return;
-        }
-
-        // fallback (Safari/antigos): focar e simular click
+        if (typeof (el as any).showPicker === 'function') { (el as any).showPicker(); return; }
         el.focus();
         el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     }

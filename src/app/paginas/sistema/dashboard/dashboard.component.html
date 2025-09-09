@@ -29,11 +29,11 @@
         <h3 class="title">
             DASHBOARD
             <span class="peek" (click)="toggleHide()">
-                @if(!this.hideAmounts()) {
+                @if(!this.esconderValores()) {
                 <img src="assets/icons/olho-aberto.svg" alt="olho-aberto" />
                 }
 
-                @if(this.hideAmounts()) {
+                @if(this.esconderValores()) {
                 <img src="assets/icons/olho-fechado.svg" alt="olho-fechado" />
                 }
             </span>
