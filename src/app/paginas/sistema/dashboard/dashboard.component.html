@@ -1,0 +1,151 @@
+<div class="layout">
+    <app-sidebar [mini]="isMinimizado" (toggle)="minimizarSidebar()"></app-sidebar>
+
+    <main class="main">
+        <header class="top">
+            <div>
+                <h2>Olá, {{ userName() }}</h2>
+                <p>Bora escalar?!</p>
+            </div>
+
+            <div class="top__right">
+                <div class="progress">
+                    <small>R$ 62.567 / R$ 100.000</small>
+                    <div class="bar"><span style="width:72%"></span></div>
+                </div>
+
+                <img class="notification" src="assets/icons/notificacao.svg" alt="notificacao" />
+
+                <!-- TODO: Quando retornar info se o user tiver IMG -->
+                <!-- @if (user.img) {
+                <img class="avatar" src="assets/images/avatar.png" alt="user" />
+                } -->
+
+                <p class="avatar">GM</p>
+
+            </div>
+        </header>
+
+        <h3 class="title">
+            DASHBOARD
+            <span class="peek" (click)="toggleHide()">
+                @if(!this.esconderValores()) {
+                <img src="assets/icons/olho-aberto.svg" alt="olho-aberto" />
+                }
+
+                @if(this.esconderValores()) {
+                <img src="assets/icons/olho-fechado.svg" alt="olho-fechado" />
+                }
+            </span>
+        </h3>
+
+        <!-- KPIs -->
+        <section class="kpis">
+            <div class="kpi">
+                <span class="kpi__label">
+                    Faturamento
+                    <img src="assets/icons/icon-faturamento.svg" alt="icon-faturamento" />
+                </span>
+                <strong class="kpi__val">{{ mask(kpis.faturamento) }}</strong>
+                <small>67% Cartão | 33% Pix</small>
+            </div>
+
+            <div class="kpi">
+                <span class="kpi__label">
+                    Saldo Disponível
+                    <img src="assets/icons/icon-saldo-disponivel.svg" alt="icon-saldo-disponivel" />
+                </span>
+                <strong class="kpi__val">{{ mask(kpis.saldoDisponivel) }}</strong>
+                <small>&nbsp;</small>
+            </div>
+
+            <div class="kpi">
+                <span class="kpi__label">
+                    Saldo Pendente
+                    <img src="assets/icons/icon-saldo-pendente.svg" alt="icon-saldo-pendente" />
+                    <img src="assets/icons/icon-interrogacao.svg" alt="icon-interrogacao" />
+                </span>
+                <strong class="kpi__val">{{ mask(kpis.saldoPendente) }}</strong>
+                <small>&nbsp;</small>
+            </div>
+
+            <!-- Filtros -->
+            <section class="filters">
+                <h5>Filtrar data:</h5>
+                <div class="datepick">
+                    <!-- DE -->
+                    <div class="datepick__field" (click)="abriDataPicker(fromRef)">
+                        <button type="button" class="datepick__btn" aria-label="Abrir calendário">
+                            <img src="assets/icons/icon-calendar.svg" alt="" />
+                        </button>
+
+                        <input #fromRef type="date" [value]="dateFmt(from)" (change)="onDataSelecionada()" />
+                    </div>
+
+                    <span class="datepick__sep">até</span>
+
+                    <!-- ATÉ -->
+                    <div class="datepick__field" (click)="abriDataPicker(toRef)">
+                        <button type="button" class="datepick__btn" aria-label="Abrir calendário">
+                            <img src="assets/icons/icon-calendar.svg" alt="" />
+                        </button>
+
+                        <input #toRef type="date" [value]="dateFmt(to)" (change)="onDataSelecionada()" />
+                    </div>
+                </div>
+
+                <div class="quick">
+                    <button [class.on]="intervaloDias==='today'" (click)="setarIntervaloData('today')">Hoje</button>
+                    <button [class.on]="intervaloDias==='yesterday'" (click)="setarIntervaloData('yesterday')">Ontem</button>
+                    <button [class.on]="intervaloDias==='7d'" (click)="setarIntervaloData('7d')">7 dias</button>
+                    <button [class.on]="intervaloDias==='15d'" (click)="setarIntervaloData('15d')">15 dias</button>
+                    <button [class.on]="intervaloDias==='30d'" (click)="setarIntervaloData('30d')">30 dias</button>
+                </div>
+            </section>
+        </section>
+
+        <!-- Gráfico -->
+        <section class="card chart">
+            <header>GRÁFICO DE FATURAMENTO</header>
+            <p>Mês atual: R$ 34.347,89</p>
+            <p class="anterior">Mês anterior: R$ 28.226,82</p>
+
+            <div class="chart__wrap">
+                <canvas #chartCanvas></canvas>
+            </div>
+        </section>
+
+        <section class="cards">
+            <div class="mini">
+                <img src="assets/icons/aprovacao-cartao.svg" alt="aprovacao-cartao" />
+                <div>
+                    <span>97,6% Aprovação Cartão</span>
+                    <small>873 Pedidos | R$ 28.321,71</small>
+                </div>
+            </div>
+            <div class="mini">
+                <img src="assets/icons/conversao-pix.svg" alt="conversao-pix'" />
+                <div>
+                    <span>92,5% Conversão Pix</span>
+                    <small>683 Pedidos | R$ 28.321,71</small>
+                </div>
+            </div>
+            <div class="mini">
+                <img src="assets/icons/med.svg" alt="med'" />
+                <div>
+                    <span>2,6% MED</span>
+                    <small>13 Pedidos | R$ 721,71</small>
+                </div>
+            </div>
+
+            <div class="mini">
+                <img src="assets/icons/chargeback.svg" alt="chargeback'" />
+                <div>
+                    <span>0,6% Chargeback</span>
+                    <small>5 Pedidos | R$ 219,32</small>
+                </div>
+            </div>
+
+        </section>
+    </main>
+</div>

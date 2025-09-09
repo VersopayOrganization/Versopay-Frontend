@@ -129,7 +129,12 @@ export class LoginComponent {
 
   async submit() {
     if (!this.email || !this.senha) {
-      this.toast.error('Todos os campos são obrigatórios.');
+      this.toast.show({
+        message: 'Todos os campos são obrigatórios.',
+        type: 'warning',
+        position: 'bottom-left',
+        offset: { x: 40, y: 40 }
+      });
       return;
     }
 
@@ -178,13 +183,13 @@ export class LoginComponent {
       if (resp.status !== 204) throw new Error('Código inválido');
 
       // login final para receber tokens
-      await this.authService.loginFinal({
-        email: this.email,
-        senha: this.senha,
-        lembrar7Dias: this.remember,
-      });
+      // await this.authService.loginFinal({
+      //   email: this.email,
+      //   senha: this.senha,
+      //   lembrar7Dias: this.remember,
+      // });
 
-      this.router.navigateByUrl('/dashboard');
+      this.utils.navegarPagina('/sistema');
     } catch (e: any) {
       this.toast.error(e?.error?.message ?? 'Código inválido ou expirado.');
     } finally {
