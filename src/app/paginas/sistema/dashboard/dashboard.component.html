@@ -16,13 +16,12 @@
 
                 <img class="notification" src="assets/icons/notificacao.svg" alt="notificacao" />
 
-                @if (user.img) {
-                    <img class="avatar" src="assets/images/avatar.png" alt="user" />
-                }
+                <!-- TODO: Quando retornar info se o user tiver IMG -->
+                <!-- @if (user.img) {
+                <img class="avatar" src="assets/images/avatar.png" alt="user" />
+                } -->
 
-                @if (!user.img) {
-                    <p class="avatar">GM</p>
-                }
+                <p class="avatar">GM</p>
 
             </div>
         </header>
@@ -74,9 +73,25 @@
             <section class="filters">
                 <h5>Filtrar data:</h5>
                 <div class="datepick">
-                    <input type="date" [value]="dateFmt(from)" (change)="onDateChange()" />
-                    <label>até</label>
-                    <input type="date" [value]="dateFmt(to)" (change)="onDateChange()" />
+                    <!-- DE -->
+                    <div class="datepick__field" (click)="openPicker(fromRef)">
+                        <button type="button" class="datepick__btn" aria-label="Abrir calendário">
+                            <img src="assets/icons/icon-calendar.svg" alt="" />
+                        </button>
+
+                        <input #fromRef type="date" [value]="dateFmt(from)" (change)="onDateChange()" />
+                    </div>
+
+                    <span class="datepick__sep">até</span>
+
+                    <!-- ATÉ -->
+                    <div class="datepick__field" (click)="openPicker(toRef)">
+                        <button type="button" class="datepick__btn" aria-label="Abrir calendário">
+                            <img src="assets/icons/icon-calendar.svg" alt="" />
+                        </button>
+
+                        <input #toRef type="date" [value]="dateFmt(to)" (change)="onDateChange()" />
+                    </div>
                 </div>
 
                 <div class="quick">

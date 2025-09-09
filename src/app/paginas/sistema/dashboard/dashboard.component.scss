@@ -128,7 +128,114 @@
 .datepick {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    border-radius: 12px;
+
+    input[type="date"] {
+        background: transparent;
+        border: none;
+        color: #e9e7ff;
+        outline: none; // remove highlight azul em alguns browsers
+        font-size: 14px;
+        padding: 0;
+
+        &:focus {
+            outline: none;
+            border: none;
+            box-shadow: none;
+        }
+    }
+}
+
+.datepick__sep {
+    font-size: 14px;
+    color: #FFF;
+    font-weight: 400;
+    line-height: 156%;
+}
+
+.datepick__field {
+    cursor: pointer;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    padding-left: 35px;
+    position: relative;
+    border: 1px solid #200F48;
+    border-radius: 10px;
+    transition: border-color .2s, box-shadow .2s;
+
+    &:focus-within {
+        border-color: #271561;
+        box-shadow: 0 0 0 3px rgba(205, 191, 248, .15);
+    }
+
+    min-width: 147px;
+}
+
+.datepick__btn {
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    padding: 0;
+
+    img {
+        width: 18px;
+        height: 18px;
+        filter: brightness(0) invert(1);
+        pointer-events: none;
+    }
+}
+
+.datepick__field input[type="date"] {
+    -webkit-appearance: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    height: 45px;
+    padding: 2px;
+    cursor: pointer;
+}
+
+/* esconde o ícone nativo do datepicker */
+.datepick__field input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    display: none;
+}
+
+.datepick__field input[type="date"]::-ms-clear,
+.datepick__field input[type="date"]::-ms-reveal {
+    display: none;
+}
+
+.datepick__field input[type="date"]::placeholder {
+    color: #b7b0d6;
+}
+
+input:focus {
+    outline: none !important
+}
+
+/* mobile */
+@media (max-width: 980px) {
+    .datepick {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .datepick__field {
+        min-width: 150px;
+    }
 }
 
 .datepick label {
