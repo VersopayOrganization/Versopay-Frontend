@@ -12,7 +12,6 @@ import {
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { format, startOfToday, subDays } from 'date-fns';
 import Chart from 'chart.js/auto';
-
 import { SidebarComponent } from '../../../shared/siderbar/siderbar.component';
 import { AuthService } from '../../../auth/auth.service';
 import { MockDashService, SeriesPoint } from '../mock-data.service';
@@ -21,7 +20,7 @@ type RangeKey = 'today' | 'yesterday' | '7d' | '15d' | '30d' | 'custom';
 
 @Component({
     standalone: true,
-    selector: 'vp-dashboard',
+    selector: 'app-dashboard',
     imports: [CommonModule, SidebarComponent],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
@@ -29,16 +28,15 @@ type RangeKey = 'today' | 'yesterday' | '7d' | '15d' | '30d' | 'custom';
 export class DashboardComponent implements AfterViewInit, OnDestroy {
     private platformId = inject(PLATFORM_ID);
     private isBrowser = isPlatformBrowser(this.platformId);
-
     private mock = inject(MockDashService);
     private auth = inject(AuthService);
 
     @ViewChild('chartCanvas') chartEl!: ElementRef<HTMLCanvasElement>;
     chart!: Chart;
-    mini = false;
+    isMinimizado = false;
     userName = computed(() => this.auth.user()?.name ?? 'Usuário');
     esconderValores = signal<boolean>(false);
-    range: RangeKey = '7d';
+    intervaloDias: RangeKey = '7d';
     from = subDays(startOfToday(), 6);
     to = startOfToday();
     kpis = this.mock.getKpis(this.from, this.to);
@@ -58,8 +56,8 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         if (this.chart) this.chart.destroy();
     }
 
-    toggleMini() {
-        this.mini = !this.mini;
+    minimizarSidebar() {
+        this.isMinimizado = !this.isMinimizado;
     }
 
     toggleHide() {
@@ -68,8 +66,8 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         if (this.isBrowser) localStorage.setItem('vp_hide_amounts', v ? '1' : '0');
     }
 
-    setQuickRange(key: RangeKey) {
-        this.range = key;
+    setarIntervaloData(key: RangeKey) {
+        this.intervaloDias = key;
         const today = startOfToday();
         const map: Record<Exclude<RangeKey, 'custom'>, number> = {
             today: 0, yesterday: 1, '7d': 6, '15d': 14, '30d': 29
@@ -83,8 +81,8 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
         this.reloadData();
     }
 
-    onDateChange() {
-        this.range = 'custom';
+    onDataSelecionada() {
+        this.intervaloDias = 'custom';
         if (this.from > this.to) [this.from, this.to] = [this.to, this.from];
         this.reloadData();
     }
@@ -220,7 +218,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
 
     dateFmt(d: Date) { return format(d, 'yyyy-MM-dd'); }
 
-    openPicker(el: HTMLInputElement | null | undefined) {
+    abriDataPicker(el: HTMLInputElement | null | undefined) {
         if (!el) return;
         if (typeof (el as any).showPicker === 'function') { (el as any).showPicker(); return; }
         el.focus();

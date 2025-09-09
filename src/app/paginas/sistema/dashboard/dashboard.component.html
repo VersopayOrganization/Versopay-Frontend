@@ -1,5 +1,5 @@
 <div class="layout">
-    <app-sidebar [mini]="mini" (toggle)="toggleMini()"></app-sidebar>
+    <app-sidebar [mini]="isMinimizado" (toggle)="minimizarSidebar()"></app-sidebar>
 
     <main class="main">
         <header class="top">
@@ -74,32 +74,32 @@
                 <h5>Filtrar data:</h5>
                 <div class="datepick">
                     <!-- DE -->
-                    <div class="datepick__field" (click)="openPicker(fromRef)">
+                    <div class="datepick__field" (click)="abriDataPicker(fromRef)">
                         <button type="button" class="datepick__btn" aria-label="Abrir calendário">
                             <img src="assets/icons/icon-calendar.svg" alt="" />
                         </button>
 
-                        <input #fromRef type="date" [value]="dateFmt(from)" (change)="onDateChange()" />
+                        <input #fromRef type="date" [value]="dateFmt(from)" (change)="onDataSelecionada()" />
                     </div>
 
                     <span class="datepick__sep">até</span>
 
                     <!-- ATÉ -->
-                    <div class="datepick__field" (click)="openPicker(toRef)">
+                    <div class="datepick__field" (click)="abriDataPicker(toRef)">
                         <button type="button" class="datepick__btn" aria-label="Abrir calendário">
                             <img src="assets/icons/icon-calendar.svg" alt="" />
                         </button>
 
-                        <input #toRef type="date" [value]="dateFmt(to)" (change)="onDateChange()" />
+                        <input #toRef type="date" [value]="dateFmt(to)" (change)="onDataSelecionada()" />
                     </div>
                 </div>
 
                 <div class="quick">
-                    <button [class.on]="range==='today'" (click)="setQuickRange('today')">Hoje</button>
-                    <button [class.on]="range==='yesterday'" (click)="setQuickRange('yesterday')">Ontem</button>
-                    <button [class.on]="range==='7d'" (click)="setQuickRange('7d')">7 dias</button>
-                    <button [class.on]="range==='15d'" (click)="setQuickRange('15d')">15 dias</button>
-                    <button [class.on]="range==='30d'" (click)="setQuickRange('30d')">30 dias</button>
+                    <button [class.on]="intervaloDias==='today'" (click)="setarIntervaloData('today')">Hoje</button>
+                    <button [class.on]="intervaloDias==='yesterday'" (click)="setarIntervaloData('yesterday')">Ontem</button>
+                    <button [class.on]="intervaloDias==='7d'" (click)="setarIntervaloData('7d')">7 dias</button>
+                    <button [class.on]="intervaloDias==='15d'" (click)="setarIntervaloData('15d')">15 dias</button>
+                    <button [class.on]="intervaloDias==='30d'" (click)="setarIntervaloData('30d')">30 dias</button>
                 </div>
             </section>
         </section>
