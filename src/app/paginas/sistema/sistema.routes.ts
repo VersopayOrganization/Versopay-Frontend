@@ -7,7 +7,7 @@ export const SISTEMA_ROUTES: Routes = [
         component: ShellComponent,
         children: [
             { path: '', loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent) },
-            { path: 'perfil', loadComponent: () => import('./perfil/perfil.component').then(m => m.PerfilComponent) },
+            { path: 'perfil', loadComponent: () => import('./configuracoes/perfil/perfil.component').then(m => m.PerfilComponent) },
             { path: '**', redirectTo: '' }
         ]
     }
