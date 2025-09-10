@@ -10,15 +10,15 @@
     </div>
 
     <nav class="sb__nav">
-        <a class="sb__item" routerLink="/sistema">
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema')}" routerLink="/sistema">
             <img class="logo" src="assets/icons/icon-dashboard.svg" alt="dashboard" />
             <span class="t">Dashboard</span></a>
-        <a class="sb__item">
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/pedidos')}">
             <img class="logo" src="assets/icons/icon-pedidos.svg" alt="pedidos" /><span class="t">Pedidos</span></a>
-        <a class="sb__item">
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/financeiro')}">
             <img class="logo" src="assets/icons/icon-financeiro.svg" alt="Financeiro" /><span
                 class="t">Financeiro</span></a>
-        <a class="sb__item" (click)="toggleGroup('settings')">
+        <a class="sb__item" (click)="toggleGroup('settings')" [ngClass]="{'active': rotaAtiva('/configuracoes')}">
             <img class="logo" src="assets/icons/icon-configuracoes.svg" alt="Configurações" /><span
                 class="t">Configurações</span>
             @if (!groupOpen().settings) {

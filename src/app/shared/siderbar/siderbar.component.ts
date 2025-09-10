@@ -29,7 +29,7 @@ export class SidebarComponent {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
       const url = this.router.url;
       const isSettingsChild =
-        url.startsWith('/sistema/perfil') || url.startsWith('/sistema/webhooks');
+        url.startsWith('/configuracoes/perfil') || url.startsWith('/configuracoes/webhooks');
       if (isSettingsChild && !this.mini) {
         this.groupOpen.update(g => ({ ...g, settings: true }));
       }
@@ -39,5 +39,9 @@ export class SidebarComponent {
   toggleGroup(key: 'settings') {
     if (this.mini) return;
     this.groupOpen.update(g => ({ ...g, [key]: !g[key] }));
+  }
+
+  rotaAtiva(rota: string) {
+    return this.router.url.startsWith(rota) && !this.mini;
   }
 }
