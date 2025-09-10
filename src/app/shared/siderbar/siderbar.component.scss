@@ -6,7 +6,7 @@
      background: $color-roxo-siderbar;
      color: #cfcde3;
      min-height: 100dvh;
-     padding: 16px;
+     padding: 40px 16px;
      transition: width .2s
  }
 
@@ -18,7 +18,7 @@
      display: flex;
      align-items: center;
      justify-content: center;
-     margin-bottom: 18px
+     margin-bottom: 40px;
  }
 
  .sb__brand img {
@@ -54,6 +54,7 @@
      cursor: pointer;
      position: relative;
      left: 20%;
+     top: 33px;
  }
 
  .sb__nav {
