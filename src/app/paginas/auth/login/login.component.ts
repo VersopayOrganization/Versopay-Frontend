@@ -2,9 +2,10 @@ import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../auth/auth.service';
+import { AuthService, Login2FARequired } from '../../../auth/auth.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { Utils } from '../../../shared/utils.service';
+import { LoginPayload } from '../../../models/auth/login-payload.dto';
 
 @Component({
   standalone: true,
@@ -22,6 +23,7 @@ export class LoginComponent {
   step: 'login' | 'code' = 'login';
   challengeId: string | null = null;
   maskedEmail = '';
+  private lastPayload!: LoginPayload;
 
   @ViewChildren('otpBox') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
   otp: string[] = Array(6).fill('');
@@ -128,6 +130,14 @@ export class LoginComponent {
   }
 
   async submit() {
+    const payload: LoginPayload = {
+      email: this.email!,
+      senha: this.senha!,
+      lembrar7Dias: this.remember ?? false
+    };
+
+    this.lastPayload = payload;
+
     if (!this.email || !this.senha) {
       this.toast.show({
         message: 'Todos os campos são obrigatórios.',
@@ -139,33 +149,29 @@ export class LoginComponent {
     }
 
     this.loading = true;
+
     try {
-      const res = await this.authService.loginSmart({
-        email: this.email,
-        senha: this.senha,
-        lembrar7Dias: this.remember,
-      });
+      const res = await this.authService.loginSmart(payload);
 
       if (res.status === 200) {
-        // já logado (bypass válido)
-        this.router.navigateByUrl('/dashboard');
+        // tokens já persistidos aqui
+        await this.router.navigateByUrl('/sistema', { replaceUrl: true });
         return;
       }
 
-      // 202 → precisa de 2FA
-      this.challengeId = res.body.challengeId;
-      this.maskedEmail = res.body.maskedEmail;
+      // 202 -> precisa de 2FA (mostre UI para digitar código)
+      const twofa = res.body as Login2FARequired;
+      this.challengeId = twofa.challengeId;
+      this.maskedEmail = twofa.maskedEmail;
       this.step = 'code';
-      setTimeout(() => this.otpInputs?.first?.nativeElement.focus(), 0);
 
+    } catch (e: any) {
       this.toast.show({
-        message: 'Enviamos um código para seu e-mail.',
-        type: 'success-email',
+        message: e?.message ?? 'Falha no login',
+        type: 'error',
         position: 'bottom-left',
         offset: { x: 40, y: 40 }
       });
-    } catch (e: any) {
-      this.toast.error(e?.error?.message ?? 'E-mail ou senha inválidos.');
     } finally {
       this.loading = false;
     }
@@ -173,27 +179,25 @@ export class LoginComponent {
 
   async confirmarCodigo() {
     if (!this.challengeId || !this.otp.every(d => d.length === 1)) {
-      this.toast.error('Informe o código de 6 dígitos.');
+      this.toast.show({ message: 'Informe o código de 6 dígitos.', type: 'error', position: 'bottom-left', offset: { x: 40, y: 40 } });
       return;
     }
 
-    this.loading = true;
     try {
-      const resp = await this.authService.confirm2fa(this.challengeId, this.code);
-      if (resp.status !== 204) throw new Error('Código inválido');
+      await this.authService.confirm2fa(this.challengeId!, this.code);
 
-      // login final para receber tokens
-      // await this.authService.loginFinal({
-      //   email: this.email,
-      //   senha: this.senha,
-      //   lembrar7Dias: this.remember,
-      // });
+      const done = await this.authService.loginFinal(this.lastPayload);
+      console.log('token depois do loginFinal:', this.authService.token);
 
-      this.utils.navegarPagina('/sistema');
+      await this.router.navigateByUrl('/sistema', { replaceUrl: true });
     } catch (e: any) {
-      this.toast.error(e?.error?.message ?? 'Código inválido ou expirado.');
-    } finally {
-      this.loading = false;
+      this.toast.show({
+        message: e?.message ?? 'Código inválido ou expirado',
+        type: 'error',
+        position: 'bottom-left',
+        offset: { x: 40, y: 40 }
+      });
     }
   }
+
 }
