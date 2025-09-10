@@ -1,0 +1,18 @@
+.layout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    min-height: 100dvh;
+    background: var(--bg);
+}
+
+.main {
+    min-width: 0;
+    padding: 40px 24px;
+    background: #06030e;
+}
+
+::ng-deep body {
+    margin: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}

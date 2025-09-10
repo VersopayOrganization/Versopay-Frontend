@@ -7,25 +7,8 @@ import { SidebarComponent } from '../../../shared/siderbar/siderbar.component';
     standalone: true,
     selector: 'app-shell',
     imports: [CommonModule, RouterOutlet, SidebarComponent],
-    template: `
-    <div class="layout">
-      <app-sidebar [mini]="mini()" (toggle)="mini.set(!mini())"></app-sidebar>
-      <main class="main"><router-outlet /></main>
-    </div>
-  `,
-    styles: [`
-    .layout {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        min-height: 100dvh;
-        background: var(--bg);
-    }
-    .main {
-        min-width: 0;
-        padding: 40px 24px;
-        background: #06030e;
-    }
-  `]
+    templateUrl: './shell.component.html',
+    styleUrl: './shell.component.scss',
 })
 export class ShellComponent {
     mini = signal(false);
