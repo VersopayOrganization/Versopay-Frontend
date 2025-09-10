@@ -21,7 +21,7 @@
                 <img class="avatar" src="assets/images/avatar.png" alt="user" />
                 } -->
 
-                <p class="avatar">GM</p>
+                <p class="avatar">{{iniciaisNome}}</p>
 
             </div>
         </header>
@@ -96,7 +96,8 @@
 
                 <div class="quick">
                     <button [class.on]="intervaloDias==='today'" (click)="setarIntervaloData('today')">Hoje</button>
-                    <button [class.on]="intervaloDias==='yesterday'" (click)="setarIntervaloData('yesterday')">Ontem</button>
+                    <button [class.on]="intervaloDias==='yesterday'"
+                        (click)="setarIntervaloData('yesterday')">Ontem</button>
                     <button [class.on]="intervaloDias==='7d'" (click)="setarIntervaloData('7d')">7 dias</button>
                     <button [class.on]="intervaloDias==='15d'" (click)="setarIntervaloData('15d')">15 dias</button>
                     <button [class.on]="intervaloDias==='30d'" (click)="setarIntervaloData('30d')">30 dias</button>

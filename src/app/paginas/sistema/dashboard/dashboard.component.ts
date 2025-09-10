@@ -8,6 +8,7 @@ import {
     signal,
     OnDestroy,
     PLATFORM_ID,
+    OnInit,
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { format, startOfToday, subDays } from 'date-fns';
@@ -25,7 +26,7 @@ type RangeKey = 'today' | 'yesterday' | '7d' | '15d' | '30d' | 'custom';
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements AfterViewInit, OnDestroy {
+export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
     private platformId = inject(PLATFORM_ID);
     private isBrowser = isPlatformBrowser(this.platformId);
     private mock = inject(MockDashService);
@@ -35,6 +36,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
     chart!: Chart;
     isMinimizado = false;
     userName = computed(() => this.auth.user()?.name ?? 'Usuário');
+    iniciaisNome: string = '';
     esconderValores = signal<boolean>(false);
     intervaloDias: RangeKey = '7d';
     from = subDays(startOfToday(), 6);
@@ -44,6 +46,13 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
 
     constructor() {
         if (this.isBrowser) this.esconderValores.set(localStorage.getItem('vp_hide_amounts') === '1');
+    }
+
+    ngOnInit(): void {
+        const primeiroNome = this.userName().split(' ')[0].slice(0, 1);
+        const segundoNome = this.userName().split(' ')[1].slice(0, 1)
+        this.iniciaisNome = `${primeiroNome}${segundoNome}`.toUpperCase();
+        console.log(this.iniciaisNome)
     }
 
     ngAfterViewInit() {
