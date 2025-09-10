@@ -21,7 +21,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 18px
+    margin-bottom: 18px;
+    text-transform: capitalize;
 }
 
 .top h2 {
@@ -92,7 +93,12 @@
     cursor: pointer;
     width: 34px;
     height: 34px;
-    border-radius: 50%
+    border-radius: 50%;
+    border: 3px solid #9376f0;
+    padding: 4px;
+    font-size: 18px !important;
+    text-align: center;
+    place-content: center;
 }
 
 .title {
