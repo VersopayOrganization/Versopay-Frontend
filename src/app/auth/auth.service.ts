@@ -52,12 +52,44 @@ export class AuthService {
       email: resp.usuario.email,
       name: resp.usuario.nome
     };
-    const exp = new Date(resp.expiresAtUtc).getTime(); // vem em UTC
-    const persist: Persist = { user, token: resp.accessToken, exp };
+
+    let expMs = Number.NaN;
+
+    // 1) tenta parsear o expiresAtUtc vindo do backend
+    if (resp.expiresAtUtc) {
+      const raw = String(resp.expiresAtUtc).trim();
+      // se vier sem timezone, força 'Z'
+      const iso = /Z$|[+-]\d{2}:\d{2}$/.test(raw) ? raw : `${raw}Z`;
+      const parsed = Date.parse(iso);
+      if (!Number.isNaN(parsed)) expMs = parsed;
+    }
+
+    // 2) se falhar, tenta extrair do JWT (exp em segundos)
+    if (Number.isNaN(expMs) && resp.accessToken) {
+      try {
+        const [, payloadB64] = resp.accessToken.split('.');
+        const json = atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/'));
+        const payload = JSON.parse(json);
+        if (payload?.exp) expMs = payload.exp * 1000;
+      } catch { /* ignore */ }
+    }
+
+    // 3) fallback (ex.: 55 min)
+    if (Number.isNaN(expMs)) {
+      expMs = Date.now() + 55 * 60 * 1000;
+    }
+
+    const persist: Persist = { user, token: resp.accessToken, exp: expMs };
+
+    // grava estado em memória já agora (deixa o guard passar)
     this._user.set(user);
+
     const raw = JSON.stringify(persist);
     const store = remember ? this.local : this.session;
     store?.setItem('vp_auth', raw);
+
+    // opcional: log de diagnóstico
+    console.log('persist >>', { expRaw: resp.expiresAtUtc, expMs, at: new Date(expMs).toISOString() });
   }
 
   private clear() {
@@ -133,11 +165,29 @@ export class AuthService {
     return out;
   }
 
-  async confirm2fa(challengeId: string, code: string): Promise<HttpResponse<any>> {
-    return await firstValueFrom(
-      this.http.post(`${API_BASE}/login/2fa/confirm`, { challengeId, code }, { withCredentials: true, observe: 'response' })
-    );
+  async confirm2fa(challengeId: string, code: string): Promise<boolean> {
+    try {
+      const normalized = (code ?? '').replace(/\D/g, '').slice(0, 6);
+
+      const res = await firstValueFrom(
+        this.http.post(`${API_BASE}/login/2fa/confirm`,
+          { challengeId: String(challengeId), code: normalized },
+          { withCredentials: true, observe: 'response' }
+        )
+      );
+
+      return res.status >= 200 && res.status < 300;
+    } catch (err: any) {
+      const status = err?.status;
+      const body = err?.error;
+      console.error('confirm2fa ERROR', { status, body, challengeId, code });
+
+      throw new Error(
+        body?.message ?? body?.detail ?? `Falha no 2FA (status ${status ?? '??'})`
+      );
+    }
   }
+
 
   async loginFinal(payload: LoginPayload) {
     // segundo passo após 2FA: agora o /login deve retornar 200 com tokens (bypass cookie presente)
@@ -173,9 +223,19 @@ export class AuthService {
     if (!this.isBrowser) return null;
     const raw = this.local?.getItem('vp_auth') ?? this.session?.getItem('vp_auth');
     if (!raw) return null;
+
     try {
       const data = JSON.parse(raw) as Persist;
-      return Date.now() < data.exp ? data.token : null;
-    } catch { return null; }
+      if (!data?.token) return null;
+
+      // só invalida se exp existir E estiver claramente vencido
+      if (typeof data.exp === 'number' && !Number.isNaN(data.exp) && Date.now() >= data.exp) {
+        return null;
+      }
+      return data.token;
+    } catch {
+      return null;
+    }
   }
+
 }
