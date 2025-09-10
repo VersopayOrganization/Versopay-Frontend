@@ -22,7 +22,7 @@ type RangeKey = 'today' | 'yesterday' | '7d' | '15d' | '30d' | 'custom';
 @Component({
     standalone: true,
     selector: 'app-dashboard',
-    imports: [CommonModule, SidebarComponent],
+    imports: [CommonModule],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
 })
@@ -34,7 +34,6 @@ export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
 
     @ViewChild('chartCanvas') chartEl!: ElementRef<HTMLCanvasElement>;
     chart!: Chart;
-    isMinimizado = false;
     userName = computed(() => this.auth.user()?.name ?? 'Usuário');
     iniciaisNome: string = '';
     esconderValores = signal<boolean>(false);
@@ -64,11 +63,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
     ngOnDestroy() {
         if (this.chart) this.chart.destroy();
     }
-
-    minimizarSidebar() {
-        this.isMinimizado = !this.isMinimizado;
-    }
-
+    
     toggleHide() {
         const v = !this.esconderValores();
         this.esconderValores.set(v);
