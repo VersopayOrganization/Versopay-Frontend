@@ -18,8 +18,27 @@
         <a class="sb__item">
             <img class="logo" src="assets/icons/icon-financeiro.svg" alt="Financeiro" /><span
                 class="t">Financeiro</span></a>
-        <a class="sb__item">
+        <a class="sb__item" (click)="toggleGroup('settings')">
             <img class="logo" src="assets/icons/icon-configuracoes.svg" alt="Configurações" /><span
-                class="t">Configurações</span></a>
+                class="t">Configurações</span>
+            @if (!groupOpen().settings) {
+            <img class="arrow-unic-right" src="assets/icons/arrow-unic-right.svg" alt="arrow-unic-right" />
+            }
+
+            @if (groupOpen().settings) {
+            <img class="arrow-down" src="assets/icons/arrow-down.svg" alt="arrow-down" />
+            }
+        </a>
+
+        <!-- Submenu Configurações -->
+        <div id="submenu-settings" class="sb__submenu" *ngIf="groupOpen().settings && !mini">
+            <a class="sb__subitem" routerLink="/sistema/perfil" routerLinkActive="active">
+                Perfil
+            </a>
+
+            <a class="sb__subitem" routerLink="/sistema/webhooks" routerLinkActive="active">
+                Webhooks
+            </a>
+        </div>
     </nav>
 </aside>
