@@ -15,14 +15,15 @@ import { SidebarComponent } from '../../../shared/siderbar/siderbar.component';
   `,
     styles: [`
     .layout {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      min-height: 100dvh;
-      background: var(--bg);
+        display: grid;
+        grid-template-columns: auto 1fr;
+        min-height: 100dvh;
+        background: var(--bg);
     }
     .main {
-      min-width: 0;
-      padding: 24px;
+        min-width: 0;
+        padding: 40px 24px;
+        background: #06030e;
     }
   `]
 })
