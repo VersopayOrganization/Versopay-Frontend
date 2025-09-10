@@ -71,6 +71,10 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json",
+            "ssl": false
+          },
           "configurations": {
             "production": {
               "buildTarget": "versopay-web:build:production"
