@@ -1,1 +1,136 @@
-<p>perfil works!</p>
+<div class="layout-default">
+    <div class="head">
+        <h4>
+            Seu perfil
+            <img class="icon-perfil" src="assets/icons/user-perfil.svg" alt="icon-perfil" />
+        </h4>
+
+        <img class="notification" src="assets/icons/notificacao.svg" alt="notificacao" />
+    </div>
+
+    <div class="progresso-perfil">
+        <div class="infos-perfil">
+            <!-- TODO: Quando retornar info se o user tiver IMG -->
+            <!-- @if (user.img) {
+                <img class="avatar" src="assets/images/avatar.png" alt="user" />
+                } -->
+
+            <p class="avatar">{{iniciaisNome}}</p>
+
+            <div class="infos">
+                <p class="name">{{ user?.name }}</p>
+                <p class="email">E-mail: {{ user?.email }}</p>
+                <p class="cpf">CNPJ: ---- </p>
+                <p class="telefone">Telefone: +55 21 99999-9999 </p>
+            </div>
+
+        </div>
+        <div class="progresso">
+            <h5>Seu progresso</h5>
+            <div class="meta">
+                <p>Parabéns, você já realizou 1678 vendas.</p>
+                <p class="valores-arrecadados">R$62.567,89 / R$100.000</p>
+            </div>
+            <div class="bar"><span style="width:72%"></span></div>
+        </div>
+    </div>
+
+    <div class="seguranca-taxa">
+        <div class="seguranca">
+            <h5>Segurança</h5>
+            <p>Ao redefinir sua senha você será desconectado de todas as sessões da VersoPay ativas em outros
+                dispositivos.
+            </p>
+
+            <button>Redefinir senha</button>
+        </div>
+
+        <div class="taxa">
+            <p>Taxa:</p>
+            <p>Cartão: 3,99%</p>
+            <p>Pix entrada: 0% + R$0,23</p>
+            <p>Pix saída: 0% + R$0,23</p>
+            <p>Boleto: 0% + R$0,97</p>
+        </div>
+    </div>
+
+    <form [formGroup]="form">
+        <div class="informacoes">
+            <!-- Informações -->
+            <div class="label" (click)="toggleGroup('informacoes')">
+                <h5 [ngClass]="{'active': abrirInformacoes}">Informações
+                </h5>
+                <img class="drop-fechado" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
+            </div>
+            @if (abrirInformacoes) {
+            <fieldset>
+                <input type="text" placeholder="Nome Fantasia" formControlName="nomeFantasia" />
+                <input type="text" placeholder="Razão Social" formControlName="razaoSocial" />
+                <input type="text" placeholder="CNPJ" formControlName="cnpj" />
+            </fieldset>
+
+            <fieldset>
+                <input type="text" placeholder="E-mail" formControlName="email" />
+                <input type="text" placeholder="Site/Rede Social" formControlName="site" />
+                <input type="text" placeholder="Instagram" formControlName="instagram" />
+            </fieldset>
+            }
+
+            <!-- Endereço -->
+            <div class="label" (click)="toggleGroup('endereco')">
+                <h5 [ngClass]="{'active': abrirInformacoes}">Endereço
+                </h5>
+                <img class="drop-fechado" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
+            </div>
+
+            @if (abrirEnderecos) {
+            <fieldset>
+                <input type="text" placeholder="CEP" formControlName="enderecoCep" />
+                <input type="text" placeholder="Endereço" formControlName="enderecoLogradouro" />
+                <input type="text" placeholder="Número" formControlName="enderecoNumero" />
+            </fieldset>
+
+            <fieldset>
+                <input type="text" placeholder="Complemento" formControlName="enderecoComplemento" />
+                <input type="text" placeholder="Bairro" formControlName="enderecoBairro" />
+                <input type="text" placeholder="Cidade" formControlName="enderecoCidade" />
+            </fieldset>
+
+            <fieldset>
+                <input type="text" placeholder="Estado" formControlName="enderecoUf" style="width: 29%;" />
+            </fieldset>
+            }
+
+            <!-- Dados bancários -->
+            <div class="label" (click)="toggleGroup('dadosBancarios')">
+                <h5 [ngClass]="{'active': abrirDadosBancarios}">Dados Bancários
+                </h5>
+                <img class="drop-fechado" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
+            </div>
+
+            @if (abrirDadosBancarios) {
+            <fieldset>
+                <input type="text" placeholder="Nome Completo" formControlName="nomeCompletoBanco" />
+                <input type="text" placeholder="CPF/CNPJ" formControlName="cpfOrCnpj" />
+                <input type="text" placeholder="Chave Pix" formControlName="chavePix" />
+            </fieldset>
+            }
+
+            <!-- Saque em Cripto -->
+            <div class="label" (click)="toggleGroup('saqueCripto')">
+                <h5 [ngClass]="{'active': abrirSaqueCripto}">Saque em Cripto
+                </h5>
+                <img class="drop-fechado" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
+            </div>
+
+            @if (abrirSaqueCripto) {
+            <fieldset>
+                <input type="text" placeholder="Chave da Carteira" formControlName="chaveCarteiraCripto" />
+            </fieldset>
+            }
+        </div>
+
+        <button class="btn-salvar-info">Salvar</button>
+    </form>
+
+</div>
