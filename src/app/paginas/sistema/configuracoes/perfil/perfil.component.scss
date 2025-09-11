@@ -1,0 +1,234 @@
+@use '../../../../styles/_tokens' as *;
+@use '../../../../styles/_mixins' as *;
+
+.head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    >h4 {
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 156%;
+    }
+}
+
+.progresso-perfil {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+
+    >.infos-perfil {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        border: 1px solid $color-border;
+        border-radius: 9px;
+        width: 40%;
+        height: 148px;
+        max-height: 148px;
+        padding: 16px 40px;
+
+        >.avatar {
+            cursor: pointer;
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            border: 3px solid #9376f0;
+            padding: 4px;
+            font-size: 28px !important;
+            text-align: center;
+            place-content: center;
+        }
+
+        >.infos {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            >p {
+                margin: 0;
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 156%;
+
+                &.name {
+                    font-size: 24px;
+                    font-weight: 500;
+                    list-style: 156%;
+                    text-transform: capitalize;
+                    margin-bottom: 2px;
+                }
+            }
+        }
+    }
+
+    >.progresso {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid $color-border;
+        justify-content: center;
+        border-radius: 9px;
+        width: 60%;
+        height: 148px;
+        max-height: 148px;
+        padding: 16px 40px;
+
+        >h5 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 156%;
+        }
+
+        .meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            >p {
+                margin: 0;
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 156%;
+                letter-spacing: -3%;
+
+                &.valores-arrecadados {
+                    font-size: 20px;
+                    font-weight: 700;
+                    line-height: 156%;
+                }
+            }
+        }
+    }
+}
+
+
+.seguranca-taxa {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-top: 32px;
+}
+
+.seguranca {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid $color-border;
+    justify-content: center;
+    border-radius: 9px;
+    width: 80%;
+    height: 137px;
+    max-height: 137px;
+    padding: 16px 40px;
+
+    >h5 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 156%;
+        margin-bottom: 2px;
+    }
+
+    >p {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 156%;
+    }
+
+    >button {
+        width: 143px;
+        max-width: 143px;
+        height: 32px;
+        background: #200F48;
+        border: none;
+        border-radius: 4px;
+        color: #FFFF;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 156%;
+        cursor: pointer;
+
+        &:hover {
+            background: linear-gradient(300deg, #532C82, #03001D);
+        }
+    }
+}
+
+.taxa {
+    border: 1px solid $color-border;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 9px;
+    width: 15%;
+    height: 137px;
+    min-height: 137px;
+    padding: 16px 40px;
+
+    >p {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 156%;
+    }
+}
+
+.progresso .bar {
+    margin-top: 10px;
+    width: 100%;
+    height: 14px;
+    background: #251a46;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #9376F0;
+}
+
+.progresso .bar span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #A77DF8, #491FA7)
+}
+
+form {
+    margin-top: 32px;
+
+    .informacoes {
+
+        >.label {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 16px;
+
+            >h5 {
+                margin: 0;
+                font-size: 30px;
+                font-weight: 700;
+                line-height: 156%;
+            }
+        }
+
+        >fieldset {
+            display: flex;
+            gap: 25px;
+
+            >input {
+                border: 1px solid $color-border;
+                background: transparent;
+                border-radius: 10px;
+                padding: 16px;
+                width: 100%;
+                color: #FFF;
+
+            }
+        }
+    }
+
+    .btn-salvar-info {
+        
+    }
+}
