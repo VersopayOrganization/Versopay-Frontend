@@ -10,16 +10,35 @@
     </div>
 
     <nav class="sb__nav">
-        <a class="sb__item active">
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema')}" routerLink="/sistema">
             <img class="logo" src="assets/icons/icon-dashboard.svg" alt="dashboard" />
             <span class="t">Dashboard</span></a>
-        <a class="sb__item">
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/pedidos')}">
             <img class="logo" src="assets/icons/icon-pedidos.svg" alt="pedidos" /><span class="t">Pedidos</span></a>
-        <a class="sb__item">
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/financeiro')}">
             <img class="logo" src="assets/icons/icon-financeiro.svg" alt="Financeiro" /><span
                 class="t">Financeiro</span></a>
-        <a class="sb__item">
+        <a class="sb__item" (click)="toggleGroup('settings')" [ngClass]="{'active': rotaAtiva('/configuracoes')}">
             <img class="logo" src="assets/icons/icon-configuracoes.svg" alt="Configurações" /><span
-                class="t">Configurações</span></a>
+                class="t">Configurações</span>
+            @if (!groupOpen().settings) {
+            <img class="arrow-unic-right" src="assets/icons/arrow-unic-right.svg" alt="arrow-unic-right" />
+            }
+
+            @if (groupOpen().settings) {
+            <img class="arrow-down" src="assets/icons/arrow-down.svg" alt="arrow-down" />
+            }
+        </a>
+
+        <!-- Submenu Configurações -->
+        <div id="submenu-settings" class="sb__submenu" *ngIf="groupOpen().settings && !mini">
+            <a class="sb__subitem" routerLink="/configuracoes/perfil" routerLinkActive="active">
+                Perfil
+            </a>
+
+            <a class="sb__subitem" routerLink="/sistema/webhooks" routerLinkActive="active">
+                Webhooks
+            </a>
+        </div>
     </nav>
 </aside>

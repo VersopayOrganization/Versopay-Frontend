@@ -1,0 +1,30 @@
+@use '../../../styles/_tokens' as *;
+@use '../../../styles/_mixins' as *;
+
+div {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    min-height: 100dvh;
+    background: var(--bg);
+}
+
+.main {
+    min-width: 0;
+    padding: 40px 24px;
+    background: $color-roxo-fundo-dash;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100vh;
+}
+
+@media screen and (min-width: 980px) and (max-width: 1980px) {
+    .main {
+        height: 91vh;
+    }
+}
+
+@media screen and (min-width: 1982px) and (max-width: 2200px) {
+    .main {
+        height: 94vh;
+    }
+}

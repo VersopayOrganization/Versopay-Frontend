@@ -4,9 +4,9 @@
  .sb {
      width: 240px;
      background: $color-roxo-siderbar;
-     color: #cfcde3;
+     color: #FFF;
      min-height: 100dvh;
-     padding: 16px;
+     padding: 40px 0;
      transition: width .2s
  }
 
@@ -18,11 +18,17 @@
      display: flex;
      align-items: center;
      justify-content: center;
-     margin-bottom: 18px
+     margin-bottom: 40px;
+     padding: 0 16px;
  }
 
  .sb__brand img {
      height: 24px;
+ }
+
+ .arrow-unic-right,
+ .arrow-down {
+     margin-left: 10px;
  }
 
  .sb__brand .logo-icon,
@@ -53,7 +59,8 @@
      height: 30px;
      cursor: pointer;
      position: relative;
-     left: 20%;
+     left: 16%;
+     top: 33px;
  }
 
  .sb__nav {
@@ -66,8 +73,7 @@
      display: flex;
      align-items: center;
      gap: 12px;
-     padding: 12px 10px;
-     border-radius: 10px;
+     padding: 12px 26px;
      cursor: pointer;
      text-decoration: none;
      color: inherit
@@ -106,4 +112,34 @@
  .i {
      width: 22px;
      text-align: center
+ }
+
+
+ /* submenu */
+ .sb__submenu {
+     display: grid;
+     gap: 16px;
+     padding: 8px 0 12px;
+     margin-left: 44px;
+ }
+
+ .sb__subitem {
+     display: block;
+     text-decoration: none;
+     color: #fff;
+     margin: 0;
+     padding: 0;
+ }
+
+ .sb__subitem.active,
+ .sb__subitem:hover {
+     color: #9376F0;
+ }
+
+ .sb--mini .sb__submenu {
+     display: none;
+ }
+
+ .sb--mini .sb__group .chev {
+     display: none;
  }

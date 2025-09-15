@@ -1,27 +1,12 @@
 @use '../../../styles/_tokens' as *;
 @use '../../../styles/_mixins' as *;
 
-.layout {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    min-height: 100dvh;
-    background: $color-roxo-fundo-dash
-}
-
-.main {
-    padding: 24px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 70%;
-    margin-top: 40px;
-    margin-bottom: 40px;
-}
-
 .top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 18px
+    margin-bottom: 18px;
+    text-transform: capitalize;
 }
 
 .top h2 {
@@ -59,7 +44,7 @@
 .progress .bar span {
     display: block;
     height: 100%;
-    background: linear-gradient(90deg, #c39afc, #6f4ef6)
+    background: linear-gradient(90deg, #A77DF8, #491FA7)
 }
 
 .progress small {
@@ -92,7 +77,12 @@
     cursor: pointer;
     width: 34px;
     height: 34px;
-    border-radius: 50%
+    border-radius: 50%;
+    border: 3px solid #9376f0;
+    padding: 4px;
+    font-size: 18px !important;
+    text-align: center;
+    place-content: center;
 }
 
 .title {
@@ -161,7 +151,7 @@
     justify-content: center;
     padding-left: 35px;
     position: relative;
-    border: 1px solid #200F48;
+    border: 1px solid $color-border;
     border-radius: 10px;
     transition: border-color .2s, box-shadow .2s;
 
@@ -251,7 +241,7 @@ input:focus {
     color: #FFF;
     width: 126px;
     height: 40px;
-    border: 1px solid #200F48;
+    border: 1px solid $color-border;
     border-radius: 5px;
     padding: 5px 14px;
     display: flex;
@@ -270,7 +260,7 @@ input:focus {
     padding: 8px 12px;
     border-radius: 5px;
     cursor: pointer;
-    border: 1px solid #200F48;
+    border: 1px solid $color-border;
 }
 
 .quick button.on,
@@ -286,7 +276,7 @@ input:focus {
 
 .kpi {
     background: $color-roxo-fundo-dash;
-    border: 1px solid #200F48;
+    border: 1px solid $color-border;
     border-radius: 10px;
     padding: 16px;
     max-width: 295px;
@@ -361,7 +351,7 @@ input:focus {
 
 
 .card {
-    border: 1px solid #200F48;
+    border: 1px solid $color-border;
     border-radius: 12px;
     padding: 16px;
 }
@@ -383,7 +373,7 @@ input:focus {
     align-items: center;
     gap: 16px;
     background: $color-roxo-fundo-dash;
-    border: 1px solid #200F48;
+    border: 1px solid $color-border;
     border-radius: 12px;
     padding: 14px
 }

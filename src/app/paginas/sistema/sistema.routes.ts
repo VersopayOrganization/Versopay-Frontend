@@ -1,6 +1,13 @@
 import { Routes } from '@angular/router';
+import { ShellComponent } from './shell/shell.component';
 
 export const SISTEMA_ROUTES: Routes = [
-    { path: '', loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent) },
-    { path: '**', redirectTo: '' }
+    {
+        path: '',
+        component: ShellComponent,
+        children: [
+            { path: '', loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent) },
+            { path: '**', redirectTo: '' }
+        ]
+    }
 ];
