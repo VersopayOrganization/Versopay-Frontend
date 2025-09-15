@@ -13,6 +13,10 @@
     }
 }
 
+.drop-aberto {
+    transform: rotate(90deg);
+}
+
 .progresso-perfil {
     display: flex;
     align-items: center;
@@ -229,6 +233,20 @@ form {
     }
 
     .btn-salvar-info {
-        
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 156%;
+        cursor: pointer;
+        width: 412px;
+        height: 54px;
+        border: none;
+        border-radius: 9px;
+        color: #FFF;
+        background: linear-gradient(40deg, #A77DF8, #491FA7);
+
+        &:hover {
+            background: linear-gradient(300deg, #532C82, #03001D);
+            transition: all 0.3s ease;
+        }
     }
 }

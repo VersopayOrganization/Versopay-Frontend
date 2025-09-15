@@ -42,7 +42,7 @@
                 dispositivos.
             </p>
 
-            <button>Redefinir senha</button>
+            <button (click)="redefinirSenha()">Redefinir senha</button>
         </div>
 
         <div class="taxa">
@@ -60,7 +60,7 @@
             <div class="label" (click)="toggleGroup('informacoes')">
                 <h5 [ngClass]="{'active': abrirInformacoes}">Informações
                 </h5>
-                <img class="drop-fechado" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
+                <img class="drop-fechado" [ngClass]="{'drop-aberto': abrirInformacoes}" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
             </div>
             @if (abrirInformacoes) {
             <fieldset>
@@ -78,9 +78,9 @@
 
             <!-- Endereço -->
             <div class="label" (click)="toggleGroup('endereco')">
-                <h5 [ngClass]="{'active': abrirInformacoes}">Endereço
+                <h5 [ngClass]="{'active': abrirEnderecos}">Endereço
                 </h5>
-                <img class="drop-fechado" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
+                <img class="drop-fechado" [ngClass]="{'drop-aberto': abrirEnderecos}" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
             </div>
 
             @if (abrirEnderecos) {
@@ -105,7 +105,7 @@
             <div class="label" (click)="toggleGroup('dadosBancarios')">
                 <h5 [ngClass]="{'active': abrirDadosBancarios}">Dados Bancários
                 </h5>
-                <img class="drop-fechado" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
+                <img class="drop-fechado" [ngClass]="{'drop-aberto': abrirDadosBancarios}" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
             </div>
 
             @if (abrirDadosBancarios) {
@@ -120,7 +120,7 @@
             <div class="label" (click)="toggleGroup('saqueCripto')">
                 <h5 [ngClass]="{'active': abrirSaqueCripto}">Saque em Cripto
                 </h5>
-                <img class="drop-fechado" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
+                <img class="drop-fechado" [ngClass]="{'drop-aberto': abrirSaqueCripto}" src="assets/icons/arrow-form-fechado.svg" alt="drop-fechado" />
             </div>
 
             @if (abrirSaqueCripto) {

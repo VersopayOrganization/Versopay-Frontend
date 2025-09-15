@@ -2,6 +2,8 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../../auth/auth.service';
+import { UsuarioService } from '../../../../services/usuario.service';
+import { ToastService } from '../../../../shared/toast/toast.service';
 
 type Chave = 'informacoes' | 'endereco' | 'dadosBancarios' | 'saqueCripto';
 
@@ -21,10 +23,16 @@ export class PerfilComponent implements OnInit {
   abrirEnderecos: boolean = false;
   abrirDadosBancarios: boolean = false;
   abrirSaqueCripto: boolean = false;
+  loading = false;
 
   // Mock de metas — Trazer do serviço depois
   metaTotal = 100_000;
   metaAtual = signal<number>(62_567.89);
+
+  constructor(
+    private usuarioService: UsuarioService,
+    private toast: ToastService) { }
+
   get progresso() {
     const v = Math.max(0, Math.min(1, this.metaAtual() / this.metaTotal));
     return Math.round(v * 100);
@@ -72,17 +80,29 @@ export class PerfilComponent implements OnInit {
     // exiba seu toast de sucesso aqui
   }
 
-  redefinirSenha() {
-    // aqui você pode navegar para a rota de reset ou abrir modal
-    // this.router.navigate(['/auth/reset']);
-    console.log('Abrir fluxo de redefinição de senha');
+  async redefinirSenha() {
+    try {
+      const payload = {
+        email: this.form.get('email')?.value
+      }
+
+      const result = await this.usuarioService.esqueciSenha(payload);
+      console.log('result:', result)
+
+      if (result) this.toast.show({ message: 'Verifique seu e-mail', type: 'success-email', position: 'top-right', offset: { x: 40, y: 40 } });
+      else this.toast.show({ message: 'Não foi possível enviar a recuperação de senha para o e-mail informado.', type: 'error', position: 'top-right', offset: { x: 40, y: 40 } });
+    } catch (err: any) {
+      const msg = err.message ?? 'Falha ao enviar e-mail de recuperação de senha. Tente novamente.';
+      this.toast.show({ message: msg, type: 'error', position: 'top-right', offset: { x: 40, y: 40 } });
+    } finally {
+      this.loading = false;
+    }
   }
 
   toggleGroup(secao: Chave) {
-    // mapeia a chave para o nome da propriedade
     const mapa = {
       informacoes: 'abrirInformacoes',
-      endereco: 'abrirEnderecos',     // 👈 note o plural aqui
+      endereco: 'abrirEnderecos',
       dadosBancarios: 'abrirDadosBancarios',
       saqueCripto: 'abrirSaqueCripto',
     } as const;
@@ -90,11 +110,9 @@ export class PerfilComponent implements OnInit {
     const prop = mapa[secao];
     const estavaAberta = (this as any)[prop] as boolean;
 
-    // fecha todas
     this.abrirInformacoes = this.abrirEnderecos =
       this.abrirDadosBancarios = this.abrirSaqueCripto = false;
 
-    // reabre somente se não era a mesma (efeito toggle)
     (this as any)[prop] = !estavaAberta;
   }
 }
