@@ -1,0 +1,51 @@
+@use '../../../styles/_tokens' as *;
+@use '../../../styles/_mixins' as *;
+
+.head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    >h4 {
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 156%;
+    }
+}
+
+.infos-venda-faturamento {
+    display: flex;
+    gap: 22px;
+    margin-top: 32px;
+
+    >div {
+        width: 50%;
+        border: 1px solid $color-border;
+        border-radius: 9px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 28px 18px;
+
+        >h5 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 156%;
+            color: #FFFFFFB2;
+        }
+
+        >p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 156%;
+
+            &.taxas {
+                font-size: 10px;
+                font-weight: 500;
+                color: #FFFFFFB2;
+            }
+        }
+    }
+}
