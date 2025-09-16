@@ -1,0 +1,125 @@
+<div class="layout-default">
+  <div class="head">
+    <h4>
+      Webhooks
+      <img class="icon-webhooks" src="assets/icons/icon-webhooks.svg" alt="icon-webhooks" />
+    </h4>
+
+    <div class="top__right">
+      <div class="progress">
+        <small>R$ 62.567 / R$ 100.000</small>
+        <div class="bar"><span style="width:72%"></span></div>
+      </div>
+
+      <img class="notification" src="assets/icons/notificacao.svg" alt="notificacao" />
+      <p class="avatar">{{ iniciaisNome }}</p>
+    </div>
+  </div>
+
+  <div class="mensagem-notificacao">
+    <h5>{{ hasWebhooks() ? 'Atenção' : 'Nenhum Webhook Registrado' }}</h5>
+    <p>
+      {{
+        hasWebhooks()
+          ? 'Sempre que o status de pagamento de uma venda mudar, enviaremos uma notificação para a URL que você cadastrar abaixo.'
+          : 'Você está usando 0 dos 5 Webhooks disponíveis. Você pode configurar até 5 para receber notificações automáticas.'
+      }}
+    </p>
+  </div>
+
+  @if (!showListaWebhooks) {
+    <div class="lista-webhooks">
+      <div class="head">
+        <h5>Lista de Webhooks</h5>
+        <button (click)="onBtnCadastrarWebhook()">+ Cadastrar Webhook</button>
+      </div>
+
+      <!-- renderize sua lista aqui -->
+      @if (hasWebhooks()) {
+        <div class="vp-table-card">
+        <table class="vp-table">
+            <thead>
+            <tr>
+                <th class="col-id">ID</th>
+                <th class="col-url">Postback</th>
+                <th class="col-status">Status</th>
+                <th class="col-actions">Ações</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let w of webhooks(); trackBy: trackById">
+                <td class="col-id">#{{ w.id }}</td>
+
+                <td class="col-url">
+                <a class="url" [href]="w.url" target="_blank" rel="noopener" [title]="w.url">
+                    {{ w.url }}
+                </a>
+                </td>
+
+                <td class="col-status">
+                <span class="badge" [class.badge--active]="isActive(w)" [class.badge--inactive]="!isActive(w)">
+                    {{ isActive(w) ? 'Ativo' : 'Inativo' }}
+                </span>
+                </td>
+
+                <td class="col-actions">
+                <button class="icon-btn" title="Editar" (click)="onEdit(w)">
+                    <!-- lápis -->
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Z" stroke="currentColor" stroke-width="1.6" />
+                    <path d="M14.06 6.19 16.88 3.37l3.75 3.75-2.82 2.82" stroke="currentColor" stroke-width="1.6" />
+                    </svg>
+                </button>
+
+                <button class="icon-btn danger" title="Excluir" (click)="onDelete(w)">
+                    <!-- lixeira -->
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V5h6v2" stroke="currentColor" stroke-width="1.6" />
+                    </svg>
+                </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+      }
+    </div>
+  }
+
+  @if (showListaWebhooks) {
+    <form [formGroup]="form" class="cadastrar-webhook">
+        <fieldset>
+            <h5>URL</h5>
+            <input type="text" placeholder="https://..." formControlName="url" [class.invalid]="isInvalid('url')" />
+        </fieldset>
+
+        <fieldset>
+            <h5>Regras</h5>
+            <div class="mensagem-notificacao" style="margin-top: 0;">
+                <p>Selecione o(s) evento(s) específico(s) para que o WebHook seja disparado.</p>
+            </div>
+
+            <p class="marcar-todos" (click)="toggleAll()">
+                {{ allSelected ? 'Desmarcar todos' : 'Marcar todos' }}
+            </p>
+
+            <div class="event-grid">
+                <label class="evt" *ngFor="let e of EVENTS">
+                <input
+                    type="checkbox"
+                    [checked]="isChecked(e.key)"
+                    (change)="toggleOne(e.key, $event)"
+                />
+                <span>{{ e.label }}</span>
+                </label>
+            </div>
+        </fieldset>
+
+        <div class="actions">
+            <button class="btn-primary cancelar" (click)="onBtnCadastrarWebhook()">cancelar</button>
+            <button class="btn-primary" (click)="onSubmitCriarWebhook()" [disabled]="form.invalid || loading">Salvar</button>
+        </div>
+    </form>
+  }
+</div>
