@@ -1,0 +1,70 @@
+@use '../../styles/_tokens' as *;
+
+::ng-deep .vp-dialog .mdc-dialog__surface {
+  background: #0D061F;
+  color: #fff;
+  border: 1px solid $color-border;
+  border-radius: 12px !important;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 30px;
+}
+
+.vp-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFF;
+  padding: 0;
+  margin: 0;
+}
+
+.vp-content {
+  padding-top: 4px;
+}
+
+.vp-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(126, 91, 237, .15);
+  border: 1px solid rgba(126, 91, 237, .35);
+  color: #cfc7ff;
+  border-radius: 9px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+
+  .i {
+    color: #cfc7ff;
+  }
+
+  >span {
+    font-size: 14px;
+  }
+}
+
+.vp-message {
+  margin: 10px 0 14px 0;
+  color: #cfc7ff;
+  font-size: 14px;
+}
+
+input {
+  background: transparent;
+  color: #FFF;
+}
+
+.vp-actions button[mat-flat-button] {
+  background: #7E5BED;
+}
+
+.vp-actions button[mat-flat-button]:hover {
+  background: linear-gradient(300deg, #532C82, #03001D);
+}
+
+button {
+  border-radius: 9px;
+}
