@@ -75,6 +75,7 @@ export class AuthService {
       enderecoLogradouro: u.enderecoLogradouro ?? '',
       enderecoNumero: u.enderecoNumero ?? '',
       enderecoComplemento: u.enderecoComplemento ?? '',
+      cpfCnpjDadosBancarios: u.cpfCnpjDadosBancarios ?? '',
       enderecoBairro: u.enderecoBairro ?? '',
       enderecoCidade: u.enderecoCidade ?? '',
       enderecoUF: u.enderecoUf ?? u.enderecoUF ?? '',

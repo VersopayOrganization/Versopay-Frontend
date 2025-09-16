@@ -21,4 +21,5 @@ export type UsuarioUpdateDto = {
   nomeCompletoBanco?: string;
   chavePix?: string;
   chaveCarteiraCripto?: string;
+  cpfCnpjDadosBancarios: string;
 };
