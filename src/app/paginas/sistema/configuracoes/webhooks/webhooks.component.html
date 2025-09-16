@@ -50,23 +50,36 @@
 
   @if (showListaWebhooks) {
     <form [formGroup]="form" class="cadastrar-webhook" (ngSubmit)="onSubmitCreate()">
-      <fieldset>
-        <h5>URL</h5>
-        <input type="text" placeholder="https://..." formControlName="url" [class.invalid]="isInvalid('url')" />
-      </fieldset>
+        <fieldset>
+            <h5>URL</h5>
+            <input type="text" placeholder="https://..." formControlName="url" [class.invalid]="isInvalid('url')" />
+        </fieldset>
 
-      <fieldset>
-        <h5>Regras</h5>
-        <div class="mensagem-notificacao" style="margin-top: 0;">
-            <p> Selecione o(s) evento(s) específico(s) para que o WebHook seja disparado. </p>
-        </div>
+        <fieldset>
+            <h5>Regras</h5>
+            <div class="mensagem-notificacao" style="margin-top: 0;">
+                <p>Selecione o(s) evento(s) específico(s) para que o WebHook seja disparado.</p>
+            </div>
 
-        <p class="marcar-todos">Marcar todos</p>
-      </fieldset>
+            <p class="marcar-todos" (click)="toggleAll()">
+                {{ allSelected ? 'Desmarcar todos' : 'Marcar todos' }}
+            </p>
 
-      <div class="actions">
+            <div class="event-grid">
+                <label class="evt" *ngFor="let e of EVENTS">
+                <input
+                    type="checkbox"
+                    [checked]="isChecked(e.key)"
+                    (change)="toggleOne(e.key, $event)"
+                />
+                <span>{{ e.label }}</span>
+                </label>
+            </div>
+        </fieldset>
+
+        <div class="actions">
         <button type="submit" class="btn-primary" [disabled]="form.invalid || saving">Salvar</button>
-      </div>
+        </div>
     </form>
   }
 </div>
