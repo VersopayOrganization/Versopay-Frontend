@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators'
 import { AuthService } from '../../../../auth/auth.service';
 import { UsuarioService } from '../../../../services/usuario.service';
 import { ToastService } from '../../../../shared/toast/toast.service';
+import { TipoCadastro } from '../../../../core/enums/tipo-cadastro.enum';
 
 type Chave = 'informacoes' | 'endereco' | 'dadosBancarios' | 'saqueCripto';
 
@@ -36,7 +37,6 @@ export class PerfilComponent implements OnInit {
   metaTotal = 100_000;
   metaAtual = signal<number>(62_567.89);
 
-  // Evita chamadas repetidas ao ViaCEP
   private lastCepFetched: string | null = null;
 
   constructor(
@@ -54,11 +54,10 @@ export class PerfilComponent implements OnInit {
   form = this.fb.group({
     nomeFantasia: [this.user?.nomeFantasia ?? '', [Validators.required]],
     razaoSocial: [this.user?.razaoSocial ?? '', [Validators.required]],
-    cnpj: [this.user?.cpfCnpj ?? '', [Validators.minLength(11)]], // CNPJ empresa
+    cnpj: [this.user?.cpfCnpj ?? '', [Validators.minLength(11)]],
     email: [this.user?.email ?? '', [Validators.email]],
     site: [this.user?.site ?? ''],
     instagram: [this.user?.instagram ?? ''],
-
     enderecoCep: [this.user?.enderecoCep ?? '', [Validators.minLength(8)]],
     enderecoLogradouro: [this.user?.enderecoLogradouro ?? '', [Validators.required]],
     enderecoNumero: [this.user?.enderecoNumero ?? '', [Validators.required]],
@@ -66,9 +65,8 @@ export class PerfilComponent implements OnInit {
     enderecoBairro: [this.user?.enderecoBairro ?? '', [Validators.required]],
     enderecoCidade: [this.user?.enderecoCidade ?? '', [Validators.required]],
     enderecoUf: [this.user?.enderecoUF ?? this.user?.enderecoUf ?? '', [Validators.required]],
-
     nomeCompletoBanco: [this.user?.nomeCompletoBanco ?? '', [Validators.required]],
-    cpfOrCnpj: [this.user?.cpfCnpj ?? '', [Validators.required]], // documento do titular
+    cpfOrCnpj: [this.user?.cpfCnpj ?? '', [Validators.required]], 
     chavePix: [this.user?.chavePix ?? '', [Validators.required]],
     chaveCarteiraCripto: [this.user?.chaveCarteiraCripto ?? '', [Validators.required]],
   });
@@ -82,7 +80,6 @@ export class PerfilComponent implements OnInit {
     this.wireMasksAndCepLookup();
   }
 
-  // ====== Helpers de máscara/normalização ======
   private onlyDigits(v?: string | null) { return (v ?? '').replace(/\D/g, ''); }
 
   private maskCep(value?: string | null): string {
@@ -127,11 +124,8 @@ export class PerfilComponent implements OnInit {
   private normalizeUrl(raw?: string | null): string {
     const v = (raw ?? '').trim();
     if (!v) return '';
-    // já tem esquema?
     if (/^[a-zA-Z][\w+.-]*:\/\//.test(v)) return v;
-    // se colou com //dominio.com
     if (/^\/\//.test(v)) return `https:${v}`;
-    // se digitou dominio
     return `https://${v}`;
   }
 
@@ -142,27 +136,23 @@ export class PerfilComponent implements OnInit {
     const docCtrl = this.form.get('cpfOrCnpj')!;
     const siteCtrl = this.form.get('site')!;
 
-    // CEP: máscara + lookup ao completar 8 dígitos
     cepCtrl.valueChanges
       .pipe(
         map(v => this.onlyDigits(v)),
         distinctUntilChanged()
       )
       .subscribe(digits => {
-        // aplica máscara visual
         const masked = this.maskCep(digits);
         if (masked !== cepCtrl.value) {
           cepCtrl.setValue(masked, { emitEvent: false });
         }
 
-        // busca ViaCEP quando completar 8 dígitos e for diferente do último buscado
         if (digits.length === 8 && digits !== this.lastCepFetched) {
           this.lastCepFetched = digits;
           this.fetchCepAndAutofill(digits);
         }
       });
 
-    // CNPJ (empresa)
     cnpjCtrl.valueChanges
       .pipe(distinctUntilChanged())
       .subscribe(v => {
@@ -172,7 +162,6 @@ export class PerfilComponent implements OnInit {
         }
       });
 
-    // CPF/CNPJ (titular)
     docCtrl.valueChanges
       .pipe(distinctUntilChanged())
       .subscribe(v => {
@@ -191,7 +180,6 @@ export class PerfilComponent implements OnInit {
       .subscribe(v => {
         if (!v) return;
         const normalized = this.normalizeUrl(v);
-        // só ajusta quando digitou algo tipo "dominio.com" sem esquema
         const needs = normalized !== v && /\./.test(v) && !/^[a-zA-Z][\w+.-]*:\/\//.test(v);
         if (needs) {
           siteCtrl.setValue(normalized, { emitEvent: false });
@@ -248,14 +236,12 @@ export class PerfilComponent implements OnInit {
       nome: this.user?.nome ?? '',
       nomeFantasia: (f.nomeFantasia ?? '').trim(),
       razaoSocial: (f.razaoSocial ?? '').trim(),
-      // remove máscara ao enviar
+      tipoCadastro: TipoCadastro.PessoaJuridica,
       cnpj: this.onlyDigits(f.cnpj),
       cpfCnpj: this.onlyDigits(f.cpfOrCnpj),
-
       email: (f.email ?? '').trim(),
       site: this.normalizeUrl(f.site),
       instagram: (f.instagram ?? '').toString().replace(/^@/, '').trim(),
-
       enderecoCep: this.onlyDigits(f.enderecoCep),
       enderecoLogradouro: (f.enderecoLogradouro ?? '').trim(),
       enderecoNumero: (f.enderecoNumero ?? '').trim(),
@@ -263,7 +249,6 @@ export class PerfilComponent implements OnInit {
       enderecoBairro: (f.enderecoBairro ?? '').trim(),
       enderecoCidade: (f.enderecoCidade ?? '').trim(),
       enderecoUf: (f.enderecoUf ?? '').toString().toUpperCase(),
-
       nomeCompletoBanco: (f.nomeCompletoBanco ?? '').trim(),
       chavePix: (f.chavePix ?? '').trim(),
       chaveCarteiraCripto: (f.chaveCarteiraCripto ?? '').trim(),
@@ -274,6 +259,12 @@ export class PerfilComponent implements OnInit {
 
   async salvar() {
     if (this.form.invalid) {
+      this.toast.show({
+        message: 'Verifique os campos e tente novamente.',
+        type: 'error',
+        position: 'top-right',
+        offset: { x: 40, y: 40 },
+      });
       this.form.markAllAsTouched();
       return;
     }
