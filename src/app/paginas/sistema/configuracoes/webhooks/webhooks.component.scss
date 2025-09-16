@@ -174,7 +174,7 @@
     margin-top: 16px;
     border: 1px solid $color-border;
     border-radius: 9px;
-    background: #0D061F; 
+    background: #0D061F;
     overflow: hidden;
 }
 
@@ -278,6 +278,35 @@
 
         &:hover {
             background: rgba(255, 91, 91, .08);
+        }
+    }
+}
+
+.actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    .btn-primary {
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 156%;
+        cursor: pointer;
+        width: 412px;
+        height: 54px;
+        border: none;
+        border-radius: 9px;
+        color: #FFF;
+        background: linear-gradient(40deg, #A77DF8, #491FA7);
+
+        &:hover {
+            background: linear-gradient(300deg, #532C82, #03001D);
+            transition: all 0.3s ease;
+        }
+
+        &.cancelar {
+            background: #FFF;
+            color: #491FA7;
         }
     }
 }
