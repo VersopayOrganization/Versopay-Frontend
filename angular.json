@@ -31,6 +31,7 @@
               "src/web.config"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.scss"
             ],
             "stylePreprocessorOptions": {
@@ -103,6 +104,7 @@
               "src/web.config"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.scss"
             ],
             "stylePreprocessorOptions": {

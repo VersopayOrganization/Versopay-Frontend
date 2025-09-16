@@ -7,6 +7,8 @@ import { WebhooksCreateDto } from '../../../../models/webhooks/webhooks-create.d
 import { WebhooksResponseDto } from '../../../../models/webhooks/webhooks-response.dto';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ConfirmDialogData, ModalComponent } from '../../../../shared/modal/modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-webhooks',
@@ -56,6 +58,8 @@ export class WebhooksComponent implements OnInit {
   }
   get allSelected(): boolean { return this.selectedEvents.length === this.EVENTS.length; }
   get someSelected(): boolean { return this.selectedEvents.length > 0 && !this.allSelected; }
+
+  constructor(private dialog: MatDialog) {}
 
   ngOnInit(): void {
     const parts = (this.userName() || '').split(' ').filter(Boolean);
@@ -159,17 +163,37 @@ export class WebhooksComponent implements OnInit {
 
 
   async onDelete(w: WebhooksResponseDto) {
-    if (!confirm('Deseja realmente excluir este webhook?')) return;
-    this.loading = true;
-    try {
-      await this.webhooksService.delete(w.id);
-      this.webhooks.update(list => list.filter(x => x.id !== w.id));
-      this.toast.show({ message: 'Webhook excluído!', type: 'success', position: 'top-right', offset: { x: 40, y: 40 } });
-    } catch (e: any) {
-      this.toast.show({ message: e?.message ?? 'Falha ao excluir webhook.', type: 'error', position: 'top-right', offset: { x: 40, y: 40 } });
-    } finally {
-      this.loading = false;
-    }
+    const data: ConfirmDialogData = {
+      title: 'Deletar Webhook',
+      info: 'Essa ação é irreversível e resultará na perda de todos os logs.',
+      message: 'Deseja realmente excluir o Webhook abaixo? Clique em Confirmar para prosseguir.',
+      showCancel: true,
+      confirmText: 'Confirmar',
+      cancelText: 'Cancelar',
+      urlReadonly: w.url,
+    };
+
+    const ref = this.dialog.open(ModalComponent, {
+      width: '580px',
+      panelClass: 'vp-dialog',
+      autoFocus: false,
+      data
+    });
+
+    ref.afterClosed().subscribe(async (res: any) => {
+      if (res === 'confirm') {
+        this.loading = true;
+        try {
+          await this.webhooksService.delete(w.id);
+          this.webhooks.update(list => list.filter(x => x.id !== w.id));
+          this.toast.show({ message: 'Webhook excluído!', type: 'success', position: 'top-right', offset: { x: 40, y: 40 } });
+        } catch (e: any) {
+          this.toast.show({ message: e?.message ?? 'Falha ao excluir webhook.', type: 'error', position: 'top-right', offset: { x: 40, y: 40 } });
+        } finally {
+          this.loading = false;
+        }
+      }
+    });
   }
 
   async atualizarWebhook(id: number, payload: WebhooksCreateDto) {

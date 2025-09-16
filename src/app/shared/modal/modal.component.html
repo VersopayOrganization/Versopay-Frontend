@@ -1,0 +1,28 @@
+<div class="header">
+    <h2 class="vp-title">{{ data.title }}</h2>
+    <svg style="width: 28px; height: 28px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        aria-hidden="true" data-slot="icon" class="h-5 w-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+    </svg>
+</div>
+
+<div mat-dialog-content class="vp-content">
+    <div class="vp-info" *ngIf="data.info">
+        <mat-icon class="i">info</mat-icon>
+        <span>{{ data.info }}</span>
+    </div>
+
+    <p class="vp-message" *ngIf="data.message">{{ data.message }}</p>
+
+    <input *ngIf="data.urlReadonly" matInput [value]="data.urlReadonly" readonly>
+</div>
+
+<div mat-dialog-actions align="end" class="vp-actions">
+    <button mat-stroked-button *ngIf="data.showCancel !== false" (click)="onCancel()">
+        {{ data.cancelText || 'Cancelar' }}
+    </button>
+
+    <button mat-flat-button color="primary" (click)="onConfirm()" [disabled]="loading">
+        {{ data.confirmText || 'Confirmar' }}
+    </button>
+</div>
