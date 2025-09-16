@@ -7,8 +7,8 @@ import { WebhooksCreateDto } from '../../../../models/webhooks/webhooks-create.d
 import { WebhooksResponseDto } from '../../../../models/webhooks/webhooks-response.dto';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ConfirmDialogData, ModalComponent } from '../../../../shared/modal/modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogData, ModalComponent } from '../../../../shared/modal/modal.component';
 
 @Component({
   selector: 'app-webhooks',
@@ -22,6 +22,7 @@ export class WebhooksComponent implements OnInit {
   private fb = inject(FormBuilder);
   private webhooksService = inject(WebhooksService);
   private toast = inject(ToastService);
+  private dialog = inject(MatDialog);
 
   userName = computed(() => this.auth.user()?.name ?? 'Usuário');
   iniciaisNome = '';
@@ -33,13 +34,36 @@ export class WebhooksComponent implements OnInit {
   showListaWebhooks = false;
   idEdicao: number | null = null;
 
+  private MAP_BACK_TO_KEY: Record<string, string> = {
+    BoletoGerado: 'boletoGerado',
+    PixGerado: 'pixGerado',
+    CompraAprovada: 'compraAprovada',
+    CompraRecusada: 'compraRecusada',
+    Estorno: 'estorno',
+    CarrinhoAbandonado: 'carrinhoAbandonado',
+    Chargeback: 'chargeback',
+    Processando: 'processando',
+  };
+  private MAP_KEY_TO_BACK: Record<string, string> = Object.entries(this.MAP_BACK_TO_KEY)
+    .reduce((acc, [b, k]) => (acc[k] = b, acc), {} as Record<string, string>);
+
+  private ORDER_BITS: string[] = [
+    'boletoGerado',
+    'pixGerado',
+    'compraAprovada',
+    'compraRecusada',
+    'estorno',
+    'carrinhoAbandonado',
+    'chargeback',
+    'processando',
+  ];
+
   trackById = (_: number, w: WebhooksResponseDto) => w.id;
-  isActive = (w: WebhooksResponseDto) =>
-    (w as any).ativo ?? true;
+  isActive = (w: WebhooksResponseDto) => (w as any).ativo ?? true;
 
   form = this.fb.group({
-    url: ['', [Validators.required,],],
-    eventos: this.fb.control<string[]>([], [this.minArrayLength(1)])
+    url: ['', [Validators.required]],
+    eventos: this.fb.control<string[]>([], [this.minArrayLength(1)]),
   });
 
   readonly EVENTS = [
@@ -59,8 +83,6 @@ export class WebhooksComponent implements OnInit {
   get allSelected(): boolean { return this.selectedEvents.length === this.EVENTS.length; }
   get someSelected(): boolean { return this.selectedEvents.length > 0 && !this.allSelected; }
 
-  constructor(private dialog: MatDialog) {}
-
   ngOnInit(): void {
     const parts = (this.userName() || '').split(' ').filter(Boolean);
     const p1 = parts[0]?.[0] ?? '';
@@ -73,23 +95,19 @@ export class WebhooksComponent implements OnInit {
 
   private setupUrlNormalizer() {
     const urlCtrl = this.form.get('url')!;
-    urlCtrl.valueChanges
-      .pipe(debounceTime(200), distinctUntilChanged())
-      .subscribe(v => {
-        if (!v) return;
-        const trimmed = v.trim();
+    urlCtrl.valueChanges.pipe(debounceTime(200), distinctUntilChanged()).subscribe(v => {
+      if (!v) return;
+      const trimmed = v.trim();
 
-        if (/^[a-zA-Z][\w+.-]*:\/\//.test(trimmed)) return;
-
-        if (/^\/\//.test(trimmed)) {
-          urlCtrl.setValue(`https:${trimmed}`, { emitEvent: false });
-          return;
-        }
-
-        if (/\./.test(trimmed)) {
-          urlCtrl.setValue(`https://${trimmed}`, { emitEvent: false });
-        }
-      });
+      if (/^[a-zA-Z][\w+.-]*:\/\//.test(trimmed)) return;
+      if (/^\/\//.test(trimmed)) {
+        urlCtrl.setValue(`https:${trimmed}`, { emitEvent: false });
+        return;
+      }
+      if (/\./.test(trimmed)) {
+        urlCtrl.setValue(`https://${trimmed}`, { emitEvent: false });
+      }
+    });
   }
 
   private minArrayLength(min: number) {
@@ -105,10 +123,7 @@ export class WebhooksComponent implements OnInit {
       const items = await this.webhooksService.getAll();
       this.webhooks.set(items ?? []);
     } catch (e: any) {
-      this.toast.show({
-        message: e?.message ?? 'Falha ao carregar webhooks.',
-        type: 'error', position: 'top-right', offset: { x: 40, y: 40 }
-      });
+      this.toast.show({ message: e?.message ?? 'Falha ao carregar webhooks.', type: 'error', position: 'top-right', offset: { x: 40, y: 40 } });
     } finally {
       this.loading = false;
     }
@@ -117,8 +132,27 @@ export class WebhooksComponent implements OnInit {
   onBtnCadastrarWebhook() {
     this.showListaWebhooks = !this.showListaWebhooks;
     if (this.showListaWebhooks) {
-      this.form.reset();
+      this.idEdicao = null;
+      this.form.reset({ url: '', eventos: [] });
     }
+  }
+
+  onEdit(webhook: WebhooksResponseDto) {
+    this.idEdicao = webhook.id;
+    this.showListaWebhooks = true;
+
+    let eventosKeys: string[] = (webhook as any).eventos?.map((n: string) => this.MAP_BACK_TO_KEY[n] ?? n) ?? [];
+
+    if ((!eventosKeys || eventosKeys.length === 0) && (webhook as any).eventosMask != null) {
+      const mask = Number((webhook as any).eventosMask);
+      eventosKeys = this.decodeMask(mask);
+    }
+
+    this.form.reset();
+    this.form.patchValue({
+      url: webhook.url,
+      eventos: eventosKeys
+    }, { emitEvent: false });
   }
 
   async onSubmitCriarWebhook() {
@@ -126,7 +160,10 @@ export class WebhooksComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    const payload = this.form.getRawValue() as WebhooksCreateDto;
+
+    const raw = this.form.getRawValue() as WebhooksCreateDto;
+    const eventosApi = (raw.eventos ?? []).map(k => this.MAP_KEY_TO_BACK[k] ?? k);
+    const payload: WebhooksCreateDto = { ...raw, eventos: eventosApi };
 
     this.loading = true;
     try {
@@ -147,20 +184,6 @@ export class WebhooksComponent implements OnInit {
       this.loading = false;
     }
   }
-
-  onEdit(webhook: WebhooksResponseDto) {
-    this.idEdicao = webhook.id;
-    this.showListaWebhooks = true;
-
-    const eventos = (webhook as any).eventos ?? [];
-
-    this.form.reset();
-    this.form.patchValue({
-      url: webhook.url,
-      eventos
-    });
-  }
-
 
   async onDelete(w: WebhooksResponseDto) {
     const data: ConfirmDialogData = {
@@ -196,44 +219,11 @@ export class WebhooksComponent implements OnInit {
     });
   }
 
-  async atualizarWebhook(id: number, payload: WebhooksCreateDto) {
-    this.loading = true;
-    try {
-      const updated = await this.webhooksService.update(id, payload);
-      this.webhooks.update(list => list.map(w => (w.id === updated.id ? updated : w)));
-      this.toast.show({
-        message: 'Webhook atualizado!',
-        type: 'success', position: 'top-right', offset: { x: 40, y: 40 }
-      });
-    } catch (e: any) {
-      this.toast.show({
-        message: e?.message ?? 'Falha ao atualizar webhook.',
-        type: 'error', position: 'top-right', offset: { x: 40, y: 40 }
-      });
-    } finally {
-      this.loading = false;
-    }
-  }
-
-  isInvalid(name: string) {
-    const c = this.form.get(name);
-    return !!c && c.invalid && (c.touched || this.loading);
-  }
-
-  urlError() {
-    const c = this.form.get('url');
-    if (!c || !c.errors) return '';
-    if (c.errors['required']) return 'Informe a URL.';
-    if (c.errors['pattern']) return 'Use uma URL válida (http/https).';
-    return 'Valor inválido.';
-  }
-
-  toggleOne(key: string, checked?: any) {
-    if (checked === undefined) checked = !this.isChecked(key);
-
+  toggleOne(key: string, ev?: Event | boolean) {
+    const isChecked = typeof ev === 'boolean' ? ev : !!(ev as any)?.target?.checked;
     const set = new Set(this.selectedEvents);
-    checked ? set.add(key) : set.delete(key);
-    this.form.get('eventos')?.setValue([...set]);
+    isChecked ? set.add(key) : set.delete(key);
+    this.form.get('eventos')?.setValue([...set], { emitEvent: false });
   }
 
   isChecked(key: string) {
@@ -241,10 +231,28 @@ export class WebhooksComponent implements OnInit {
   }
 
   toggleAll() {
-    if (this.allSelected) {
-      this.form.get('eventos')?.setValue([]);
-    } else {
-      this.form.get('eventos')?.setValue(this.EVENTS.map(e => e.key));
-    }
+    this.form.get('eventos')?.setValue(
+      this.allSelected ? [] : this.EVENTS.map(e => e.key),
+      { emitEvent: false }
+    );
+  }
+
+  private decodeMask(mask: number): string[] {
+    const out: string[] = [];
+    this.ORDER_BITS.forEach((k, i) => {
+      if ((mask & (1 << i)) !== 0) out.push(k);
+    });
+    return out;
+  }
+
+  isInvalid(name: string) {
+    const c = this.form.get(name);
+    return !!c && c.invalid && (c.touched || this.loading);
+  }
+  urlError() {
+    const c = this.form.get('url');
+    if (!c || !c.errors) return '';
+    if (c.errors['required']) return 'Informe a URL.';
+    return 'Valor inválido.';
   }
 }
