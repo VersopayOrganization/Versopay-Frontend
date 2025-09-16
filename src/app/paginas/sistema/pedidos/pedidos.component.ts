@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { CardInfoUsuarioComponent } from "../../../shared/card-info-usuario/card-info-usuario.component";
 
 @Component({
   selector: 'app-pedidos',
-  imports: [],
+  imports: [CardInfoUsuarioComponent],
   templateUrl: './pedidos.component.html',
   styleUrl: './pedidos.component.scss'
 })
