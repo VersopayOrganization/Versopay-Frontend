@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { UsuarioCreateDto } from '../models/usuarios/usuario-create.dto';
 import { UsuarioResponseDto } from '../models/usuarios/usuario-response.dto';
 import { environment } from '../../environment';
+import { UsuarioUpdateDto } from '../models/usuarios/usuario-update.dto';
 
 const API_BASE = `${environment.apiUrl}/api/usuarios`;
 
@@ -45,7 +46,7 @@ export class UsuarioService {
     }
   }
 
-  async update(id: number, payload: UsuarioCreateDto): Promise<UsuarioResponseDto> {
+  async update(id: number, payload: UsuarioUpdateDto): Promise<UsuarioResponseDto> {
     try {
       const obs = this.http.put<UsuarioResponseDto>(`${API_BASE}/${id}`, payload, {
         withCredentials: true,

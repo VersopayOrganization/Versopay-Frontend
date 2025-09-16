@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    <form [formGroup]="form">
+    <form [formGroup]="form" (ngSubmit)="salvar()">
         <div class="informacoes">
             <!-- Informações -->
             <div class="label" (click)="toggleGroup('informacoes')">

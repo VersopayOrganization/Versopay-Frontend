@@ -6,6 +6,7 @@ import { AuthUser } from '../models/auth/auth-user.dto';
 import { LoginPayload } from '../models/auth/login-payload.dto';
 import { AuthResponseDto } from '../models/auth/auth-response.dto';
 import { firstValueFrom } from 'rxjs';
+import { TipoCadastro } from '../core/enums/tipo-cadastro.enum';
 
 const API_BASE = `${environment.apiUrl}/api/auth`;
 type Persist = { user: AuthUser; token: string; exp: number };
@@ -47,50 +48,69 @@ export class AuthService {
   }
 
   private persist(resp: AuthResponseDto, remember: boolean) {
+    const u: any = resp.usuario ?? {};
+
     const user: AuthUser = {
-      id: String(resp.usuario.id),
-      email: resp.usuario.email,
-      name: resp.usuario.nome
+      id: String(u.id ?? ''),
+      email: String(u.email ?? ''),
+      chaveCarteiraCripto: u.chaveCarteiraCripto ?? '',
+      chavePix: u.chavePix ?? '',
+      cpfCnpj: u.cpfCnpj ?? '',
+      cpfCnpjFormatado: u.cpfCnpjFormatado ?? '',
+      createdAt: u.createdAt
+        ? (typeof u.createdAt === 'string' ? u.createdAt : new Date(u.createdAt).toISOString())
+        : '',
+      isAdmin: !!u.isAdmin,
+      instagram: u.instagram ?? u.instagram ?? '',
+      nome: u.nome ?? '',
+      nomeCompletoBanco: u.nomeCompletoBanco ?? '',
+      nomeFantasia: u.nomeFantasia ?? '',
+      razaoSocial: u.razaoSocial ?? '',
+      site: u.site ?? '',
+      telefone: u.telefone ?? '',
+      tipoCadastro: (typeof u.tipoCadastro === 'number'
+        ? u.tipoCadastro
+        : Number(u.tipoCadastro)) as TipoCadastro,
+      enderecoCep: u.enderecoCep ?? '',
+      enderecoLogradouro: u.enderecoLogradouro ?? '',
+      enderecoNumero: u.enderecoNumero ?? '',
+      enderecoComplemento: u.enderecoComplemento ?? '',
+      enderecoBairro: u.enderecoBairro ?? '',
+      enderecoCidade: u.enderecoCidade ?? '',
+      enderecoUF: u.enderecoUf ?? u.enderecoUF ?? '',
     };
 
     let expMs = Number.NaN;
 
-    // 1) tenta parsear o expiresAtUtc vindo do backend
     if (resp.expiresAtUtc) {
       const raw = String(resp.expiresAtUtc).trim();
-      // se vier sem timezone, força 'Z'
       const iso = /Z$|[+-]\d{2}:\d{2}$/.test(raw) ? raw : `${raw}Z`;
       const parsed = Date.parse(iso);
       if (!Number.isNaN(parsed)) expMs = parsed;
     }
 
-    // 2) se falhar, tenta extrair do JWT (exp em segundos)
     if (Number.isNaN(expMs) && resp.accessToken) {
       try {
         const [, payloadB64] = resp.accessToken.split('.');
         const json = atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/'));
         const payload = JSON.parse(json);
         if (payload?.exp) expMs = payload.exp * 1000;
-      } catch { /* ignore */ }
+      } catch { }
     }
 
-    // 3) fallback (ex.: 55 min)
     if (Number.isNaN(expMs)) {
       expMs = Date.now() + 55 * 60 * 1000;
     }
 
     const persist: Persist = { user, token: resp.accessToken, exp: expMs };
 
-    // grava estado em memória já agora (deixa o guard passar)
     this._user.set(user);
 
     const raw = JSON.stringify(persist);
     const store = remember ? this.local : this.session;
     store?.setItem('vp_auth', raw);
-
-    // opcional: log de diagnóstico
-    console.log('persist >>', { expRaw: resp.expiresAtUtc, expMs, at: new Date(expMs).toISOString() });
   }
+
 
   private clear() {
     this._user.set(null);
