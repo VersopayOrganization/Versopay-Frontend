@@ -36,20 +36,59 @@
 
       <!-- renderize sua lista aqui -->
       @if (hasWebhooks()) {
-        <ul class="webhooks">
-          @for (w of webhooks(); track w.id) {
-            <li>
-              <span class="url">{{ w.url }}</span>
-              <button [disabled]="saving">Atualizar</button>
-            </li>
-          }
-        </ul>
+        <div class="vp-table-card">
+        <table class="vp-table">
+            <thead>
+            <tr>
+                <th class="col-id">ID</th>
+                <th class="col-url">Postback</th>
+                <th class="col-status">Status</th>
+                <th class="col-actions">Ações</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let w of webhooks(); trackBy: trackById">
+                <td class="col-id">#{{ w.id }}</td>
+
+                <td class="col-url">
+                <a class="url" [href]="w.url" target="_blank" rel="noopener" [title]="w.url">
+                    {{ w.url }}
+                </a>
+                </td>
+
+                <td class="col-status">
+                <span class="badge" [class.badge--active]="isActive(w)" [class.badge--inactive]="!isActive(w)">
+                    {{ isActive(w) ? 'Ativo' : 'Inativo' }}
+                </span>
+                </td>
+
+                <td class="col-actions">
+                <button class="icon-btn" title="Editar" (click)="onEdit(w)">
+                    <!-- lápis -->
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Z" stroke="currentColor" stroke-width="1.6" />
+                    <path d="M14.06 6.19 16.88 3.37l3.75 3.75-2.82 2.82" stroke="currentColor" stroke-width="1.6" />
+                    </svg>
+                </button>
+
+                <button class="icon-btn danger" title="Excluir" (click)="onDelete(w)">
+                    <!-- lixeira -->
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V5h6v2" stroke="currentColor" stroke-width="1.6" />
+                    </svg>
+                </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
       }
     </div>
   }
 
   @if (showListaWebhooks) {
-    <form [formGroup]="form" class="cadastrar-webhook" (ngSubmit)="onSubmitCreate()">
+    <form [formGroup]="form" class="cadastrar-webhook">
         <fieldset>
             <h5>URL</h5>
             <input type="text" placeholder="https://..." formControlName="url" [class.invalid]="isInvalid('url')" />
@@ -78,7 +117,8 @@
         </fieldset>
 
         <div class="actions">
-        <button type="submit" class="btn-primary" [disabled]="form.invalid || saving">Salvar</button>
+        <button class="btn-primary" (click)="onBtnCadastrarWebhook()">cancelar</button>
+        <button class="btn-primary" (click)="onSubmitCriarWebhook()" [disabled]="form.invalid || loading">Salvar</button>
         </div>
     </form>
   }

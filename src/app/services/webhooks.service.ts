@@ -48,6 +48,15 @@ export class WebhooksService {
         }
     }
 
+    async delete(id: number): Promise<void> {
+        try {
+            const obs = this.http.delete<void>(`${API_BASE}/${id}`, { withCredentials: true });
+            await firstValueFrom(obs);
+        } catch (err) {
+            throw this.parseHttpError(err);
+        }
+    }
+
     private parseHttpError(err: unknown): Error {
         if (err instanceof HttpErrorResponse) {
             const msg =
