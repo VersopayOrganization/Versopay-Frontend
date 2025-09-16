@@ -25,4 +25,5 @@ export type AuthUser = {
   enderecoBairro: string;
   enderecoCidade: string;
   enderecoUF: string;
+  cpfCnpjDadosBancarios: string;
 };

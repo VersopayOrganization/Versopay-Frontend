@@ -66,7 +66,7 @@
             <fieldset>
                 <input type="text" placeholder="Nome Fantasia" formControlName="nomeFantasia" />
                 <input type="text" placeholder="Razão Social" formControlName="razaoSocial" />
-                <input type="text" placeholder="CNPJ" formControlName="cnpj" />
+                <input type="text" placeholder="CNPJ" formControlName="cpfCnpj" />
             </fieldset>
 
             <fieldset>
@@ -111,7 +111,7 @@
             @if (abrirDadosBancarios) {
             <fieldset>
                 <input type="text" placeholder="Nome Completo" formControlName="nomeCompletoBanco" />
-                <input type="text" placeholder="CPF/CNPJ" formControlName="cpfOrCnpj" />
+                <input type="text" placeholder="CPF/CNPJ" formControlName="cpfCnpjDadosBancarios" />
                 <input type="text" placeholder="Chave Pix" formControlName="chavePix" />
             </fieldset>
             }

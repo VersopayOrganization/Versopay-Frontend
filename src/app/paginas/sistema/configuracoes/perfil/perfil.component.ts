@@ -54,7 +54,7 @@ export class PerfilComponent implements OnInit {
   form = this.fb.group({
     nomeFantasia: [this.user?.nomeFantasia ?? '', [Validators.required]],
     razaoSocial: [this.user?.razaoSocial ?? '', [Validators.required]],
-    cnpj: [this.user?.cpfCnpj ?? '', [Validators.minLength(11)]],
+    cpfCnpj: [this.user?.cpfCnpj ?? '', [Validators.minLength(11)]],
     email: [this.user?.email ?? '', [Validators.email]],
     site: [this.user?.site ?? ''],
     instagram: [this.user?.instagram ?? ''],
@@ -66,7 +66,7 @@ export class PerfilComponent implements OnInit {
     enderecoCidade: [this.user?.enderecoCidade ?? '', [Validators.required]],
     enderecoUf: [this.user?.enderecoUF ?? this.user?.enderecoUf ?? '', [Validators.required]],
     nomeCompletoBanco: [this.user?.nomeCompletoBanco ?? '', [Validators.required]],
-    cpfOrCnpj: [this.user?.cpfCnpj ?? '', [Validators.required]], 
+    cpfCnpjDadosBancarios: [this.user?.cpfCnpjDadosBancarios ?? '', [Validators.required]], 
     chavePix: [this.user?.chavePix ?? '', [Validators.required]],
     chaveCarteiraCripto: [this.user?.chaveCarteiraCripto ?? '', [Validators.required]],
   });
@@ -132,8 +132,8 @@ export class PerfilComponent implements OnInit {
   // ====== Liga máscaras e ViaCEP ======
   private wireMasksAndCepLookup() {
     const cepCtrl = this.form.get('enderecoCep')!;
-    const cnpjCtrl = this.form.get('cnpj')!;
-    const docCtrl = this.form.get('cpfOrCnpj')!;
+    const cnpjCtrl = this.form.get('cpfCnpjDadosBancarios')!;
+    const docCtrl = this.form.get('cpfCnpj')!;
     const siteCtrl = this.form.get('site')!;
 
     cepCtrl.valueChanges
@@ -237,8 +237,8 @@ export class PerfilComponent implements OnInit {
       nomeFantasia: (f.nomeFantasia ?? '').trim(),
       razaoSocial: (f.razaoSocial ?? '').trim(),
       tipoCadastro: TipoCadastro.PessoaJuridica,
-      cnpj: this.onlyDigits(f.cnpj),
-      cpfCnpj: this.onlyDigits(f.cpfOrCnpj),
+      cpfCnpj: this.onlyDigits(f.cpfCnpj),
+      cpfCnpjDadosBancarios: this.onlyDigits(f.cpfCnpjDadosBancarios),
       email: (f.email ?? '').trim(),
       site: this.normalizeUrl(f.site),
       instagram: (f.instagram ?? '').toString().replace(/^@/, '').trim(),
