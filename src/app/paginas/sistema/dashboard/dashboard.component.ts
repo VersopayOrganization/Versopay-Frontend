@@ -15,13 +15,14 @@ import { format, startOfToday, subDays } from 'date-fns';
 import Chart from 'chart.js/auto';
 import { AuthService } from '../../../auth/auth.service';
 import { MockDashService, SeriesPoint } from '../mock-data.service';
+import { CardInfoUsuarioComponent } from '../../../shared/card-info-usuario/card-info-usuario.component';
 
 type RangeKey = 'today' | 'yesterday' | '7d' | '15d' | '30d' | 'custom';
 
 @Component({
     standalone: true,
     selector: 'app-dashboard',
-    imports: [CommonModule],
+    imports: [CommonModule, CardInfoUsuarioComponent],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
 })
