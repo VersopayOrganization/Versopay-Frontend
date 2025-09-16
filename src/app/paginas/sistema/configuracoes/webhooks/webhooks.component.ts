@@ -5,7 +5,7 @@ import { WebhooksService } from '../../../../services/webhooks.service';
 import { ToastService } from '../../../../shared/toast/toast.service';
 import { WebhooksCreateDto } from '../../../../models/webhooks/webhooks-create.dto';
 import { WebhooksResponseDto } from '../../../../models/webhooks/webhooks-response.dto';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
@@ -38,7 +38,25 @@ export class WebhooksComponent implements OnInit {
         Validators.required,
       ],
     ],
+    eventos: this.fb.control<string[]>([], [this.minArrayLength(1)])
   });
+
+  readonly EVENTS = [
+    { key: 'boletoGerado', label: 'Boleto Gerado' },
+    { key: 'estorno', label: 'Estorno' },
+    { key: 'pixGerado', label: 'Pix Gerado' },
+    { key: 'carrinhoAbandonado', label: 'Carrinho Abandonado' },
+    { key: 'compraAprovada', label: 'Compra Aprovada' },
+    { key: 'chargeback', label: 'Chargeback' },
+    { key: 'compraRecusada', label: 'Compra Recusada' },
+    { key: 'processando', label: 'Processando' },
+  ];
+
+  get selectedEvents(): string[] {
+    return (this.form.get('eventos')?.value as string[]) ?? [];
+  }
+  get allSelected(): boolean { return this.selectedEvents.length === this.EVENTS.length; }
+  get someSelected(): boolean { return this.selectedEvents.length > 0 && !this.allSelected; }
 
   ngOnInit(): void {
     const parts = (this.userName() || '').split(' ').filter(Boolean);
@@ -70,6 +88,14 @@ export class WebhooksComponent implements OnInit {
         }
       });
   }
+
+  private minArrayLength(min: number) {
+    return (ctrl: AbstractControl) => {
+      const v = (ctrl.value ?? []) as any[];
+      return v.length >= min ? null : { minArray: { required: min, actual: v.length } };
+    };
+  }
+
 
   async obterWebhooks() {
     this.loading = true;
@@ -150,5 +176,25 @@ export class WebhooksComponent implements OnInit {
     if (c.errors['required']) return 'Informe a URL.';
     if (c.errors['pattern']) return 'Use uma URL válida (http/https).';
     return 'Valor inválido.';
+  }
+
+  toggleOne(key: string, checked?: any) {
+    if(checked === undefined) checked = !this.isChecked(key);
+
+    const set = new Set(this.selectedEvents);
+    checked ? set.add(key) : set.delete(key);
+    this.form.get('eventos')?.setValue([...set]);
+  }
+
+  isChecked(key: string) {
+    return this.selectedEvents.includes(key);
+  }
+
+  toggleAll() {
+    if (this.allSelected) {
+      this.form.get('eventos')?.setValue([]);
+    } else {
+      this.form.get('eventos')?.setValue(this.EVENTS.map(e => e.key));
+    }
   }
 }
