@@ -33,7 +33,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
 
     @ViewChild('chartCanvas') chartEl!: ElementRef<HTMLCanvasElement>;
     chart!: Chart;
-    userName = computed(() => this.auth.user()?.name ?? 'Usuário');
+    userName = computed(() => this.auth.user()?.nome ?? 'Usuário');
     iniciaisNome: string = '';
     esconderValores = signal<boolean>(false);
     intervaloDias: RangeKey = '7d';
