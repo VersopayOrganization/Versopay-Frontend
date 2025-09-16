@@ -10,10 +10,10 @@
     </div>
 
     <nav class="sb__nav">
-        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema')}" routerLink="/sistema">
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/dashboard')}" routerLink="/sistema/dashboard">
             <img class="logo" src="assets/icons/icon-dashboard.svg" alt="dashboard" />
             <span class="t">Dashboard</span></a>
-        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/pedidos')}">
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/pedidos')}" routerLink="/sistema/pedidos">
             <img class="logo" src="assets/icons/icon-pedidos.svg" alt="pedidos" /><span class="t">Pedidos</span></a>
         <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/financeiro')}">
             <img class="logo" src="assets/icons/icon-financeiro.svg" alt="Financeiro" /><span
