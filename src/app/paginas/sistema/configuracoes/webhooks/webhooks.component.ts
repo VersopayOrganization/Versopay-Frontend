@@ -144,15 +144,19 @@ export class WebhooksComponent implements OnInit {
     }
   }
 
-  onEdit(w: WebhooksResponseDto) {
-    this.idEdicao = w.id;
+  onEdit(webhook: WebhooksResponseDto) {
+    this.idEdicao = webhook.id;
     this.showListaWebhooks = true;
+
+    const eventos = (webhook as any).eventos ?? [];
+
     this.form.reset();
     this.form.patchValue({
-      url: w.url,
-      eventos: (w as any).eventos ?? []
+      url: webhook.url,
+      eventos
     });
   }
+
 
   async onDelete(w: WebhooksResponseDto) {
     if (!confirm('Deseja realmente excluir este webhook?')) return;
