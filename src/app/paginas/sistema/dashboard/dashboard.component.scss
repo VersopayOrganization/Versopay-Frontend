@@ -24,40 +24,6 @@
     margin: 0;
 }
 
-.top__right {
-    background: #12082C;
-    border-radius: 10px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px
-}
-
-.progress .bar {
-    width: 220px;
-    height: 10px;
-    background: #251a46;
-    border-radius: 10px;
-    overflow: hidden
-}
-
-.progress .bar span {
-    display: block;
-    height: 100%;
-    background: linear-gradient(90deg, #A77DF8, #491FA7)
-}
-
-.progress small {
-    display: block;
-    text-align: right;
-    color: #FFFFFF;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 156%;
-    font-weight: 400;
-    margin-bottom: 8px;
-}
-
 .eye {
     background: #241a40;
     border: 0;
@@ -71,18 +37,6 @@
     cursor: pointer;
     width: 26px;
     height: 26px;
-}
-
-.avatar {
-    cursor: pointer;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 3px solid #9376f0;
-    padding: 4px;
-    font-size: 18px !important;
-    text-align: center;
-    place-content: center;
 }
 
 .title {
