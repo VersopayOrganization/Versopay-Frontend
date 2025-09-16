@@ -29,15 +29,14 @@ export class WebhooksComponent implements OnInit {
 
   loading = false;
   showListaWebhooks = false;
-  saving = false;
+  idEdicao: number | null = null;
+
+  trackById = (_: number, w: WebhooksResponseDto) => w.id;
+  isActive = (w: WebhooksResponseDto) =>
+    (w as any).ativo ?? true;
 
   form = this.fb.group({
-    url: [
-      '',
-      [
-        Validators.required,
-      ],
-    ],
+    url: ['', [Validators.required,],],
     eventos: this.fb.control<string[]>([], [this.minArrayLength(1)])
   });
 
@@ -96,7 +95,6 @@ export class WebhooksComponent implements OnInit {
     };
   }
 
-
   async obterWebhooks() {
     this.loading = true;
     try {
@@ -119,35 +117,59 @@ export class WebhooksComponent implements OnInit {
     }
   }
 
-  async onSubmitCreate() {
+  async onSubmitCriarWebhook() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-
     const payload = this.form.getRawValue() as WebhooksCreateDto;
 
-    this.saving = true;
+    this.loading = true;
     try {
-      const created = await this.webhooksService.create(payload);
-      this.webhooks.update(list => [created, ...list]);
-      this.toast.show({
-        message: 'Webhook criado com sucesso!',
-        type: 'success', position: 'top-right', offset: { x: 40, y: 40 }
-      });
+      if (this.idEdicao) {
+        const updated = await this.webhooksService.update(this.idEdicao, payload);
+        this.webhooks.update(list => list.map(w => (w.id === updated.id ? updated : w)));
+        this.toast.show({ message: 'Webhook atualizado!', type: 'success', position: 'top-right', offset: { x: 40, y: 40 } });
+      } else {
+        const created = await this.webhooksService.create(payload);
+        this.webhooks.update(list => [created, ...list]);
+        this.toast.show({ message: 'Webhook criado com sucesso!', type: 'success', position: 'top-right', offset: { x: 40, y: 40 } });
+      }
+      this.idEdicao = null;
       this.showListaWebhooks = false;
     } catch (e: any) {
-      this.toast.show({
-        message: e?.message ?? 'Falha ao criar webhook.',
-        type: 'error', position: 'top-right', offset: { x: 40, y: 40 }
-      });
+      this.toast.show({ message: e?.message ?? 'Falha ao salvar webhook.', type: 'error', position: 'top-right', offset: { x: 40, y: 40 } });
     } finally {
-      this.saving = false;
+      this.loading = false;
+    }
+  }
+
+  onEdit(w: WebhooksResponseDto) {
+    this.idEdicao = w.id;
+    this.showListaWebhooks = true;
+    this.form.reset();
+    this.form.patchValue({
+      url: w.url,
+      eventos: (w as any).eventos ?? []
+    });
+  }
+
+  async onDelete(w: WebhooksResponseDto) {
+    if (!confirm('Deseja realmente excluir este webhook?')) return;
+    this.loading = true;
+    try {
+      await this.webhooksService.delete(w.id);
+      this.webhooks.update(list => list.filter(x => x.id !== w.id));
+      this.toast.show({ message: 'Webhook excluído!', type: 'success', position: 'top-right', offset: { x: 40, y: 40 } });
+    } catch (e: any) {
+      this.toast.show({ message: e?.message ?? 'Falha ao excluir webhook.', type: 'error', position: 'top-right', offset: { x: 40, y: 40 } });
+    } finally {
+      this.loading = false;
     }
   }
 
   async atualizarWebhook(id: number, payload: WebhooksCreateDto) {
-    this.saving = true;
+    this.loading = true;
     try {
       const updated = await this.webhooksService.update(id, payload);
       this.webhooks.update(list => list.map(w => (w.id === updated.id ? updated : w)));
@@ -161,13 +183,13 @@ export class WebhooksComponent implements OnInit {
         type: 'error', position: 'top-right', offset: { x: 40, y: 40 }
       });
     } finally {
-      this.saving = false;
+      this.loading = false;
     }
   }
 
   isInvalid(name: string) {
     const c = this.form.get(name);
-    return !!c && c.invalid && (c.touched || this.saving);
+    return !!c && c.invalid && (c.touched || this.loading);
   }
 
   urlError() {
@@ -179,7 +201,7 @@ export class WebhooksComponent implements OnInit {
   }
 
   toggleOne(key: string, checked?: any) {
-    if(checked === undefined) checked = !this.isChecked(key);
+    if (checked === undefined) checked = !this.isChecked(key);
 
     const set = new Set(this.selectedEvents);
     checked ? set.add(key) : set.delete(key);
