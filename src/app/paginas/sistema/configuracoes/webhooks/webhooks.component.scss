@@ -1,0 +1,108 @@
+@use '../../../../styles/_tokens' as *;
+@use '../../../../styles/_mixins' as *;
+
+.head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    >h4 {
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 156%;
+    }
+}
+
+.mensagem-notificacao {
+    background: #0D061F;
+    border-radius: 9px;
+    padding: 14px 36px;
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    >h5 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 156%;
+    }
+
+    >p {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 156%;
+    }
+}
+
+.lista-webhooks {
+    padding: 14px 36px;
+    margin-top: 32px;
+    border-radius: 9px;
+    border: 1px solid $color-border;
+
+    >.head {
+        >h5 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 156%;
+        }
+
+        >button {
+            border: none;
+            border-radius: 4px;
+            background: #7E5BED;
+            height: 31px;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            color: #FFF;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 156%;
+            justify-content: center;
+            padding: 14px 20px;
+
+            &:hover {
+                background: linear-gradient(300deg, #532C82, #03001D);
+            }
+        }
+    }
+}
+
+.cadastrar-webhook {
+    margin-top: 32px;
+
+    >fieldset {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        >h5 {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 156%;
+        }
+
+        >input {
+            width: 97%;
+            background: transparent;
+            border-radius: 9px;
+            color: #FFF;
+        }
+
+        >.marcar-todos {
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 156%;
+            color: #FFF;
+        }
+    }
+}

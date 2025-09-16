@@ -1,0 +1,72 @@
+<div class="layout-default">
+  <div class="head">
+    <h4>
+      Webhooks
+      <img class="icon-webhooks" src="assets/icons/icon-webhooks.svg" alt="icon-webhooks" />
+    </h4>
+
+    <div class="top__right">
+      <div class="progress">
+        <small>R$ 62.567 / R$ 100.000</small>
+        <div class="bar"><span style="width:72%"></span></div>
+      </div>
+
+      <img class="notification" src="assets/icons/notificacao.svg" alt="notificacao" />
+      <p class="avatar">{{ iniciaisNome }}</p>
+    </div>
+  </div>
+
+  <div class="mensagem-notificacao">
+    <h5>{{ hasWebhooks() ? 'Atenção' : 'Nenhum Webhook Registrado' }}</h5>
+    <p>
+      {{
+        hasWebhooks()
+          ? 'Sempre que o status de pagamento de uma venda mudar, enviaremos uma notificação para a URL que você cadastrar abaixo.'
+          : 'Você está usando 0 dos 5 Webhooks disponíveis. Você pode configurar até 5 para receber notificações automáticas.'
+      }}
+    </p>
+  </div>
+
+  @if (!showListaWebhooks) {
+    <div class="lista-webhooks">
+      <div class="head">
+        <h5>Lista de Webhooks</h5>
+        <button (click)="onBtnCadastrarWebhook()">+ Cadastrar Webhook</button>
+      </div>
+
+      <!-- renderize sua lista aqui -->
+      @if (hasWebhooks()) {
+        <ul class="webhooks">
+          @for (w of webhooks(); track w.id) {
+            <li>
+              <span class="url">{{ w.url }}</span>
+              <button [disabled]="saving">Atualizar</button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  @if (showListaWebhooks) {
+    <form [formGroup]="form" class="cadastrar-webhook" (ngSubmit)="onSubmitCreate()">
+      <fieldset>
+        <h5>URL</h5>
+        <input type="text" placeholder="https://..." formControlName="url" [class.invalid]="isInvalid('url')" />
+      </fieldset>
+
+      <fieldset>
+        <h5>Regras</h5>
+        <div class="mensagem-notificacao" style="margin-top: 0;">
+            <p> Selecione o(s) evento(s) específico(s) para que o WebHook seja disparado. </p>
+        </div>
+
+        <p class="marcar-todos">Marcar todos</p>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary" [disabled]="form.invalid || saving">Salvar</button>
+      </div>
+    </form>
+  }
+</div>
