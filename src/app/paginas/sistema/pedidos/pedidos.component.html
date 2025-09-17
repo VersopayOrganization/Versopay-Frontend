@@ -14,16 +14,21 @@
                 <img class="icon-saldo-disponivel" src="assets/icons/icon-saldo-disponivel.svg"
                     alt="icon-saldo-disponivel" />
             </h5>
-            <p>2697</p>
+            <p>{{ total }}</p>
         </div>
 
         <div class="faturamento">
             <h5>Faturamento
-                <img class="icon-faturamento" src="assets/icons/icon-faturamento.svg"
-                    alt="icon-faturamento" />
+                <img class="icon-faturamento" src="assets/icons/icon-faturamento.svg" alt="icon-faturamento" />
             </h5>
             <p>R$ 62.567,89</p>
             <p class="taxas">67% Cartão | 33% Pix</p>
         </div>
+    </div>
+
+    <div style="margin-top: 32px;">
+        <app-table [colunas]="columns" [data]="rows" [loading]="loading" [page]="page" [pageSize]="pageSize"
+            [total]="total" (pageChange)="loadPage($event)">
+        </app-table>
     </div>
 </div>
