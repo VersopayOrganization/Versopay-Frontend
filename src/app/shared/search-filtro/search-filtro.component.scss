@@ -1,0 +1,45 @@
+.vp-search {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 18px 0
+}
+
+.vp-search .box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #0f0a20;
+    border: 1px solid #2a2144;
+    border-radius: 9px;
+    padding: 10px 14px
+}
+
+.vp-search .box svg {
+    width: 18px;
+    opacity: .8;
+    fill: #cdbff8
+}
+
+.vp-search input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    color: #fff;
+    outline: none
+}
+
+.btn-filter {
+    border: 0;
+    background: #7E5BED;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 700
+}
+
+.btn-filter:hover {
+    background: linear-gradient(300deg, #532C82, #03001D)
+}
