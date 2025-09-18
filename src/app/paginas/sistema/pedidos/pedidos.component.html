@@ -10,7 +10,8 @@
 
     <div class="infos-venda-faturamento">
         <div class="vendas">
-            <h5>Venda Encontradas
+            <h5>
+                Vendas Encontradas
                 <img class="icon-saldo-disponivel" src="assets/icons/icon-saldo-disponivel.svg"
                     alt="icon-saldo-disponivel" />
             </h5>
@@ -18,7 +19,8 @@
         </div>
 
         <div class="faturamento">
-            <h5>Faturamento
+            <h5>
+                Faturamento
                 <img class="icon-faturamento" src="assets/icons/icon-faturamento.svg" alt="icon-faturamento" />
             </h5>
             <p>R$ 62.567,89</p>
@@ -26,8 +28,21 @@
         </div>
     </div>
 
-    <div style="margin-top: 32px;">
-        <app-table [colunas]="columns" [data]="rows" [loading]="loading" [page]="page" [pageSize]="pageSize"
+    <app-search-filtro [placeholder]="'Buscar por CPF, nome, produto, transação...'" [showBtnFiltrar]="true"
+        (search)="onSearch($event)" (openFilters)="onOpenFilters()">
+    </app-search-filtro>
+
+    <div class="tabs" style="display:flex;gap:8px;margin:12px 0;">
+        <button class="tab todos" [class.active]="filtroStatus==='todos'"
+            (click)="setFiltroStatus('todos')">Todos</button>
+        <button class="tab pagos" [class.active]="filtroStatus==='pagos'"
+            (click)="setFiltroStatus('pagos')">Pagos</button>
+        <button class="tab pendentes" [class.active]="filtroStatus==='pendentes'"
+            (click)="setFiltroStatus('pendentes')">Pendentes</button>
+    </div>
+
+    <div style="margin-top: 16px;">
+        <app-table [colunas]="colunas" [data]="rows" [loading]="loading" [page]="page" [pageSize]="pageSize"
             [total]="total" (pageChange)="loadPage($event)">
         </app-table>
     </div>

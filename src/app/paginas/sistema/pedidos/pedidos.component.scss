@@ -49,3 +49,34 @@
         }
     }
 }
+
+.tabs .tab {
+    height: 31px;
+    line-height: 156%;
+    font-size: 14px;
+    padding: 14px;
+    border-radius: 4px;
+    border: 1px solid #908D99;
+    background: transparent;
+    color: #908D99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &.todos {
+        width: 74px;
+    }
+
+    &.pagos,
+    &.pendentes {
+        width: 105px;
+    }
+}
+
+.tabs .tab.active {
+    background: #200F48;
+    border-color: #200F48;
+    color: #fff;
+    font-weight: 700
+}

@@ -6,7 +6,7 @@ export type Coluna<T = any> = {
   header: string;
   width?: string;
   align?: 'left' | 'center' | 'right';
-  formatter?: (value: any, row: T) => any;   // retorna string/HTML
+  formatter?: (value: any, row: T) => any;
   headerAlign?: 'left' | 'center' | 'right';
 };
 
@@ -27,19 +27,16 @@ export class TableComponent<T = any> {
 
   // paginação
   @Input() page = 1;
-  @Input() pageSize = 10;               // padrão: 10 por página
-  @Input() total = 0;                   // total de registros no servidor
+  @Input() pageSize = 10;
+  @Input() total = 0;
   @Output() pageChange = new EventEmitter<number>();
 
-  // área de scroll (opcional)
   @Input() maxHeight = '62vh';
 
-  // helper: acessar valor da célula (evita "as any" no template)
   cell(row: T, key: keyof T | string): any {
     return (row as any)[key as any];
   }
 
-  // pager helpers
   get totalPages(): number {
     return Math.max(1, Math.ceil(this.total / this.pageSize || 0));
   }
@@ -73,11 +70,9 @@ export class TableComponent<T = any> {
   prev() { this.goTo(this.page - 1); }
   next() { this.goTo(this.page + 1); }
 
-  // skeleton rows
   get skeletonRows(): number[] {
     return Array.from({ length: this.pageSize }, (_, i) => i);
   }
 
-  // trackBy padrão
   trackByIndex = (_: number, __: T) => _;
 }
