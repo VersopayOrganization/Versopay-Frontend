@@ -2,17 +2,16 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environment';
-import { PedidosResponseDto } from '../models/pedidos/pedidos-response.dto';
-import { PedidosCreateDto } from '../models/pedidos/pedidos-create.dto';
+import { TransferenciasResponseDto } from '../models/transferencias/transferencias-response.dto';
+import { TransferenciasCreateDto } from '../models/transferencias/transferencias-create.dto';
 
-const API_BASE = `${environment.apiUrl}/api/pedidos`;
+const API_BASE = `${environment.apiUrl}/api/transferencias`;
 
-export interface PedidosListParams {
+export interface TransferenciaListParams {
     status?: string;
-    vendedorId?: number;
-    metodo?: string;
-    dataDeUtc?: string;
-    dataAteUtc?: string;
+    solicitanteId?: number;
+    dataInicio?: string;
+    dataFim?: string;
     page: number;
     pageSize: number;
 }
@@ -23,19 +22,18 @@ export interface Paginated<T> {
 }
 
 @Injectable({ providedIn: 'root' })
-export class PedidosService {
+export class TransferenciaService {
     private http = inject(HttpClient);
 
-    async list(paramsIn: PedidosListParams): Promise<Paginated<PedidosResponseDto>> {
+    async list(paramsIn: TransferenciaListParams): Promise<Paginated<TransferenciasResponseDto>> {
         let params = new HttpParams()
             .set('page', String(paramsIn.page))
             .set('pageSize', String(paramsIn.pageSize));
 
         if (paramsIn.status != null) params = params.set('status', paramsIn.status);
-        if (paramsIn.vendedorId != null) params = params.set('vendedorId', String(paramsIn.vendedorId));
-        if (paramsIn.metodo) params = params.set('metodo', paramsIn.metodo);
-        if (paramsIn.dataDeUtc) params = params.set('dataDeUtc', paramsIn.dataDeUtc);
-        if (paramsIn.dataAteUtc) params = params.set('dataAteUtc', paramsIn.dataAteUtc);
+        if (paramsIn.solicitanteId != null) params = params.set('solicitanteId', String(paramsIn.solicitanteId));
+        if (paramsIn.dataInicio) params = params.set('dataInicio', paramsIn.dataInicio);
+        if (paramsIn.dataFim) params = params.set('dataFim', paramsIn.dataFim);
 
         try {
             const resp = await firstValueFrom(
@@ -48,7 +46,7 @@ export class PedidosService {
                 return { items: body.pedidos ?? [], total: body.totalRegistros };
             }
 
-            const items: PedidosResponseDto[] = Array.isArray(body) ? body : [];
+            const items: TransferenciasResponseDto[] = Array.isArray(body) ? body : [];
             const totalHeader =
                 resp.headers.get('x-total-count') ||
                 resp.headers.get('X-Total-Count') ||
@@ -62,18 +60,18 @@ export class PedidosService {
         }
     }
 
-    async create(payload: PedidosCreateDto): Promise<PedidosResponseDto> {
+    async create(payload: TransferenciasCreateDto): Promise<TransferenciasResponseDto> {
         try {
-            const obs = this.http.post<PedidosResponseDto>(API_BASE, payload, { withCredentials: true });
+            const obs = this.http.post<TransferenciasResponseDto>(API_BASE, payload, { withCredentials: true });
             return await firstValueFrom(obs);
         } catch (err) {
             throw this.parseHttpError(err);
         }
     }
 
-    async getById(id: number): Promise<PedidosResponseDto | null> {
+    async getById(id: number): Promise<TransferenciasResponseDto | null> {
         try {
-            const obs = this.http.get<PedidosResponseDto>(`${API_BASE}/${id}`, { withCredentials: true });
+            const obs = this.http.get<TransferenciasResponseDto>(`${API_BASE}/${id}`, { withCredentials: true });
             return await firstValueFrom(obs);
         } catch (err) {
             if (err instanceof HttpErrorResponse && err.status === 404) return null;
@@ -81,9 +79,9 @@ export class PedidosService {
         }
     }
 
-    async update(id: number, payload: PedidosCreateDto): Promise<PedidosResponseDto> {
+    async update(id: number, payload: TransferenciasCreateDto): Promise<TransferenciasResponseDto> {
         try {
-            const obs = this.http.put<PedidosResponseDto>(`${API_BASE}/${id}/status`, payload, {
+            const obs = this.http.put<TransferenciasResponseDto>(`${API_BASE}/${id}/status`, payload, {
                 withCredentials: true,
             });
             return await firstValueFrom(obs);
