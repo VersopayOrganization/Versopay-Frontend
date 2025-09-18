@@ -1,0 +1,22 @@
+<div class="layout-default">
+    <div class="head">
+        <h4>
+            Transferências
+            <img class="icon-tela-pedidos" src="assets/icons/icon-tela-pedidos.svg" alt="icon-tela-pedidos" />
+        </h4>
+
+        <app-card-info-usuario></app-card-info-usuario>
+    </div>
+
+
+
+    <app-search-filtro [placeholder]="'Buscar por CPF, nome, produto, transação...'" [showBtnFiltrar]="true"
+        (search)="onSearch($event)" (openFilters)="onOpenFilters()">
+    </app-search-filtro>
+
+    <div style="margin-top: 16px;">
+        <app-table [colunas]="colunas" [data]="rows" [loading]="loading" [page]="page" [pageSize]="pageSize"
+            [total]="total" (pageChange)="loadPage($event)">
+        </app-table>
+    </div>
+</div>
