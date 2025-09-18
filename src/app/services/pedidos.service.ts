@@ -46,12 +46,10 @@ export class PedidosService {
 
             const body = resp.body;
 
-            // Caso 1: backend já manda {items,total}
-            if (body && typeof body === 'object' && 'items' in body && 'total' in body) {
-                return { items: body.items ?? [], total: Number(body.total ?? 0) };
+            if (body && typeof body === 'object' && 'pedidos' in body && 'totalRegistros' in body) {
+                return { items: body.pedidos ?? [], total: body.totalRegistros };
             }
 
-            // Caso 2: backend manda array simples
             const items: PedidosResponseDto[] = Array.isArray(body) ? body : [];
             const totalHeader =
                 resp.headers.get('x-total-count') ||

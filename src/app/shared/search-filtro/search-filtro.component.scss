@@ -1,8 +1,8 @@
 .vp-search {
     display: flex;
-    gap: 12px;
+    gap: 22px;
     align-items: center;
-    margin: 18px 0
+    margin: 32px 0
 }
 
 .vp-search .box {
@@ -10,10 +10,15 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #0f0a20;
-    border: 1px solid #2a2144;
+    border: 1px solid #908D99;
     border-radius: 9px;
-    padding: 10px 14px
+}
+
+.box>img {
+    width: 24px;
+    height: 24px;
+    margin-left: 16px;
+
 }
 
 .vp-search .box svg {
@@ -27,17 +32,28 @@
     background: transparent;
     border: 0;
     color: #fff;
-    outline: none
+    outline: none;
+
+    &:focus {
+        outline: none;
+        border: 0;
+        box-shadow: none;
+    }
 }
 
 .btn-filter {
     border: 0;
-    background: #7E5BED;
+    background: #200F48;
     color: #fff;
     border-radius: 8px;
     padding: 10px 16px;
     cursor: pointer;
-    font-weight: 700
+    font-weight: 700;
+    height: 50px;
+    width: 129px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 156%;
 }
 
 .btn-filter:hover {
