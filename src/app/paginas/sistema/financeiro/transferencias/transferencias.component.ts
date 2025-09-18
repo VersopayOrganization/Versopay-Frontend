@@ -2,10 +2,12 @@ import { Component, inject } from "@angular/core";
 import { CardInfoUsuarioComponent } from "../../../../shared/card-info-usuario/card-info-usuario.component";
 import { Coluna, TableComponent } from "../../../../shared/table/table.component";
 import { SearchFiltroComponent } from "../../../../shared/search-filtro/search-filtro.component";
-import { PedidosService } from "../../../../services/pedidos.service";
 import { ToastService } from "../../../../shared/toast/toast.service";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { StatusPedido } from "../../../../core/enums/status-pedido.enum";
+import { TransferenciaService } from "../../../../services/transferencia.service";
+import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
+import { debounceTime, distinctUntilChanged } from "rxjs";
 
 type Transferencia = {
   id: number;
@@ -18,14 +20,15 @@ type Transferencia = {
 
 @Component({
   selector: 'app-transferencias',
-  imports: [CardInfoUsuarioComponent, TableComponent, SearchFiltroComponent],
+  imports: [CardInfoUsuarioComponent, TableComponent, SearchFiltroComponent, ReactiveFormsModule],
   templateUrl: './transferencias.component.html',
   styleUrl: './transferencias.component.scss'
 })
 export class TransferenciasComponent {
-  private pedidosService = inject(PedidosService);
+  private trnasferenciaService = inject(TransferenciaService);
   private toast = inject(ToastService);
   private safe = inject(DomSanitizer);
+  private fb = inject(FormBuilder);
 
   rows: Transferencia[] = [];
   loading = false;
@@ -34,6 +37,15 @@ export class TransferenciasComponent {
   pageSize = 10;
   total = 0;
   busca = '';
+
+  saqueForm = this.fb.group({
+    valor: this.fb.control<string>(''),
+    metodo: this.fb.control<string>(''),
+  });
+
+  private valorCentavos = 0;
+  get metodo() { return this.saqueForm.get('metodo')?.value || ''; }
+  get canSubmit() { return this.valorCentavos > 0 && !!this.metodo && !this.loading; }
 
   private readonly STATUS_META: Record<number, { label: string; color: string }> = {
     [StatusPedido.Pendente]: { label: 'Pendente', color: '#f39c12' },
@@ -91,6 +103,19 @@ export class TransferenciasComponent {
 
   ngOnInit() {
     this.carregarPagina(1);
+
+    const ctrl = this.saqueForm.get('valor')!;
+    ctrl.valueChanges.pipe(distinctUntilChanged(), debounceTime(0)).subscribe(v => {
+      const digits = (v || '').toString().replace(/\D/g, '');
+      this.valorCentavos = Number(digits || '0');
+
+      const format = (this.valorCentavos / 100).toLocaleString('pt-BR', {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+      });
+
+      const masked = `R$ ${format}`;
+      if (masked !== v) ctrl.setValue(masked, { emitEvent: false });
+    });
   }
 
   onSearch(term: string) {
@@ -119,7 +144,7 @@ export class TransferenciasComponent {
     this.page = pagina;
 
     try {
-      const { items, total } = await this.pedidosService.list({
+      const { items, total } = await this.trnasferenciaService.list({
         page: this.page,
         pageSize: this.pageSize
       });
@@ -158,5 +183,46 @@ export class TransferenciasComponent {
         ${meta.label}
       </span>`;
     return this.safe.bypassSecurityTrustHtml(html);
+  }
+
+  setMetodo(m: 'Pix' | 'BTC' | 'USDT' | 'TED', ev?: Event | boolean) {
+    const isChecked = typeof ev === 'boolean' ? ev : !!(ev as any)?.target?.checked;
+
+    if (isChecked) {
+      this.saqueForm.get('metodo')?.setValue(m);
+    } else if (this.metodo === m) {
+      this.saqueForm.get('metodo')?.setValue('');
+    }
+  }
+
+  async solicitarSaque() {
+    if (!this.canSubmit) return;
+
+    try {
+      this.loading = true;
+
+      // Aqui você chama seu endpoint de saque quando existir.
+      // Exemplo (ajuste para o seu service):
+      // await this.trnasferenciaService.solicitarSaque({
+      //   valorCentavos: this.valorCentavos,
+      //   metodo: this.metodo
+      // });
+
+      this.toast.show({
+        message: `Solicitação enviada: ${this.metodo} • ${this.moeda(this.valorCentavos / 100)}`,
+        type: 'success', position: 'top-right', offset: { x: 40, y: 40 }
+      });
+
+      // reset suave
+      this.saqueForm.patchValue({ valor: '', metodo: '' });
+      this.valorCentavos = 0;
+    } catch (e: any) {
+      this.toast.show({
+        message: e?.message || 'Falha ao solicitar saque.',
+        type: 'error', position: 'top-right', offset: { x: 40, y: 40 }
+      });
+    } finally {
+      this.loading = false;
+    }
   }
 }
