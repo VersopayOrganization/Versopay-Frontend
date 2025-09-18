@@ -9,12 +9,14 @@ export const routes: Routes = [
     path: 'auth', canMatch: [guestGuard],
     loadChildren: () => import('./paginas/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
-
   {
     path: 'sistema', canMatch: [authGuard],
     loadChildren: () => import('./paginas/sistema/sistema.routes').then(m => m.SISTEMA_ROUTES)
   },
-
+  {
+    path: 'financeiro', canMatch: [authGuard],
+    loadChildren: () => import('./paginas/sistema/financeiro/financeiro.routes').then(m => m.FINANCEIRO_ROUTES)
+  },
   {
     path: 'configuracoes', canMatch: [authGuard],
     loadChildren: () => import('./paginas/sistema/configuracoes/configuracoes.routes').then(m => m.CONFIGURACOES_ROUTES)

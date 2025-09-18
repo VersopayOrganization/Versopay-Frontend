@@ -16,32 +16,38 @@ export class SidebarComponent {
 
   private router = inject(Router);
 
-  // estado de grupos
-  groupOpen = signal({ settings: false });
+  grupoAberto = signal({ financeiro: false, configuracoes: false });
 
   constructor() {
-    // fecha grupos quando ficar mini
     effect(() => {
-      if (this.mini) this.groupOpen.set({ settings: false });
+      if (this.mini) this.grupoAberto.set({ financeiro: false, configuracoes: false });
     });
 
-    // auto-expand "Configurações" quando estiver em uma rota filha
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
       const url = this.router.url;
-      const isSettingsChild =
+
+      const isConfiguracoesFilho =
         url.startsWith('/configuracoes/perfil') || url.startsWith('/configuracoes/webhooks');
-      if (isSettingsChild && !this.mini) {
-        this.groupOpen.update(g => ({ ...g, settings: true }));
-      }
+
+      const isFinanceiroFilho =
+        url.startsWith('/sistema/financeiro') || url.startsWith('/financeiro');
+
+      this.grupoAberto.update(g => ({
+        ...g,
+        configuracoes: !this.mini && (g.configuracoes || isConfiguracoesFilho),
+        financeiro: !this.mini && (g.financeiro || isFinanceiroFilho),
+      }));
     });
   }
 
-  toggleGroup(key: 'settings') {
+  toggleGroup(key: 'financeiro' | 'configuracoes') {
     if (this.mini) return;
-    this.groupOpen.update(g => ({ ...g, [key]: !g[key] }));
+    this.grupoAberto.update(g => ({ ...g, [key]: !g[key] }));
   }
 
-  rotaAtiva(rota: string) {
-    return this.router.url.startsWith(rota) && !this.mini;
+  rotaAtiva(rota: string | string[]) {
+    const url = this.router.url;
+    const list = Array.isArray(rota) ? rota : [rota];
+    return !this.mini && list.some(r => url.startsWith(r));
   }
 }
