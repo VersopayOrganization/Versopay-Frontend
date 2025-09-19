@@ -1,0 +1,72 @@
+<div class="vp-table-card">
+  <div class="vp-table-wrap" [style.maxHeight]="maxHeight">
+    <table class="vp-table">
+      <thead>
+        <tr>
+          <th *ngFor="let c of colunas"
+              [style.width]="c.width"
+              [class.align-c]="c.headerAlign === 'center'"
+              [class.align-r]="c.headerAlign === 'right'">
+            {{ c.header }}
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <!-- linhas reais -->
+        <tr *ngFor="let row of data; trackBy: trackBy || trackByIndex" [class.hidden]="loading">
+          <td *ngFor="let c of colunas"
+              [class.align-c]="c.align === 'center'"
+              [class.align-r]="c.align === 'right'">
+            <ng-container *ngIf="!c.formatter; else fmt">
+              {{ cell(row, c.key) }}
+            </ng-container>
+            <ng-template #fmt>
+              <span [innerHTML]="c.formatter!(cell(row, c.key), row)"></span>
+            </ng-template>
+          </td>
+        </tr>
+
+        <!-- skeleton enquanto carrega -->
+        <tr *ngFor="let i of skeletonRows" [class.skeleton-row]="loading" [class.hidden]="!loading">
+          <td *ngFor="let c of colunas">
+            <div class="skeleton"></div>
+          </td>
+        </tr>
+
+        <!-- vazio -->
+        <tr *ngIf="!loading && (!data || data.length === 0)">
+          <td [attr.colspan]="colunas.length" class="empty">{{ mensagemSemRegistros }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- footer / paginação -->
+  <div class="vp-pager">
+    <div class="range">
+      <ng-container *ngIf="total > 0; else nada">
+        Mostrando {{ startIdx }} – {{ endIdx }} de {{ total }}
+      </ng-container>
+      <ng-template #nada>Mostrando 0 – 0 de 0</ng-template>
+    </div>
+
+    <nav class="pages">
+      <button class="nav" [disabled]="page === 1 || loading" (click)="prev()">
+        ‹
+      </button>
+
+      <button class="page"
+              *ngFor="let p of pages"
+              [class.active]="p === page"
+              [disabled]="loading"
+              (click)="goTo(p)">
+        {{ p }}
+      </button>
+
+      <button class="nav" [disabled]="page === totalPages || loading" (click)="next()">
+        ›
+      </button>
+    </nav>
+  </div>
+</div>

@@ -9,11 +9,12 @@ import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogData, ModalComponent } from '../../../../shared/modal/modal.component';
+import { CardInfoUsuarioComponent } from '../../../../shared/card-info-usuario/card-info-usuario.component';
 
 @Component({
   selector: 'app-webhooks',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CardInfoUsuarioComponent],
   templateUrl: './webhooks.component.html',
   styleUrl: './webhooks.component.scss'
 })

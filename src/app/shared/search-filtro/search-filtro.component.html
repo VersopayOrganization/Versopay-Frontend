@@ -1,0 +1,11 @@
+<div class="vp-search">
+    <div class="box">
+        <img src="assets/icons/icon-search.svg" alt="search-lupa" />
+        <input [placeholder]="placeholder" [formControl]="form" />
+    </div>
+
+    <button *ngIf="showBtnFiltrar" class="btn-filter" type="button" (click)="openFilters.emit()">
+        Filtrar
+        <img src="assets/icons/icon-filter.svg" alt="filtro" />
+    </button>
+</div>

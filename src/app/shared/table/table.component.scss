@@ -1,0 +1,113 @@
+
+.vp-table-wrap {
+    overflow: auto;
+}
+
+.vp-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    thead th {
+        position: sticky;
+        top: 0;
+        color: #FFF;
+        font-weight: 700;
+        font-size: 20px;
+        padding-bottom: 8px;
+        line-height: 156%;
+        border-bottom: 1px solid #7D7D7D;
+    }
+
+    tbody td {
+        padding: 14px 16px;
+        border-bottom: 1px solid transparent;
+        color: #B4B2BA;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .align-c {
+        text-align: center;
+    }
+
+    .align-r {
+        text-align: right;
+    }
+
+    .empty {
+        text-align: center;
+        padding: 32px 12px;
+        color: #cfc3ff;
+    }
+
+    .hidden {
+        display: none;
+    }
+}
+
+/* skeleton */
+.skeleton-row td {
+    height: 44px;
+}
+
+.skeleton {
+    height: 16px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #1b1036 25%, #26194a 37%, #1b1036 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+/* pager */
+.vp-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 12px;
+    gap: 12px;
+    border-top: 1px solid #2b1f4b;
+    color: #B4B2BA;
+
+    .pages {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    button {
+        background: transparent;
+        color: #cfc3ff;
+        border: 1px solid #3a2a6b;
+        padding: 6px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    button:hover:not(:disabled) {
+        border-color: #7e5bed;
+        color: #fff;
+    }
+
+    button:disabled {
+        opacity: .5;
+        cursor: default;
+    }
+
+    .page.active {
+        background: #7e5bed;
+        color: #fff;
+        border-color: #7e5bed;
+    }
+}

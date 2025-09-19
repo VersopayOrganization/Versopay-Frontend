@@ -1,0 +1,93 @@
+<div class="layout-default">
+    <div class="head">
+        <h4>
+            Transferências
+            <img class="icon-tela-transferencias" src="assets/icons/icon-transferencias.svg"
+                alt="icon-tela-transferencias" />
+        </h4>
+
+        <app-card-info-usuario></app-card-info-usuario>
+    </div>
+
+    <div class="info-saque">
+        <div class="info-transferencias">
+            <div class="saldo-total">
+                <p>Saldo Total
+                    <img class="icon-faturamento" src="assets/icons/icon-faturamento.svg" alt="icon-faturamento" />
+                </p>
+                <p class="valor-saldo">R$ 62.567,89</p>
+            </div>
+
+            <div class="saldos">
+                <div class="disponivel">
+                    <p>Saldo Disponível
+                        <img class="icon-disponivel" src="assets/icons/icon-saldo-disponivel.svg"
+                            alt="icon-disponivel" />
+                    </p>
+                    <p class="valor-disponivel">R$ 42.567,89</p>
+                </div>
+
+                <div class="pendente">
+                    <p>Saldo Pendente
+                        <img class="icon-pendente" src="assets/icons/icon-saldo-pendente.svg" alt="icon-pendente" />
+                        <img class="icon-interrogacao" src="assets/icons/icon-interrogacao.svg"
+                            alt="icon-interrogacao" />
+                    </p>
+                    <p class="valor-pendente">R$ 20.000,00
+                        <button>Antecipar</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="saque" [formGroup]="saqueForm">
+            <p>Preencha o valor que deseja sacar:</p>
+
+            <input class="inp-valor" type="text" inputmode="numeric" placeholder="R$ 0,00" formControlName="valor" />
+
+            <div class="metodos">
+                <span>Escolha o método desejado:</span>
+
+                <div class="checks-metodos">
+                    <label class="check-pill" [class.active]="metodo === 'Pix'">
+                        <input type="checkbox" [checked]="metodo === 'Pix'"
+                            (change)="setMetodo('Pix', $event)" />
+                        <b>Pix</b>
+                    </label>
+    
+                    <label class="check-pill" [class.active]="metodo === 'BTC'">
+                        <input type="checkbox" [checked]="metodo === 'BTC'"
+                            (change)="setMetodo('BTC', $event)" />
+                        <b>BTC</b>
+                    </label>
+    
+                    <label class="check-pill" [class.active]="metodo === 'USDT'">
+                        <input type="checkbox" [checked]="metodo === 'USDT'"
+                            (change)="setMetodo('USDT', $event)" />
+                        <b>USDT</b>
+                    </label>
+    
+                    <label class="check-pill" [class.active]="metodo === 'TED'">
+                        <input type="checkbox" [checked]="metodo === 'TED'"
+                            (change)="setMetodo('TED', $event)" />
+                        <b>TED</b>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn-solicitar" type="button" [disabled]="!canSubmit" (click)="solicitarSaque()">
+                Solicitar Saque
+            </button>
+        </div>
+    </div>
+
+    <app-search-filtro [placeholder]="'Buscar por data, transação...'" [showBtnFiltrar]="true"
+        (search)="onSearch($event)" (openFilters)="onOpenFilters()">
+    </app-search-filtro>
+
+    <div style="margin-top: 16px;">
+        <app-table [colunas]="colunas" [data]="rows" [loading]="loading" [page]="page" [pageSize]="pageSize"
+            [total]="total" (pageChange)="loadPage($event)">
+        </app-table>
+    </div>
+</div>
