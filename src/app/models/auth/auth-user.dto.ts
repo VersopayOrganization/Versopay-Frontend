@@ -26,4 +26,5 @@ export type AuthUser = {
   enderecoCidade: string;
   enderecoUF: string;
   cpfCnpjDadosBancarios: string;
+  cadastroCompleto: boolean;
 };
