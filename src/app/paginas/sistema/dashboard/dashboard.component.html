@@ -1,16 +1,19 @@
 <div class="layout-default">
     <header class="top" [ngClass]="{'incompleto': !usuarioPossuiCadastroCompleto()}">
-        <div class="mensagem-completar-cadastro" *ngIf="!usuarioPossuiCadastroCompleto()">
+        @if(!usuarioPossuiCadastroCompleto()) {
+        <div class="mensagem-completar-cadastro">
             <p><span>Seu cadastro ainda não está completo.</span> Finalize para acessar todos os recursos.</p>
             <button type="button">
                 Finalizar cadastro
             </button>
         </div>
-
-        <div class="cadastro-completo" *ngIf="usuarioPossuiCadastroCompleto()">
+        }
+        @if(usuarioPossuiCadastroCompleto()) {
+        <div class="cadastro-completo">
             <h2>Olá, {{ userName() }}</h2>
             <p>Bora escalar?!</p>
         </div>
+        }
 
         <app-card-info-usuario></app-card-info-usuario>
     </header>
