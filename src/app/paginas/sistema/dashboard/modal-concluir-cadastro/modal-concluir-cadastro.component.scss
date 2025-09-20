@@ -50,6 +50,7 @@ fieldset {
         background: transparent;
         color: white;
         border: 1px solid #908D99;
+        height: 20px;
     }
 }
 
@@ -58,7 +59,6 @@ fieldset {
 }
 
 .step3 {
-
     >fieldset:nth-child(1),
     >fieldset:nth-child(2) {
 
@@ -87,6 +87,36 @@ fieldset {
         font-size: 18px;
         margin-top: 32px;
         margin-bottom: 16px;
+    }
+}
+
+.step4 {
+    >fieldset:nth-child(2) {
+        >input:nth-child(1),
+        >input:nth-child(3) {
+            width: 25%;
+        }
+    }
+
+    >fieldset:nth-child(3) {
+        >input {
+            width: 100%;
+        }
+    }
+
+    >.alerta {
+        padding: 14px 36px 14px 20px;
+        background-color: #200F48;
+        border-radius: 9px;
+        margin: 8px 0;
+
+        >p {
+            margin: 0;
+            color: #FFFF;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 156%;
+        }
     }
 }
 
