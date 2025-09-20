@@ -1,1 +1,106 @@
-<p>modal-concluir-cadastro works!</p>
+<div class="box">
+    <header>
+        <svg style="align-self: flex-end; width: 22px; height: 26px; cursor: pointer;" (click)="fechar()"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            aria-hidden="true" data-slot="icon" class="h-5 w-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+        </svg>
+        <h4>
+            @if(steps === 1) {
+            Selecione o tipo de Cadastro
+            }
+
+            @if(steps === 2 || steps === 3) {
+            {{ tipoCadastro === 0 ? 'Sobre Você' : 'Sobre sua Empresa'}}
+            }
+
+            @if(steps === 4) {
+            Finalizar Cadastro
+            }
+
+            @if(steps === 5) {
+            Documentos
+            }
+        </h4>
+    </header>
+
+    <body [formGroup]="form">
+        @if(steps === 1) {
+        <div class="step1">
+            <button class="btn-generic" type="button" (click)="onSelectTipoCadastro(0)">Pessoa Física</button>
+            <button class="btn-generic" type="button" (click)="onSelectTipoCadastro(1)">Pessoa Jurídica</button>
+        </div>
+        }
+
+        @if(steps === 2) {
+        <div class="step2">
+            <fieldset class="mt-16">
+                <input type="text" placeholder="CPF" formControlName="cpf" [class.invalid]="isInvalid('cpf')" />
+                <input type="text" placeholder="Nome Completo" formControlName="nome"
+                    [class.invalid]="isInvalid('nome')" />
+            </fieldset>
+            <fieldset>
+                <input type="text" placeholder="User do Instagram" formControlName="instagram" />
+                <input type="text" placeholder="Telefone para Contato" formControlName="telefone"
+                    [class.invalid]="isInvalid('telefone')" />
+            </fieldset>
+        </div>
+        }
+
+        @if(steps === 3) {
+        <div class="step3">
+            @if(tipoCadastro === 1) {
+            <fieldset class="mt-16">
+                <input type="text" placeholder="CNPJ" formControlName="cnpj" [class.invalid]="isInvalid('cnpj')" />
+                <input type="text" placeholder="Razão Social" formControlName="razaoSocial"
+                    [class.invalid]="isInvalid('razaoSocial')" />
+            </fieldset>
+            }
+
+            <fieldset [ngClass]="{'mt-16': tipoCadastro === 0}">
+                <input type="text" placeholder="CEP" formControlName="enderecoCep"
+                    [class.invalid]="isInvalid('enderecoCep')" />
+                <input type="text" placeholder="Endereço" formControlName="enderecoLogradouro"
+                    [class.invalid]="isInvalid('enderecoLogradouro')" />
+            </fieldset>
+
+            <fieldset>
+                <input type="text" placeholder="Número" formControlName="numero"
+                    [class.invalid]="isInvalid('numero')" />
+                <input type="text" placeholder="Bairro" formControlName="enderecoBairro"
+                    [class.invalid]="isInvalid('enderecoBairro')" />
+                <input type="text" placeholder="UF / Cidade" formControlName="enderecoCidade"
+                    [class.invalid]="isInvalid('enderecoCidade')" />
+            </fieldset>
+
+            <h4>Quais produtos sua empresa comercializa?</h4>
+
+            <div class="event-grid">
+                <label class="evt" *ngFor="let produto of produtos">
+                    <input type="checkbox" [checked]="isChecked(produto.key)"
+                        (change)="toggleOne(produto.key, $event)" />
+                    <span>{{ produto.label }}</span>
+                </label>
+            </div>
+        </div>
+        }
+
+        @if(steps === 4) {
+        <div class="step4">
+        </div>
+        }
+
+        @if(steps === 5) {
+        <div class="step5">
+        </div>
+        }
+    </body>
+
+
+    @if(steps > 1) {
+    <footer>
+        <button class="btn-generic voltar" type="button" (click)="onVoltar(steps-1)">Voltar</button>
+        <button class="btn-generic continuar" type="button" (click)="onAvancar(steps+1)">Continuar</button>
+    </footer>
+    }
+</div>

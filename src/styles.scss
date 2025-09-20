@@ -217,7 +217,6 @@ input[type="checkbox"]:checked::before {
 }
 
 
-
 /* Responsivo (mobile: empilha) */
 @media (max-width: 980px) {
   input {
@@ -225,5 +224,38 @@ input[type="checkbox"]:checked::before {
   }
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.mt-16 {
+  margin-top: 16px;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.btn-generic {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 156%;
+  cursor: pointer;
+  width: 157px;
+  height: 40px;
+  border: none;
+  border-radius: 9px;
+  color: #FFF;
+  background: #7E5BED;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: linear-gradient(300deg, #532C82, #03001D);
+    transition: all 0.3s ease;
+  }
+}

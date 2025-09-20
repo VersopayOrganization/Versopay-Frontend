@@ -8,6 +8,7 @@ import { AuthService } from '../../../../auth/auth.service';
 import { UsuarioService } from '../../../../services/usuario.service';
 import { ToastService } from '../../../../shared/toast/toast.service';
 import { TipoCadastro } from '../../../../core/enums/tipo-cadastro.enum';
+import { Utils } from '../../../../shared/utils.service';
 
 type Chave = 'informacoes' | 'endereco' | 'dadosBancarios' | 'saqueCripto';
 
@@ -22,6 +23,9 @@ export class PerfilComponent implements OnInit {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private http = inject(HttpClient);
+  private usuarioService = inject(UsuarioService);
+  private toast = inject(ToastService);
+  private utils = inject(Utils);
 
   iniciaisNome: string = '';
   userName = computed(() => this.auth.user()?.nome ?? 'Usuário');
@@ -37,12 +41,7 @@ export class PerfilComponent implements OnInit {
   metaTotal = 100_000;
   metaAtual = signal<number>(62_567.89);
 
-  private lastCepFetched: string | null = null;
-
-  constructor(
-    private usuarioService: UsuarioService,
-    private toast: ToastService
-  ) { }
+  private ultimoCepObtido: string | null = null;
 
   get progresso() {
     const v = Math.max(0, Math.min(1, this.metaAtual() / this.metaTotal));
@@ -66,7 +65,7 @@ export class PerfilComponent implements OnInit {
     enderecoCidade: [this.user?.enderecoCidade ?? '', [Validators.required]],
     enderecoUf: [this.user?.enderecoUF ?? this.user?.enderecoUf ?? '', [Validators.required]],
     nomeCompletoBanco: [this.user?.nomeCompletoBanco ?? '', [Validators.required]],
-    cpfCnpjDadosBancarios: [this.user?.cpfCnpjDadosBancarios ?? '', [Validators.required]], 
+    cpfCnpjDadosBancarios: [this.user?.cpfCnpjDadosBancarios ?? '', [Validators.required]],
     chavePix: [this.user?.chavePix ?? '', [Validators.required]],
     chaveCarteiraCripto: [this.user?.chaveCarteiraCripto ?? '', [Validators.required]],
   });
@@ -77,49 +76,9 @@ export class PerfilComponent implements OnInit {
     const p2 = partes[1]?.charAt(0) ?? '';
     this.iniciaisNome = `${p1}${p2}`.toUpperCase() || (p1 || '?');
 
-    this.wireMasksAndCepLookup();
+    this.mascarasEBuscaCEP();
   }
 
-  private onlyDigits(v?: string | null) { return (v ?? '').replace(/\D/g, ''); }
-
-  private maskCep(value?: string | null): string {
-    const d = this.onlyDigits(value).slice(0, 8);
-    if (d.length <= 5) return d;
-    return `${d.slice(0, 5)}-${d.slice(5)}`;
-  }
-
-  private maskCpf(value: string): string {
-    const d = this.onlyDigits(value).slice(0, 11);
-    const p1 = d.slice(0, 3);
-    const p2 = d.slice(3, 6);
-    const p3 = d.slice(6, 9);
-    const p4 = d.slice(9, 11);
-    let out = p1;
-    if (p2) out += `.${p2}`;
-    if (p3) out += `.${p3}`;
-    if (p4) out += `-${p4}`;
-    return out;
-  }
-
-  private maskCnpj(value: string): string {
-    const d = this.onlyDigits(value).slice(0, 14);
-    const p1 = d.slice(0, 2);
-    const p2 = d.slice(2, 5);
-    const p3 = d.slice(5, 8);
-    const p4 = d.slice(8, 12);
-    const p5 = d.slice(12, 14);
-    let out = p1;
-    if (p2) out += `.${p2}`;
-    if (p3) out += `.${p3}`;
-    if (p4) out += `/${p4}`;
-    if (p5) out += `-${p5}`;
-    return out;
-  }
-
-  private maskCpfCnpj(value?: string | null): string {
-    const d = this.onlyDigits(value);
-    return d.length <= 11 ? this.maskCpf(d) : this.maskCnpj(d);
-  }
 
   private normalizeUrl(raw?: string | null): string {
     const v = (raw ?? '').trim();
@@ -130,7 +89,7 @@ export class PerfilComponent implements OnInit {
   }
 
   // ====== Liga máscaras e ViaCEP ======
-  private wireMasksAndCepLookup() {
+  private mascarasEBuscaCEP() {
     const cepCtrl = this.form.get('enderecoCep')!;
     const cnpjCtrl = this.form.get('cpfCnpjDadosBancarios')!;
     const docCtrl = this.form.get('cpfCnpj')!;
@@ -138,17 +97,17 @@ export class PerfilComponent implements OnInit {
 
     cepCtrl.valueChanges
       .pipe(
-        map(v => this.onlyDigits(v)),
+        map(v => this.utils.onlyDigits(v)),
         distinctUntilChanged()
       )
       .subscribe(digits => {
-        const masked = this.maskCep(digits);
+        const masked = this.utils.maskCep(digits);
         if (masked !== cepCtrl.value) {
           cepCtrl.setValue(masked, { emitEvent: false });
         }
 
-        if (digits.length === 8 && digits !== this.lastCepFetched) {
-          this.lastCepFetched = digits;
+        if (digits.length === 8 && digits !== this.ultimoCepObtido) {
+          this.ultimoCepObtido = digits;
           this.fetchCepAndAutofill(digits);
         }
       });
@@ -156,7 +115,7 @@ export class PerfilComponent implements OnInit {
     cnpjCtrl.valueChanges
       .pipe(distinctUntilChanged())
       .subscribe(v => {
-        const masked = this.maskCnpj(v ?? '');
+        const masked = this.utils.maskCnpj(v ?? '');
         if (masked !== cnpjCtrl.value) {
           cnpjCtrl.setValue(masked, { emitEvent: false });
         }
@@ -165,7 +124,7 @@ export class PerfilComponent implements OnInit {
     docCtrl.valueChanges
       .pipe(distinctUntilChanged())
       .subscribe(v => {
-        const masked = this.maskCpfCnpj(v ?? '');
+        const masked = this.utils.maskCpfCnpj(v ?? '');
         if (masked !== docCtrl.value) {
           docCtrl.setValue(masked, { emitEvent: false });
         }
@@ -237,12 +196,12 @@ export class PerfilComponent implements OnInit {
       nomeFantasia: (f.nomeFantasia ?? '').trim(),
       razaoSocial: (f.razaoSocial ?? '').trim(),
       tipoCadastro: TipoCadastro.PessoaJuridica,
-      cpfCnpj: this.onlyDigits(f.cpfCnpj),
-      cpfCnpjDadosBancarios: this.onlyDigits(f.cpfCnpjDadosBancarios),
+      cpfCnpj: this.utils.onlyDigits(f.cpfCnpj),
+      cpfCnpjDadosBancarios: this.utils.onlyDigits(f.cpfCnpjDadosBancarios),
       email: (f.email ?? '').trim(),
       site: this.normalizeUrl(f.site),
       instagram: (f.instagram ?? '').toString().replace(/^@/, '').trim(),
-      enderecoCep: this.onlyDigits(f.enderecoCep),
+      enderecoCep: this.utils.onlyDigits(f.enderecoCep),
       enderecoLogradouro: (f.enderecoLogradouro ?? '').trim(),
       enderecoNumero: (f.enderecoNumero ?? '').trim(),
       enderecoComplemento: (f.enderecoComplemento ?? '').trim(),

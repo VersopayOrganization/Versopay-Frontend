@@ -34,28 +34,6 @@
             font-weight: 700;
         }
     }
-
-    >button {
-        font-weight: 700;
-        font-size: 14px;
-        line-height: 156%;
-        cursor: pointer;
-        width: 157px;
-        height: 40px;
-        border: none;
-        border-radius: 9px;
-        color: #FFF;
-        background: #7E5BED;
-        padding: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        &:hover {
-            background: linear-gradient(300deg, #532C82, #03001D);
-            transition: all 0.3s ease;
-        }
-    }
 }
 
 .top h2 {
