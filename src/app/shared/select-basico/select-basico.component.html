@@ -1,0 +1,18 @@
+<div class="vp-select" [class.open]="open" [class.disabled]="disabled" [style.--select-width]="width || '100%'">
+    <button type="button" class="vp-control" (click)="toggle()" [attr.aria-expanded]="open">
+        <span class="label" [class.placeholder]="!value">{{ currentLabel }}</span>
+        <svg class="chev" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+        </svg>
+    </button>
+
+    <div class="vp-menu" *ngIf="open">
+        <ul class="vp-list" role="listbox">
+            <li class="vp-item" *ngFor="let o of options" [class.active]="o.value === value" (click)="select(o.value)"
+                role="option">
+                {{ o.label }}
+            </li>
+        </ul>
+    </div>
+</div>
