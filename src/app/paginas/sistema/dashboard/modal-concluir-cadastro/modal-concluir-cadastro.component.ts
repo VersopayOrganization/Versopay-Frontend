@@ -1,15 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { TipoCadastro } from '../../../../core/enums/tipo-cadastro.enum';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Utils } from '../../../../shared/utils.service';
 import { ToastService } from '../../../../shared/toast/toast.service';
 import { HttpClient } from '@angular/common/http';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs';
+import { SelectBasicoComponent } from '../../../../shared/select-basico/select-basico.component';
 
 @Component({
   selector: 'app-modal-concluir-cadastro',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, SelectBasicoComponent],
   templateUrl: './modal-concluir-cadastro.component.html',
   styleUrl: './modal-concluir-cadastro.component.scss'
 })
@@ -20,9 +21,9 @@ export class ModalConcluirCadastroComponent implements OnInit {
   private http = inject(HttpClient);
   private ultimoCepObtido: string | null = null;
 
-  steps: number = 1;
-  tipoCadastro: TipoCadastro = 0;
-  loading: boolean = false;
+  steps = 1;
+  tipoCadastro: TipoCadastro = TipoCadastro.PessoaFisica;
+  loading = false;
 
   readonly produtos = [
     { key: 'infoprodutos', label: 'Infoprodutos' },
@@ -74,15 +75,10 @@ export class ModalConcluirCadastroComponent implements OnInit {
     const docCtrl = this.form.get('cpf')!;
 
     cepCtrl.valueChanges
-      .pipe(
-        map(v => this.utils.onlyDigits(v)),
-        distinctUntilChanged()
-      )
+      .pipe(map(v => this.utils.onlyDigits(v)), distinctUntilChanged())
       .subscribe(digits => {
         const masked = this.utils.maskCep(digits);
-        if (masked !== cepCtrl.value) {
-          cepCtrl.setValue(masked, { emitEvent: false });
-        }
+        if (masked !== cepCtrl.value) cepCtrl.setValue(masked, { emitEvent: false });
 
         if (digits.length === 8 && digits !== this.ultimoCepObtido) {
           this.ultimoCepObtido = digits;
@@ -90,52 +86,123 @@ export class ModalConcluirCadastroComponent implements OnInit {
         }
       });
 
-    cnpjCtrl.valueChanges
-      .pipe(distinctUntilChanged())
+    cnpjCtrl.valueChanges.pipe(distinctUntilChanged())
       .subscribe(v => {
         const masked = this.utils.maskCnpj(v ?? '');
-        if (masked !== cnpjCtrl.value) {
-          cnpjCtrl.setValue(masked, { emitEvent: false });
-        }
+        if (masked !== cnpjCtrl.value) cnpjCtrl.setValue(masked, { emitEvent: false });
       });
 
-    docCtrl.valueChanges
-      .pipe(distinctUntilChanged())
+    docCtrl.valueChanges.pipe(distinctUntilChanged())
       .subscribe(v => {
         const masked = this.utils.maskCpf(v ?? '');
-        if (masked !== docCtrl.value) {
-          docCtrl.setValue(masked, { emitEvent: false });
-        }
+        if (masked !== docCtrl.value) docCtrl.setValue(masked, { emitEvent: false });
       });
+  }
+
+  private async fetchCepAndAutofill(cepDigits: string) {
+    this.loading = true;
+    try {
+      const data: any = await this.http.get(`https://viacep.com.br/ws/${cepDigits}/json/`).toPromise();
+      if (!data || data.erro) {
+        this.toast.show({ message: 'CEP não encontrado.', type: 'warning', position: 'top-right', offset: { x: 40, y: 40 } });
+        return;
+      }
+      this.form.patchValue({
+        enderecoLogradouro: data.logradouro ?? '',
+        enderecoBairro: data.bairro ?? '',
+        enderecoCidade: data.localidade ?? '',
+      }, { emitEvent: false });
+    } catch {
+      this.toast.show({ message: 'Falha ao buscar CEP. Tente novamente.', type: 'error', position: 'top-right', offset: { x: 40, y: 40 } });
+    } finally {
+      this.loading = false;
+    }
   }
 
   onSelectTipoCadastro(tipoCadastro: TipoCadastro) {
-    this.steps = 2;
     this.tipoCadastro = tipoCadastro;
+    this.applyTipoValidators();
+    this.steps = 2;
   }
 
-  onAvancar(steps: number) {
-    console.log(this.form.value)
+  private applyTipoValidators() {
+    const isPJ = this.tipoCadastro === TipoCadastro.PessoaJuridica;
 
-    if (this.tipoCadastro === TipoCadastro.PessoaJuridica) {
-      this.form.get('cnpj')?.setValidators([Validators.required]);
-      this.form.get('razaoSocial')?.setValidators([Validators.required]);
-      this.form.get('cartaoCnpj')?.setValidators([Validators.required]);
+    const cnpj = this.form.get('cnpj')!;
+    const rz = this.form.get('razaoSocial')!;
+    const cartao = this.form.get('cartaoCnpj')!;
+
+    if (isPJ) {
+      cnpj.setValidators([Validators.required]);
+      rz.setValidators([Validators.required]);
+      cartao.setValidators([Validators.required]);
     } else {
-      this.form.get('cnpj')?.clearValidators();
-      this.form.get('razaoSocial')?.clearValidators();
-      this.form.get('cartaoCnpj')?.clearValidators();
+      cnpj.clearValidators();
+      rz.clearValidators();
+      cartao.clearValidators();
+    }
+    cnpj.updateValueAndValidity({ emitEvent: false });
+    rz.updateValueAndValidity({ emitEvent: false });
+    cartao.updateValueAndValidity({ emitEvent: false });
+  }
+
+  onAvancar(next: number) {
+    if (!this.validateCurrentStep()) return;
+
+    if (this.steps === 2 || this.steps === 3 || this.steps === 5)
+      this.applyTipoValidators();
+
+    this.steps = next;
+  }
+
+  onVoltar(step: number) {
+    this.steps = step;
+  }
+
+  fechar() { }
+
+  private getRequiredForStep(step: number): string[] {
+    const s2 = ['cpf', 'nome', 'telefone'];
+    const s3 = ['enderecoCep', 'enderecoLogradouro', 'numero', 'enderecoBairro', 'enderecoCidade', 'produtos'];
+    const s4 = ['codigoBanco', 'nomeBanco', 'tipoContaBanco', 'agencia', 'numeroConta', 'cidadeBanco'];
+    const s5 = ['frenteDocumento', 'versoDocumento', 'selfie'];
+
+    if (step === 2) return s2;
+    if (step === 3) {
+      const base = [...s3];
+      if (this.tipoCadastro === TipoCadastro.PessoaJuridica) base.push('cnpj', 'razaoSocial', 'cartaoCnpj');
+      return base;
+    }
+    if (step === 4) return s4;
+    if (step === 5) return s5;
+    return [];
+  }
+
+  private validateCurrentStep(): boolean {
+    const required = this.getRequiredForStep(this.steps);
+    if (required.length === 0) return true;
+
+    this.applyTipoValidators();
+
+    let ok = true;
+    for (const name of required) {
+      const c = this.form.get(name) as AbstractControl | null;
+      if (!c) continue;
+      c.markAsTouched();
+      c.updateValueAndValidity({ onlySelf: true });
+
+      if (c.invalid) ok = false;
     }
 
-    this.steps = steps;
-  }
-
-  onVoltar(steps: number) {
-    this.steps = steps;
-  }
-
-  fechar() {
-
+    if (!ok) {
+      this.toast.show({
+        message: 'Preencha os campos obrigatórios antes de continuar.',
+        type: 'warning',
+        position: 'top-right',
+        offset: { x: 40, y: 40 },
+      });
+    }
+    return ok;
   }
 
   isInvalid(name: string) {
@@ -152,45 +219,5 @@ export class ModalConcluirCadastroComponent implements OnInit {
 
   isChecked(key: string) {
     return this.produtosSelecionados.includes(key);
-  }
-
-  private async fetchCepAndAutofill(cepDigits: string) {
-    this.loading = true;
-    try {
-      const data: any = await this.http
-        .get(`https://viacep.com.br/ws/${cepDigits}/json/`)
-        .toPromise();
-
-      if (!data || data.erro) {
-        this.toast.show({
-          message: 'CEP não encontrado.',
-          type: 'warning',
-          position: 'top-right',
-          offset: { x: 40, y: 40 },
-        });
-        return;
-      }
-
-      // Mapeia campos do ViaCEP
-      this.form.patchValue(
-        {
-          enderecoLogradouro: data.logradouro ?? '',
-          enderecoBairro: data.bairro ?? '',
-          enderecoCidade: data.localidade ?? '',
-        },
-        { emitEvent: false }
-      );
-
-      this.loading = false;
-    } catch {
-      this.loading = false;
-
-      this.toast.show({
-        message: 'Falha ao buscar CEP. Tente novamente.',
-        type: 'error',
-        position: 'top-right',
-        offset: { x: 40, y: 40 },
-      });
-    }
   }
 }
