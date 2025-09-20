@@ -3,7 +3,7 @@
         @if(!usuarioPossuiCadastroCompleto()) {
         <div class="mensagem-completar-cadastro">
             <p><span>Seu cadastro ainda não está completo.</span> Finalize para acessar todos os recursos.</p>
-            <button type="button">
+            <button class="btn-generic" type="button" (click)="finalizarCadastro()">
                 Finalizar cadastro
             </button>
         </div>
