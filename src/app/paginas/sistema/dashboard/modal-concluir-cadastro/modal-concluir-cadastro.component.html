@@ -87,6 +87,32 @@
 
         @if(steps === 4) {
         <div class="step4">
+            <fieldset class="mt-16">
+                <input type="text" placeholder="Código do Banco" formControlName="codigoBanco"
+                    [class.invalid]="isInvalid('codigoBanco')" />
+                <input type="text" placeholder="Nome do Banco" formControlName="nomeBanco"
+                    [class.invalid]="isInvalid('nomeBanco')" />
+                <input type="text" placeholder="Tipo de Conta" formControlName="tipoContaBanco"
+                    [class.invalid]="isInvalid('tipoContaBanco')" />
+            </fieldset>
+
+            <fieldset>
+                <input type="text" placeholder="Agência" formControlName="agencia"
+                    [class.invalid]="isInvalid('agencia')" />
+                <input type="text" placeholder="Número da Conta" formControlName="numeroConta"
+                    [class.invalid]="isInvalid('numeroConta')" />
+                <input type="text" placeholder="UF / Cidade" formControlName="cidadeBanco"
+                    [class.invalid]="isInvalid('cidadeBanco')" />
+            </fieldset>
+
+            <fieldset>
+                <input type="text" placeholder="Chave Pix" formControlName="chavePix"
+                    [class.invalid]="isInvalid('chavePix')" />
+            </fieldset>
+
+            <div class="alerta">
+                <p>A conta bancária deve obrigatoriamente estar no nome do titular, com CPF ou CNPJ idênticos.</p>
+            </div>
         </div>
         }
 
