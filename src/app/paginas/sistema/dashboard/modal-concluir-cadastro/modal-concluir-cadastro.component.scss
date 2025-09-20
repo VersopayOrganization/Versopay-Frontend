@@ -117,15 +117,20 @@ footer {
 
 .event-grid {
     display: grid;
-    grid-template-columns: 0.22fr 1fr;
-    gap: 12px 48px;
+    gap: 12px 10px;
+    grid-template-columns: 136px 200px 93px;
+    grid-auto-rows: 40px;
+
+    >label:nth-child(5) {
+        text-wrap-mode: nowrap;
+    }
 }
 
 .evt {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 18px;
+    font-size: 14px;
 }
 
 /* base do checkbox */
