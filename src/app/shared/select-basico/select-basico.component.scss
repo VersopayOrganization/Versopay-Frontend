@@ -11,7 +11,12 @@
     position: relative;
     width: var(--select-width, 100%);
     font-size: 16px;
-    color: var(--c-text);
+    background: transparent;
+    color: #908D99;
+    border: 1px solid #908D99;
+    height: 44px;
+    border-radius: 10px;
+    outline: none;
 
     &.disabled {
         opacity: .6;
@@ -37,9 +42,13 @@
         color: var(--c-muted);
     }
 
-    .chev {
+    img {
         opacity: .9;
         transition: transform .15s ease;
+
+        &.aberto {
+            transform: rotate(180deg);
+        }
     }
 }
 
@@ -49,15 +58,15 @@
 
 .vp-menu {
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 1px);
     left: 0;
     right: 0;
-    background: #130F1E;
-    border: 1px solid var(--c-border);
-    border-radius: 12px;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, .35);
-    z-index: 20;
+    background: #0E0722;
+    border: 1px solid #908D99;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
     overflow: hidden;
+    border-top: none;
 }
 
 .vp-list {

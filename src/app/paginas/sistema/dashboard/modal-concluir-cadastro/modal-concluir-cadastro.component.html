@@ -92,11 +92,10 @@
                     [class.invalid]="isInvalid('codigoBanco')" />
                 <input type="text" placeholder="Nome do Banco" formControlName="nomeBanco"
                     [class.invalid]="isInvalid('nomeBanco')" />
-                <app-select-basico formControlName="tipoContaBanco" 
-                    [placeholder]="'Tipo de Conta'" [options]="[
+                <app-select-basico style="width: 50%;" formControlName="tipoContaBanco" [placeholder]="'Tipo de Conta'" [options]="[
                         { value: 'corrente', label: 'Corrente' },
                         { value: 'poupanca',  label: 'Poupança' }
-                    ]" [width]="'50%'">
+                    ]" [width]="'100%'">
                 </app-select-basico>
 
             </fieldset>
