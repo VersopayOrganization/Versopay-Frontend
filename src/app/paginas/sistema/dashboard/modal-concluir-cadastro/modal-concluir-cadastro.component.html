@@ -189,13 +189,28 @@
             }
         </div>
         }
+
+        @if (steps === 6) {
+        <div class="step6">
+            <p>Após análise, você receberá um e-mail confirmando seu cadastro e o acesso completo à Verso Pay.</p>
+        </div>
+        }
     </body>
 
 
     @if(steps > 1) {
     <footer>
+        @if(steps !== 6) {
         <button class="btn-generic voltar" type="button" (click)="onVoltar(steps-1)">Voltar</button>
+        }
+        @if(steps === 5) {
         <button class="btn-generic continuar" type="button" (click)="onAvancar(steps+1)">Continuar</button>
+        }
+
+        @if(steps === 6) {
+        <button class="btn-generic continuar" type="button" (click)="fechar()">Fechar</button>
+        }
+
     </footer>
     }
 </div>
