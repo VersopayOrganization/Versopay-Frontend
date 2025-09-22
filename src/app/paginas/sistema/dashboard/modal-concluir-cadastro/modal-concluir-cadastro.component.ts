@@ -37,7 +37,7 @@ export class ModalConcluirCadastroComponent implements OnInit {
     cpf: ['', [Validators.required]],
     nome: ['', [Validators.required]],
     instagram: [''],
-    telefone: ['', [Validators.required]],
+    telefone: ['', [Validators.required, this.utils.telefoneValidator()]],
     enderecoCep: ['', [Validators.required]],
     enderecoLogradouro: ['', [Validators.required]],
     numero: ['', [Validators.required]],
@@ -73,6 +73,7 @@ export class ModalConcluirCadastroComponent implements OnInit {
     const cepCtrl = this.form.get('enderecoCep')!;
     const cnpjCtrl = this.form.get('cnpj')!;
     const docCtrl = this.form.get('cpf')!;
+    const telCtrl = this.form.get('telefone')!;
 
     cepCtrl.valueChanges
       .pipe(map(v => this.utils.onlyDigits(v)), distinctUntilChanged())
@@ -96,6 +97,13 @@ export class ModalConcluirCadastroComponent implements OnInit {
       .subscribe(v => {
         const masked = this.utils.maskCpf(v ?? '');
         if (masked !== docCtrl.value) docCtrl.setValue(masked, { emitEvent: false });
+      });
+
+    telCtrl.valueChanges
+      .pipe(distinctUntilChanged())
+      .subscribe(v => {
+        const masked = this.utils.maskTelefone(v);
+        if (masked !== v) telCtrl.setValue(masked, { emitEvent: false });
       });
   }
 
