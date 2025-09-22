@@ -21,6 +21,10 @@
             @if(steps === 5) {
             Documentos
             }
+
+            @if(steps === 6) {
+            Obrigado por enviar seus dados!
+            }
         </h4>
     </header>
 
@@ -121,8 +125,68 @@
         </div>
         }
 
-        @if(steps === 5) {
+        @if (steps === 5) {
         <div class="step5">
+            <!-- Frente -->
+            <fieldset class="mt-16">
+                <label class="doc-label">Frente do documento oficial com foto (RG ou CNH).</label>
+                <div class="dropzone" [class.invalid]="isInvalid('frenteDocumento')"
+                    [class.dragover]="dragOver['frenteDocumento']" (click)="openPicker('frenteDocumento', frenteInput)"
+                    (dragover)="onDragOver('frenteDocumento', $event)"
+                    (dragleave)="onDragLeave('frenteDocumento', $event)" (drop)="onDrop('frenteDocumento', $event)">
+                    <img src="assets/icons/icon-jpg.svg" alt="jpg" class="dz-icon" />
+                    <span>{{ fileLabel('frenteDocumento') }}</span>
+                    <input #frenteInput type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/jpg,image/png"
+                        (change)="onFilePicked('frenteDocumento', $event)" />
+                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
+                </div>
+            </fieldset>
+
+            <!-- Verso -->
+            <fieldset>
+                <label class="doc-label">Verso do documento oficial com foto (RG ou CNH).</label>
+                <div class="dropzone" [class.invalid]="isInvalid('versoDocumento')"
+                    [class.dragover]="dragOver['versoDocumento']" (click)="openPicker('versoDocumento', versoInput)"
+                    (dragover)="onDragOver('versoDocumento', $event)"
+                    (dragleave)="onDragLeave('versoDocumento', $event)" (drop)="onDrop('versoDocumento', $event)">
+                    <img src="assets/icons/icon-jpg.svg" alt="jpg" class="dz-icon" />
+                    <span>{{ fileLabel('versoDocumento') }}</span>
+                    <input #versoInput type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/jpg,image/png"
+                        (change)="onFilePicked('versoDocumento', $event)" />
+                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
+                </div>
+            </fieldset>
+
+            <!-- Selfie -->
+            <fieldset>
+                <label class="doc-label">Selfie segurando o documento oficial com foto (RG ou CNH).</label>
+                <div class="dropzone" [class.invalid]="isInvalid('selfie')" [class.dragover]="dragOver['selfie']"
+                    (click)="openPicker('selfie', selfieInput)" (dragover)="onDragOver('selfie', $event)"
+                    (dragleave)="onDragLeave('selfie', $event)" (drop)="onDrop('selfie', $event)">
+                    <img src="assets/icons/icon-jpg.svg" alt="jpg" class="dz-icon" />
+                    <span>{{ fileLabel('selfie') }}</span>
+                    <input #selfieInput type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/jpg,image/png"
+                        (change)="onFilePicked('selfie', $event)" />
+                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
+                </div>
+            </fieldset>
+
+            <!-- Cartão CNPJ (apenas PJ) -->
+            @if (tipoCadastro === 1) {
+            <fieldset>
+                <label class="doc-label">Cartão CNPJ da sua empresa (PDF).</label>
+                <div class="dropzone" [class.invalid]="isInvalid('cartaoCnpj')"
+                    [class.dragover]="dragOver['cartaoCnpj']" (click)="openPicker('cartaoCnpj', cnpjInput)"
+                    (dragover)="onDragOver('cartaoCnpj', $event)" (dragleave)="onDragLeave('cartaoCnpj', $event)"
+                    (drop)="onDrop('cartaoCnpj', $event)">
+                    <img src="assets/icons/icon-pdf.svg" alt="pdf" class="dz-icon" />
+                    <span>{{ fileLabel('cartaoCnpj') }}</span>
+                    <input #cnpjInput type="file" accept=".pdf,application/pdf"
+                        (change)="onFilePicked('cartaoCnpj', $event)" />
+                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
+                </div>
+            </fieldset>
+            }
         </div>
         }
     </body>
