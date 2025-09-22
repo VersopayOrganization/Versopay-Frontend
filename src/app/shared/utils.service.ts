@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
@@ -22,6 +22,27 @@ export class Utils {
   }
 
   onlyDigits(v?: string | null) { return (v ?? '').replace(/\D/g, ''); }
+
+  maskTelefone(value?: string | null): string {
+    const d = this.onlyDigits(value).slice(0, 11);
+    const ddd = d.slice(0, 2);
+    const n1 = d.length > 10 ? d.slice(2, 7) : d.slice(2, 6);
+    const n2 = d.length > 10 ? d.slice(7, 11) : d.slice(6, 10);
+
+    let out = '';
+    if (ddd) out = `(${ddd}`;
+    if (ddd && (n1 || n2)) out += ') ';
+    if (n1) out += n1;
+    if (n2) out += `-${n2}`;
+    return out;
+  }
+
+  telefoneValidator(): ValidatorFn {
+    return (ctrl: AbstractControl): ValidationErrors | null => {
+      const digits = this.onlyDigits(ctrl.value);
+      return digits.length === 10 || digits.length === 11 ? null : { telefone: true };
+    };
+  }
 
   maskCpf(value: string): string {
     const d = this.onlyDigits(value).slice(0, 11);
