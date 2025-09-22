@@ -8,6 +8,8 @@ import { HttpClient } from '@angular/common/http';
 import { distinctUntilChanged, map } from 'rxjs';
 import { SelectBasicoComponent } from '../../../../shared/select-basico/select-basico.component';
 
+type DocCtrl = 'frenteDocumento' | 'versoDocumento' | 'selfie' | 'cartaoCnpj';
+
 @Component({
   selector: 'app-modal-concluir-cadastro',
   imports: [CommonModule, ReactiveFormsModule, SelectBasicoComponent],
@@ -30,9 +32,10 @@ export class ModalConcluirCadastroComponent implements OnInit {
     { key: 'ecommerceTradicional', label: 'Ecommerce Tradicional' },
     { key: 'saas', label: 'SaaS' },
     { key: 'dropshipping', label: 'Dropshipping' },
-    { key: 'nutraceutico', label: 'Nútracêutico (Encapsulados, gotas, etc...)' },
+    { key: 'nutraceutico', label: 'Nútraceutico (Encapsulados, gotas, etc...)' },
   ];
 
+  // ===== Form =====
   form = this.fb.group({
     cpf: ['', [Validators.required]],
     nome: ['', [Validators.required]],
@@ -43,9 +46,12 @@ export class ModalConcluirCadastroComponent implements OnInit {
     numero: ['', [Validators.required]],
     enderecoBairro: ['', [Validators.required]],
     enderecoCidade: ['', [Validators.required]],
+
     cnpj: [''],
     razaoSocial: [''],
+
     produtos: this.fb.control<string[]>([], [this.utils.minArrayLength(1)]),
+
     codigoBanco: ['', [Validators.required]],
     nomeBanco: ['', [Validators.required]],
     tipoContaBanco: ['', [Validators.required]],
@@ -53,11 +59,31 @@ export class ModalConcluirCadastroComponent implements OnInit {
     numeroConta: ['', [Validators.required]],
     cidadeBanco: ['', [Validators.required]],
     chavePix: [''],
-    frenteDocumento: ['', [Validators.required]],
-    versoDocumento: ['', [Validators.required]],
-    selfie: ['', [Validators.required]],
-    cartaoCnpj: [''],
+
+    // Arquivos: guardamos File | null
+    frenteDocumento: [null as File | null, [Validators.required]],
+    versoDocumento: [null as File | null, [Validators.required]],
+    selfie: [null as File | null, [Validators.required]],
+    cartaoCnpj: [null as File | null], // obrigatório no step 5 somente para PJ
   });
+
+  // ===== Estado de upload =====
+  selectedDocs: Record<DocCtrl, File | null> = {
+    frenteDocumento: null,
+    versoDocumento: null,
+    selfie: null,
+    cartaoCnpj: null,
+  };
+  dragOver: Record<string, boolean> = {};
+
+  // Regras por campo
+  private readonly ACCEPT_BY_CTRL: Record<DocCtrl, string[]> = {
+    frenteDocumento: ['image/jpeg', 'image/jpg', 'image/png'],
+    versoDocumento: ['image/jpeg', 'image/jpg', 'image/png'],
+    selfie: ['image/jpeg', 'image/jpg', 'image/png'],
+    cartaoCnpj: ['application/pdf'],
+  };
+  private readonly MAX_MB = 10;
 
   get produtosSelecionados(): string[] {
     return (this.form.get('produtos')?.value as string[]) ?? [];
@@ -65,10 +91,12 @@ export class ModalConcluirCadastroComponent implements OnInit {
   get allSelected(): boolean { return this.produtosSelecionados.length === this.produtos.length; }
   get someSelected(): boolean { return this.produtosSelecionados.length > 0 && !this.allSelected; }
 
+  // ===== Init =====
   ngOnInit() {
     this.mascarasEBuscaCEP();
   }
 
+  // ===== Máscaras + ViaCEP =====
   private mascarasEBuscaCEP() {
     const cepCtrl = this.form.get('enderecoCep')!;
     const cnpjCtrl = this.form.get('cnpj')!;
@@ -87,13 +115,15 @@ export class ModalConcluirCadastroComponent implements OnInit {
         }
       });
 
-    cnpjCtrl.valueChanges.pipe(distinctUntilChanged())
+    cnpjCtrl.valueChanges
+      .pipe(distinctUntilChanged())
       .subscribe(v => {
         const masked = this.utils.maskCnpj(v ?? '');
         if (masked !== cnpjCtrl.value) cnpjCtrl.setValue(masked, { emitEvent: false });
       });
 
-    docCtrl.valueChanges.pipe(distinctUntilChanged())
+    docCtrl.valueChanges
+      .pipe(distinctUntilChanged())
       .subscribe(v => {
         const masked = this.utils.maskCpf(v ?? '');
         if (masked !== docCtrl.value) docCtrl.setValue(masked, { emitEvent: false });
@@ -127,6 +157,7 @@ export class ModalConcluirCadastroComponent implements OnInit {
     }
   }
 
+  // ===== Fluxo de steps =====
   onSelectTipoCadastro(tipoCadastro: TipoCadastro) {
     this.tipoCadastro = tipoCadastro;
     this.applyTipoValidators();
@@ -135,27 +166,31 @@ export class ModalConcluirCadastroComponent implements OnInit {
 
   private applyTipoValidators() {
     const isPJ = this.tipoCadastro === TipoCadastro.PessoaJuridica;
-
     const cnpj = this.form.get('cnpj')!;
     const rz = this.form.get('razaoSocial')!;
+    const cartao = this.form.get('cartaoCnpj')!;
 
     if (isPJ) {
       cnpj.setValidators([Validators.required]);
       rz.setValidators([Validators.required]);
+      // no step 5, cartaoCnpj também será obrigatório
+      if (this.steps === 5) cartao.setValidators([Validators.required]);
     } else {
       cnpj.clearValidators();
       rz.clearValidators();
+      cartao.clearValidators();
     }
     cnpj.updateValueAndValidity({ emitEvent: false });
     rz.updateValueAndValidity({ emitEvent: false });
+    cartao.updateValueAndValidity({ emitEvent: false });
   }
 
   onAvancar(next: number) {
     if (!this.validateCurrentStep()) return;
 
-    if (this.steps === 2 || this.steps === 3 || this.steps === 5)
+    if (this.steps === 2 || this.steps === 3 || this.steps === 5) {
       this.applyTipoValidators();
-
+    }
     this.steps = next;
   }
 
@@ -166,9 +201,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
   fechar() { }
 
   private getRequiredForStep(step: number): string[] {
-    console.log('Valores:', this.form.value);
-    console.log('Formulário:', this.form);
-
     const s2 = ['cpf', 'nome', 'telefone'];
     const s3 = ['enderecoCep', 'enderecoLogradouro', 'numero', 'enderecoBairro', 'enderecoCidade', 'produtos'];
     const s4 = ['codigoBanco', 'nomeBanco', 'tipoContaBanco', 'agencia', 'numeroConta', 'cidadeBanco'];
@@ -183,9 +215,7 @@ export class ModalConcluirCadastroComponent implements OnInit {
     if (step === 4) return s4;
     if (step === 5) {
       const base = [...s5];
-      if (this.tipoCadastro === TipoCadastro.PessoaJuridica) {
-        base.push('cartaoCnpj');
-      }
+      if (this.tipoCadastro === TipoCadastro.PessoaJuridica) base.push('cartaoCnpj');
       return base;
     }
     return [];
@@ -202,7 +232,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
       if (!c) continue;
       c.markAsTouched();
       c.updateValueAndValidity({ onlySelf: true });
-
       if (c.invalid) ok = false;
     }
 
@@ -222,14 +251,93 @@ export class ModalConcluirCadastroComponent implements OnInit {
     return !!c && c.invalid && (c.touched || this.loading);
   }
 
+  // ===== Produtos (checkbox grid) =====
+  get produtosSelecionadosChecked(): string[] {
+    return (this.form.get('produtos')?.value as string[]) ?? [];
+  }
+
   toggleOne(key: string, ev?: Event | boolean) {
     const isChecked = typeof ev === 'boolean' ? ev : !!(ev as any)?.target?.checked;
-    const set = new Set(this.produtosSelecionados);
+    const set = new Set(this.produtosSelecionadosChecked);
     isChecked ? set.add(key) : set.delete(key);
     this.form.get('produtos')?.setValue([...set], { emitEvent: false });
   }
 
   isChecked(key: string) {
-    return this.produtosSelecionados.includes(key);
+    return this.produtosSelecionadosChecked.includes(key);
+  }
+
+  // ===== Upload (click + drag&drop) =====
+  private validateFile(ctrlName: DocCtrl, file: File): string | null {
+    const allow = this.ACCEPT_BY_CTRL[ctrlName] || [];
+    if (!allow.includes(file.type)) {
+      const esperado = ctrlName === 'cartaoCnpj' ? 'PDF' : 'imagem (JPG/PNG)';
+      return `Formato inválido para "${this.prettyCtrl(ctrlName)}". Envie ${esperado}.`;
+    }
+    const mb = file.size / (1024 * 1024);
+    if (mb > this.MAX_MB) return `Arquivo muito grande (${mb.toFixed(1)}MB). Máx. ${this.MAX_MB}MB.`;
+    return null;
+  }
+
+  private prettyCtrl(c: DocCtrl) {
+    return c === 'frenteDocumento' ? 'Frente do documento'
+      : c === 'versoDocumento' ? 'Verso do documento'
+        : c === 'selfie' ? 'Selfie'
+          : 'Cartão CNPJ';
+  }
+
+  openPicker(ctrlName: DocCtrl, input: HTMLInputElement) {
+    input.click();
+  }
+
+  onFilePicked(ctrlName: DocCtrl, ev: Event) {
+    const input = ev.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    const file = input.files[0];
+
+    const err = this.validateFile(ctrlName, file);
+    if (err) {
+      this.toast.show({ message: err, type: 'warning', position: 'top-right', offset: { x: 40, y: 40 } });
+      input.value = '';
+      return;
+    }
+
+    this.selectedDocs[ctrlName] = file;
+    const ctrl = this.form.get(ctrlName);
+    ctrl?.setValue(file);
+    ctrl?.markAsDirty();
+    ctrl?.markAsTouched();
+  }
+
+  onDragOver(ctrlName: string, ev: DragEvent) {
+    ev.preventDefault();
+    this.dragOver[ctrlName] = true;
+  }
+
+  onDragLeave(ctrlName: string, _ev: DragEvent) {
+    this.dragOver[ctrlName] = false;
+  }
+
+  onDrop(ctrlName: DocCtrl, ev: DragEvent) {
+    ev.preventDefault();
+    this.dragOver[ctrlName] = false;
+    const f = ev.dataTransfer?.files?.[0];
+    if (!f) return;
+
+    const err = this.validateFile(ctrlName, f);
+    if (err) {
+      this.toast.show({ message: err, type: 'warning', position: 'top-right', offset: { x: 40, y: 40 } });
+      return;
+    }
+
+    this.selectedDocs[ctrlName] = f;
+    this.form.get(ctrlName)?.setValue(f);
+    this.form.get(ctrlName)?.markAsDirty();
+    this.form.get(ctrlName)?.markAsTouched();
+  }
+
+  fileLabel(ctrlName: DocCtrl): string {
+    const f = this.selectedDocs[ctrlName];
+    return f ? f.name : 'Clique ou arraste para fazer upload';
   }
 }

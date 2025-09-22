@@ -126,6 +126,51 @@ fieldset {
     }
 }
 
+.step5 {
+    >fieldset {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        >label {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 156%;
+            color: #FFF;
+        }
+
+        >.dropzone {
+            border: 1px solid #908D99;
+            padding: 16px 19px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            >span {
+                line-height: 156%;
+                font-size: 20px;
+                font-weight: 400;
+                color: #908D99;
+                flex-grow: 2;
+            }
+        }
+    }
+}
+
+.dropzone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+    appearance: none;
+    border: 0;
+    padding: 0;
+}
+
 footer {
     display: flex;
     justify-content: center;
