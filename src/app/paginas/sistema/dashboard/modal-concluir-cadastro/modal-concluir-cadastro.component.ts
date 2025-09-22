@@ -35,7 +35,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
     { key: 'nutraceutico', label: 'Nútraceutico (Encapsulados, gotas, etc...)' },
   ];
 
-  // ===== Form =====
   form = this.fb.group({
     cpf: ['', [Validators.required]],
     nome: ['', [Validators.required]],
@@ -46,12 +45,9 @@ export class ModalConcluirCadastroComponent implements OnInit {
     numero: ['', [Validators.required]],
     enderecoBairro: ['', [Validators.required]],
     enderecoCidade: ['', [Validators.required]],
-
     cnpj: [''],
     razaoSocial: [''],
-
     produtos: this.fb.control<string[]>([], [this.utils.minArrayLength(1)]),
-
     codigoBanco: ['', [Validators.required]],
     nomeBanco: ['', [Validators.required]],
     tipoContaBanco: ['', [Validators.required]],
@@ -59,15 +55,12 @@ export class ModalConcluirCadastroComponent implements OnInit {
     numeroConta: ['', [Validators.required]],
     cidadeBanco: ['', [Validators.required]],
     chavePix: [''],
-
-    // Arquivos: guardamos File | null
     frenteDocumento: [null as File | null, [Validators.required]],
     versoDocumento: [null as File | null, [Validators.required]],
     selfie: [null as File | null, [Validators.required]],
-    cartaoCnpj: [null as File | null], // obrigatório no step 5 somente para PJ
+    cartaoCnpj: [null as File | null],
   });
 
-  // ===== Estado de upload =====
   selectedDocs: Record<DocCtrl, File | null> = {
     frenteDocumento: null,
     versoDocumento: null,
@@ -76,7 +69,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
   };
   dragOver: Record<string, boolean> = {};
 
-  // Regras por campo
   private readonly ACCEPT_BY_CTRL: Record<DocCtrl, string[]> = {
     frenteDocumento: ['image/jpeg', 'image/jpg', 'image/png'],
     versoDocumento: ['image/jpeg', 'image/jpg', 'image/png'],
@@ -91,12 +83,10 @@ export class ModalConcluirCadastroComponent implements OnInit {
   get allSelected(): boolean { return this.produtosSelecionados.length === this.produtos.length; }
   get someSelected(): boolean { return this.produtosSelecionados.length > 0 && !this.allSelected; }
 
-  // ===== Init =====
   ngOnInit() {
     this.mascarasEBuscaCEP();
   }
 
-  // ===== Máscaras + ViaCEP =====
   private mascarasEBuscaCEP() {
     const cepCtrl = this.form.get('enderecoCep')!;
     const cnpjCtrl = this.form.get('cnpj')!;
@@ -157,7 +147,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
     }
   }
 
-  // ===== Fluxo de steps =====
   onSelectTipoCadastro(tipoCadastro: TipoCadastro) {
     this.tipoCadastro = tipoCadastro;
     this.applyTipoValidators();
@@ -173,7 +162,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
     if (isPJ) {
       cnpj.setValidators([Validators.required]);
       rz.setValidators([Validators.required]);
-      // no step 5, cartaoCnpj também será obrigatório
       if (this.steps === 5) cartao.setValidators([Validators.required]);
     } else {
       cnpj.clearValidators();
@@ -267,7 +255,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
     return this.produtosSelecionadosChecked.includes(key);
   }
 
-  // ===== Upload (click + drag&drop) =====
   private validateFile(ctrlName: DocCtrl, file: File): string | null {
     const allow = this.ACCEPT_BY_CTRL[ctrlName] || [];
     if (!allow.includes(file.type)) {
