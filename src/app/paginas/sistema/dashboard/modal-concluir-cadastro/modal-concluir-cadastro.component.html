@@ -5,27 +5,7 @@
             aria-hidden="true" data-slot="icon" class="h-5 w-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
         </svg>
-        <h4>
-            @if(steps === 1) {
-            Selecione o tipo de Cadastro
-            }
-
-            @if(steps === 2 || steps === 3) {
-            {{ tipoCadastro === 0 ? 'Sobre Você' : 'Sobre sua Empresa'}}
-            }
-
-            @if(steps === 4) {
-            Finalizar Cadastro
-            }
-
-            @if(steps === 5) {
-            Documentos
-            }
-
-            @if(steps === 6) {
-            Obrigado por enviar seus dados!
-            }
-        </h4>
+        <h4>{{ tituloStep() }}</h4>
     </header>
 
     <body [formGroup]="form">
@@ -202,8 +182,6 @@
     <footer>
         @if(steps !== 6) {
         <button class="btn-generic voltar" type="button" (click)="onVoltar(steps-1)">Voltar</button>
-        }
-        @if(steps === 5) {
         <button class="btn-generic continuar" type="button" (click)="onAvancar(steps+1)">Continuar</button>
         }
 

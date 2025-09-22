@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { TipoCadastro } from '../../../../core/enums/tipo-cadastro.enum';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -7,6 +7,7 @@ import { ToastService } from '../../../../shared/toast/toast.service';
 import { HttpClient } from '@angular/common/http';
 import { distinctUntilChanged, map } from 'rxjs';
 import { SelectBasicoComponent } from '../../../../shared/select-basico/select-basico.component';
+import { MatDialogRef } from '@angular/material/dialog';
 
 type DocCtrl = 'frenteDocumento' | 'versoDocumento' | 'selfie' | 'cartaoCnpj';
 
@@ -22,9 +23,25 @@ export class ModalConcluirCadastroComponent implements OnInit {
   private toast = inject(ToastService);
   private http = inject(HttpClient);
   private ultimoCepObtido: string | null = null;
+  private dialogRef = inject(MatDialogRef<ModalConcluirCadastroComponent>, { optional: true });
 
   steps = 1;
   tipoCadastro: TipoCadastro = TipoCadastro.PessoaFisica;
+  tituloStep = computed(() => {
+    switch (this.steps) {
+      case 1: return 'Selecione o tipo de Cadastro';
+      case 2:
+      case 3:
+        return this.tipoCadastro === TipoCadastro.PessoaFisica
+          ? 'Sobre Você'
+          : 'Sobre sua Empresa';
+      case 4: return 'Finalizar Cadastro';
+      case 5: return 'Documentos';
+      case 6: return 'Obrigado por enviar seus dados!';
+      default: return '';
+    }
+  });
+
   loading = false;
 
   readonly produtos = [
@@ -186,7 +203,9 @@ export class ModalConcluirCadastroComponent implements OnInit {
     this.steps = step;
   }
 
-  fechar() { }
+  fechar(result: 'cancel' | 'confirm' | Record<string, any> = 'cancel') {
+    this.dialogRef?.close(result);
+  }
 
   private getRequiredForStep(step: number): string[] {
     const s2 = ['cpf', 'nome', 'telefone'];
