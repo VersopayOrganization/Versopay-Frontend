@@ -130,20 +130,16 @@ export class ModalConcluirCadastroComponent implements OnInit {
 
     const cnpj = this.form.get('cnpj')!;
     const rz = this.form.get('razaoSocial')!;
-    const cartao = this.form.get('cartaoCnpj')!;
 
     if (isPJ) {
       cnpj.setValidators([Validators.required]);
       rz.setValidators([Validators.required]);
-      cartao.setValidators([Validators.required]);
     } else {
       cnpj.clearValidators();
       rz.clearValidators();
-      cartao.clearValidators();
     }
     cnpj.updateValueAndValidity({ emitEvent: false });
     rz.updateValueAndValidity({ emitEvent: false });
-    cartao.updateValueAndValidity({ emitEvent: false });
   }
 
   onAvancar(next: number) {
@@ -162,6 +158,9 @@ export class ModalConcluirCadastroComponent implements OnInit {
   fechar() { }
 
   private getRequiredForStep(step: number): string[] {
+    console.log('Valores:', this.form.value);
+    console.log('Formulário:', this.form);
+
     const s2 = ['cpf', 'nome', 'telefone'];
     const s3 = ['enderecoCep', 'enderecoLogradouro', 'numero', 'enderecoBairro', 'enderecoCidade', 'produtos'];
     const s4 = ['codigoBanco', 'nomeBanco', 'tipoContaBanco', 'agencia', 'numeroConta', 'cidadeBanco'];
@@ -170,18 +169,23 @@ export class ModalConcluirCadastroComponent implements OnInit {
     if (step === 2) return s2;
     if (step === 3) {
       const base = [...s3];
-      if (this.tipoCadastro === TipoCadastro.PessoaJuridica) base.push('cnpj', 'razaoSocial', 'cartaoCnpj');
+      if (this.tipoCadastro === TipoCadastro.PessoaJuridica) base.push('cnpj', 'razaoSocial');
       return base;
     }
     if (step === 4) return s4;
-    if (step === 5) return s5;
+    if (step === 5) {
+      const base = [...s5];
+      if (this.tipoCadastro === TipoCadastro.PessoaJuridica) {
+        base.push('cartaoCnpj');
+      }
+      return base;
+    }
     return [];
   }
 
   private validateCurrentStep(): boolean {
     const required = this.getRequiredForStep(this.steps);
     if (required.length === 0) return true;
-
     this.applyTipoValidators();
 
     let ok = true;
