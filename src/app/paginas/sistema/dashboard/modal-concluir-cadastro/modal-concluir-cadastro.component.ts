@@ -8,41 +8,45 @@ import { HttpClient } from '@angular/common/http';
 import { distinctUntilChanged, map } from 'rxjs';
 import { SelectBasicoComponent } from '../../../../shared/select-basico/select-basico.component';
 import { MatDialogRef } from '@angular/material/dialog';
+import { UsuarioService } from '../../../../services/usuario.service';
+import { AuthService } from '../../../../auth/auth.service';
+import { TipoContaBanco } from '../../../../core/enums/tipo-conta-banco.enum';
 
 type DocCtrl = 'frenteDocumento' | 'versoDocumento' | 'selfie' | 'cartaoCnpj';
 
 @Component({
   selector: 'app-modal-concluir-cadastro',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, SelectBasicoComponent],
   templateUrl: './modal-concluir-cadastro.component.html',
   styleUrl: './modal-concluir-cadastro.component.scss'
 })
 export class ModalConcluirCadastroComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private auth = inject(AuthService);
+  private usuarioService = inject(UsuarioService);
   private utils = inject(Utils);
   private toast = inject(ToastService);
   private http = inject(HttpClient);
-  private ultimoCepObtido: string | null = null;
   private dialogRef = inject(MatDialogRef<ModalConcluirCadastroComponent>, { optional: true });
+
+  private ultimoCepObtido: string | null = null;
 
   steps = 1;
   tipoCadastro: TipoCadastro = TipoCadastro.PessoaFisica;
+  loading = false;
+
   tituloStep = computed(() => {
     switch (this.steps) {
       case 1: return 'Selecione o tipo de Cadastro';
       case 2:
-      case 3:
-        return this.tipoCadastro === TipoCadastro.PessoaFisica
-          ? 'Sobre Você'
-          : 'Sobre sua Empresa';
+      case 3: return this.tipoCadastro === TipoCadastro.PessoaFisica ? 'Sobre Você' : 'Sobre sua Empresa';
       case 4: return 'Finalizar Cadastro';
       case 5: return 'Documentos';
       case 6: return 'Obrigado por enviar seus dados!';
       default: return '';
     }
   });
-
-  loading = false;
 
   readonly produtos = [
     { key: 'infoprodutos', label: 'Infoprodutos' },
@@ -101,6 +105,9 @@ export class ModalConcluirCadastroComponent implements OnInit {
   get someSelected(): boolean { return this.produtosSelecionados.length > 0 && !this.allSelected; }
 
   ngOnInit() {
+    const userIdRaw = this.auth.user()?.id;
+    console.log(userIdRaw)
+    debugger
     this.mascarasEBuscaCEP();
   }
 
@@ -118,7 +125,7 @@ export class ModalConcluirCadastroComponent implements OnInit {
 
         if (digits.length === 8 && digits !== this.ultimoCepObtido) {
           this.ultimoCepObtido = digits;
-          this.fetchCepAndAutofill(digits);
+          // this.fetchCepAndAutofill(digits);
         }
       });
 
@@ -190,8 +197,31 @@ export class ModalConcluirCadastroComponent implements OnInit {
     cartao.updateValueAndValidity({ emitEvent: false });
   }
 
-  onAvancar(next: number) {
+  async onAvancar(next: number) {
     if (!this.validateCurrentStep()) return;
+
+    if (this.steps === 5 && next === 6) {
+      try {
+        this.loading = true;
+        const userId = this.auth.user()?.id;
+        const payload = this.buildPayload();
+
+        await this.usuarioService.completarCadastro(userId, payload);
+
+        this.steps = next;
+      } catch (e: any) {
+        this.toast.show({
+          message: e?.message ?? 'Falha ao enviar seus dados. Tente novamente.',
+          type: 'error',
+          position: 'top-right',
+          offset: { x: 40, y: 40 },
+        });
+        return;
+      } finally {
+        this.loading = false;
+      }
+      return;
+    }
 
     if (this.steps === 2 || this.steps === 3 || this.steps === 5) {
       this.applyTipoValidators();
@@ -258,21 +288,13 @@ export class ModalConcluirCadastroComponent implements OnInit {
     return !!c && c.invalid && (c.touched || this.loading);
   }
 
-  // ===== Produtos (checkbox grid) =====
-  get produtosSelecionadosChecked(): string[] {
-    return (this.form.get('produtos')?.value as string[]) ?? [];
-  }
-
   toggleOne(key: string, ev?: Event | boolean) {
     const isChecked = typeof ev === 'boolean' ? ev : !!(ev as any)?.target?.checked;
-    const set = new Set(this.produtosSelecionadosChecked);
+    const set = new Set(this.produtosSelecionados);
     isChecked ? set.add(key) : set.delete(key);
     this.form.get('produtos')?.setValue([...set], { emitEvent: false });
   }
-
-  isChecked(key: string) {
-    return this.produtosSelecionadosChecked.includes(key);
-  }
+  isChecked(key: string) { return this.produtosSelecionados.includes(key); }
 
   private validateFile(ctrlName: DocCtrl, file: File): string | null {
     const allow = this.ACCEPT_BY_CTRL[ctrlName] || [];
@@ -284,7 +306,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
     if (mb > this.MAX_MB) return `Arquivo muito grande (${mb.toFixed(1)}MB). Máx. ${this.MAX_MB}MB.`;
     return null;
   }
-
   private prettyCtrl(c: DocCtrl) {
     return c === 'frenteDocumento' ? 'Frente do documento'
       : c === 'versoDocumento' ? 'Verso do documento'
@@ -292,9 +313,7 @@ export class ModalConcluirCadastroComponent implements OnInit {
           : 'Cartão CNPJ';
   }
 
-  openPicker(ctrlName: DocCtrl, input: HTMLInputElement) {
-    input.click();
-  }
+  openPicker(_ctrlName: DocCtrl, input: HTMLInputElement) { input.click(); }
 
   onFilePicked(ctrlName: DocCtrl, ev: Event) {
     const input = ev.target as HTMLInputElement;
@@ -309,20 +328,13 @@ export class ModalConcluirCadastroComponent implements OnInit {
     }
 
     this.selectedDocs[ctrlName] = file;
-    const ctrl = this.form.get(ctrlName);
-    ctrl?.setValue(file);
-    ctrl?.markAsDirty();
-    ctrl?.markAsTouched();
+    this.form.get(ctrlName)?.setValue(file);
+    this.form.get(ctrlName)?.markAsDirty();
+    this.form.get(ctrlName)?.markAsTouched();
   }
 
-  onDragOver(ctrlName: string, ev: DragEvent) {
-    ev.preventDefault();
-    this.dragOver[ctrlName] = true;
-  }
-
-  onDragLeave(ctrlName: string, _ev: DragEvent) {
-    this.dragOver[ctrlName] = false;
-  }
+  onDragOver(ctrlName: string, ev: DragEvent) { ev.preventDefault(); this.dragOver[ctrlName] = true; }
+  onDragLeave(ctrlName: string, _ev: DragEvent) { this.dragOver[ctrlName] = false; }
 
   onDrop(ctrlName: DocCtrl, ev: DragEvent) {
     ev.preventDefault();
@@ -345,5 +357,40 @@ export class ModalConcluirCadastroComponent implements OnInit {
   fileLabel(ctrlName: DocCtrl): string {
     const f = this.selectedDocs[ctrlName];
     return f ? f.name : 'Clique ou arraste para fazer upload';
+  }
+
+  private buildPayload(): any {
+    const body = {
+      tipoCadastro: this.tipoCadastro,
+      cpf: this.utils.onlyDigits(this.form.get('cpf')?.value),
+      nome: this.form.get('nome')?.value,
+      instagram: (this.form.get('instagram')?.value ?? '').toString().replace(/^@/, '').trim(),
+      telefone: this.utils.onlyDigits(this.form.get('telefone')?.value),
+      enderecoCep: this.utils.onlyDigits(this.form.get('enderecoCep')?.value),
+      enderecoLogradouro: this.form.get('enderecoLogradouro')?.value,
+      numero: this.form.get('numero')?.value,
+      enderecoBairro: this.form.get('enderecoBairro')?.value,
+      enderecoCidade: (this.form.get('enderecoCidade')?.value ?? '').toString().trim(),
+      enderecoUf: (this.form.get('enderecoUf')?.value ?? '').toString().toUpperCase(),
+      enderecoComplemento: this.form.get('enderecoComplemento')?.value,
+      digitoConta: this.form.get('digitoConta')?.value,
+      tipoConta: this.form.get('tipoConta')?.value,
+      cnpj: this.utils.onlyDigits(this.form.get('cnpj')?.value),
+      razaoSocial: this.form.get('razaoSocial')?.value,
+      produtos: this.produtosSelecionados,
+      codigoBanco: this.form.get('codigoBanco')?.value,
+      nomeBanco: this.form.get('codigoBanco')?.value,
+      tipoContaBanco: this.form.get('tipoContaBanco')?.value === 'Corrente' ? TipoContaBanco.Corrente : TipoContaBanco.Poupanca,
+      agencia: this.form.get('agencia')?.value,
+      numeroConta: this.form.get('numeroConta')?.value,
+      cidadeBanco: this.form.get('cidadeBanco')?.value,
+      chavePix: this.form.get('chavePix')?.value,
+      frenteDocumento: this.form.get('frenteDocumento')?.value,
+      versoDocumento: this.form.get('versoDocumento')?.value,
+      selfie: this.form.get('selfie')?.value,
+      cartaoCnpj: this.form.get('cartaoCnpj')?.value,
+    }
+
+    return body;
   }
 }
