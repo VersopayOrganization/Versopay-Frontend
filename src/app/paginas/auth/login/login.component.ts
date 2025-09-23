@@ -187,7 +187,6 @@ export class LoginComponent {
       await this.authService.confirm2fa(this.challengeId!, this.code);
 
       const done = await this.authService.loginFinal(this.lastPayload);
-      console.log('token depois do loginFinal:', this.authService.token);
 
       await this.router.navigateByUrl('/sistema', { replaceUrl: true });
     } catch (e: any) {
