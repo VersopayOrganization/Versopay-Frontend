@@ -105,9 +105,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
   get someSelected(): boolean { return this.produtosSelecionados.length > 0 && !this.allSelected; }
 
   ngOnInit() {
-    const userIdRaw = this.auth.user()?.id;
-    console.log(userIdRaw)
-    debugger
     this.mascarasEBuscaCEP();
   }
 
@@ -204,8 +201,8 @@ export class ModalConcluirCadastroComponent implements OnInit {
       try {
         this.loading = true;
         const userId = this.auth.user()?.id;
-        const payload = this.buildPayload();
 
+        const payload = await this.buildPayload();
         await this.usuarioService.completarCadastro(userId, payload);
 
         this.steps = next;
@@ -359,37 +356,60 @@ export class ModalConcluirCadastroComponent implements OnInit {
     return f ? f.name : 'Clique ou arraste para fazer upload';
   }
 
-  private buildPayload(): any {
-    const body = {
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('Falha ao ler arquivo'));
+      reader.onload = () => {
+        const res = String(reader.result || '');
+        const base64 = res.includes(',') ? res.split(',')[1] : res;
+        resolve(base64);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  private async buildPayload(): Promise<any> {
+    const raw = this.form.getRawValue();
+
+    const frenteB64 = this.selectedDocs.frenteDocumento ? await this.fileToBase64(this.selectedDocs.frenteDocumento) : null;
+    const versoB64 = this.selectedDocs.versoDocumento ? await this.fileToBase64(this.selectedDocs.versoDocumento) : null;
+    const selfieB64 = this.selectedDocs.selfie ? await this.fileToBase64(this.selectedDocs.selfie) : null;
+    const cartaoB64 = (this.tipoCadastro === TipoCadastro.PessoaJuridica && this.selectedDocs.cartaoCnpj)
+      ? await this.fileToBase64(this.selectedDocs.cartaoCnpj)
+      : null;
+
+    const tipoContaEnum =
+      (String(raw.tipoContaBanco || '').toLowerCase() === 'corrente')
+        ? TipoContaBanco.Corrente
+        : TipoContaBanco.Poupanca;
+
+    const body: any = {
       tipoCadastro: this.tipoCadastro,
-      cpf: this.utils.onlyDigits(this.form.get('cpf')?.value),
-      nome: this.form.get('nome')?.value,
-      instagram: (this.form.get('instagram')?.value ?? '').toString().replace(/^@/, '').trim(),
-      telefone: this.utils.onlyDigits(this.form.get('telefone')?.value),
-      enderecoCep: this.utils.onlyDigits(this.form.get('enderecoCep')?.value),
-      enderecoLogradouro: this.form.get('enderecoLogradouro')?.value,
-      numero: this.form.get('numero')?.value,
-      enderecoBairro: this.form.get('enderecoBairro')?.value,
-      enderecoCidade: (this.form.get('enderecoCidade')?.value ?? '').toString().trim(),
-      enderecoUf: (this.form.get('enderecoUf')?.value ?? '').toString().toUpperCase(),
-      enderecoComplemento: this.form.get('enderecoComplemento')?.value,
-      digitoConta: this.form.get('digitoConta')?.value,
-      tipoConta: this.form.get('tipoConta')?.value,
-      cnpj: this.utils.onlyDigits(this.form.get('cnpj')?.value),
-      razaoSocial: this.form.get('razaoSocial')?.value,
-      produtos: this.produtosSelecionados,
-      codigoBanco: this.form.get('codigoBanco')?.value,
-      nomeBanco: this.form.get('codigoBanco')?.value,
-      tipoContaBanco: this.form.get('tipoContaBanco')?.value === 'Corrente' ? TipoContaBanco.Corrente : TipoContaBanco.Poupanca,
-      agencia: this.form.get('agencia')?.value,
-      numeroConta: this.form.get('numeroConta')?.value,
-      cidadeBanco: this.form.get('cidadeBanco')?.value,
-      chavePix: this.form.get('chavePix')?.value,
-      frenteDocumento: this.form.get('frenteDocumento')?.value,
-      versoDocumento: this.form.get('versoDocumento')?.value,
-      selfie: this.form.get('selfie')?.value,
-      cartaoCnpj: this.form.get('cartaoCnpj')?.value,
-    }
+      cpf: this.utils.onlyDigits(raw.cpf),
+      nome: raw.nome ?? '',
+      instagram: (raw.instagram ?? '').toString().replace(/^@/, '').trim(),
+      telefone: this.utils.onlyDigits(raw.telefone),
+      enderecoCep: this.utils.onlyDigits(raw.enderecoCep),
+      enderecoLogradouro: raw.enderecoLogradouro ?? '',
+      numero: raw.numero ?? '',
+      enderecoBairro: raw.enderecoBairro ?? '',
+      enderecoCidade: (raw.enderecoCidade ?? '').toString().trim(),
+      cnpj: this.tipoCadastro === TipoCadastro.PessoaJuridica ? this.utils.onlyDigits(raw.cnpj) : '',
+      razaoSocial: this.tipoCadastro === TipoCadastro.PessoaJuridica ? (raw.razaoSocial ?? '') : '',
+      produtos: raw.produtos ?? [],
+      codigoBanco: raw.codigoBanco ?? '',
+      nomeBanco: raw.nomeBanco ?? '',
+      tipoContaBanco: tipoContaEnum,
+      agencia: raw.agencia ?? '',
+      numeroConta: raw.numeroConta ?? '',
+      cidadeBanco: raw.cidadeBanco ?? '',
+      chavePix: raw.chavePix ?? '',
+      frenteDocumento: frenteB64,
+      versoDocumento: versoB64,
+      selfie: selfieB64,
+      cartaoCnpj: cartaoB64
+    };
 
     return body;
   }
