@@ -57,15 +57,21 @@ export class UsuarioService {
     }
   }
 
-  private parseHttpError(err: unknown): Error {
-    if (err instanceof HttpErrorResponse) {
-      const msg =
-        (err.error && (err.error.message || err.error.title)) ||
-        (typeof err.error === 'string' ? err.error : null) ||
-        `Erro HTTP ${err.status || 0}`;
-      return new Error(msg);
+  async completarCadastro(
+    idUsuario: any,
+    payload: any
+  ): Promise<UsuarioResponseDto> {
+    try {
+
+      const obs = this.http.put<UsuarioResponseDto>(
+        `${API_BASE}/${idUsuario}/completar-cadastro`,
+        payload,
+        { withCredentials: true }
+      );
+      return await firstValueFrom(obs);
+    } catch (err) {
+      throw this.parseHttpError(err);
     }
-    return new Error('Erro inesperado ao chamar o servidor.');
   }
 
   async esqueciSenha(payload: any) {
@@ -104,5 +110,35 @@ export class UsuarioService {
     } catch {
       return false;
     }
+  }
+
+  private parseHttpError(err: unknown): Error {
+    if (err instanceof HttpErrorResponse) {
+      const msg =
+        (err.error && (err.error.message || err.error.title)) ||
+        (typeof err.error === 'string' ? err.error : null) ||
+        `Erro HTTP ${err.status || 0}`;
+      return new Error(msg);
+    }
+    return new Error('Erro inesperado ao chamar o servidor.');
+  }
+
+
+  private toFormData(obj: Record<string, any>): FormData {
+    const fd = new FormData();
+    const append = (key: string, value: any) => {
+      if (value === undefined || value === null) return;
+      if (value instanceof Blob || value instanceof File) {
+        fd.append(key, value);
+      } else if (Array.isArray(value)) {
+        value.forEach(v => append(`${key}[]`, v));
+      } else if (typeof value === 'object') {
+        Object.keys(value).forEach(k => append(`${key}[${k}]`, value[k]));
+      } else {
+        fd.append(key, String(value));
+      }
+    };
+    Object.keys(obj).forEach(k => append(k, obj[k]));
+    return fd;
   }
 }
