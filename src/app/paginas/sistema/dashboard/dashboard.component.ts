@@ -55,7 +55,6 @@ export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
         const primeiroNome = this.userName().split(' ')[0].slice(0, 1);
         const segundoNome = this.userName().split(' ')[1].slice(0, 1)
         this.iniciaisNome = `${primeiroNome}${segundoNome}`.toUpperCase();
-        console.log(this.iniciaisNome)
     }
 
     ngAfterViewInit() {

@@ -49,7 +49,6 @@ export class AuthService {
 
   private persist(resp: AuthResponseDto, remember: boolean) {
     const u: any = resp.usuario ?? {};
-    console.log('U', u)
     const user: AuthUser = {
       id: String(u.id ?? ''),
       email: String(u.email ?? ''),

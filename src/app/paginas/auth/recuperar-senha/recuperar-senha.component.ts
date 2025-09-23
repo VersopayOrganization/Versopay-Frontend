@@ -54,7 +54,6 @@ export class RecuperarSenhaComponent {
       }
 
       const result = await this.usuarioService.esqueciSenha(payload);
-      console.log('result:', result)
 
       if (result) this.toast.show({ message: 'Verifique seu e-mail', type: 'success-email', position: 'bottom-left', offset: { x: 40, y: 40 } });
       else this.toast.show({ message: 'Não foi possível enviar a recuperação de senha para o e-mail informado.', type: 'error', position: 'bottom-left', offset: { x: 40, y: 40 } });
