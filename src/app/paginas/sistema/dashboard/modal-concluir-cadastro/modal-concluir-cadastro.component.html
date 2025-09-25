@@ -1,0 +1,194 @@
+<div class="box">
+    <header>
+        <svg style="align-self: flex-end; width: 22px; height: 26px; cursor: pointer;" (click)="fechar()"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            aria-hidden="true" data-slot="icon" class="h-5 w-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+        </svg>
+        <h4>{{ tituloStep() }}</h4>
+    </header>
+
+    <body [formGroup]="form">
+        @if(steps === 1) {
+        <div class="step1">
+            <button class="btn-generic" type="button" (click)="onSelectTipoCadastro(0)">Pessoa Física</button>
+            <button class="btn-generic" type="button" (click)="onSelectTipoCadastro(1)">Pessoa Jurídica</button>
+        </div>
+        }
+
+        @if(steps === 2) {
+        <div class="step2">
+            <fieldset class="mt-16">
+                <input type="text" placeholder="CPF" formControlName="cpf" [class.invalid]="isInvalid('cpf')" />
+                <input type="text" placeholder="Nome Completo" formControlName="nome"
+                    [class.invalid]="isInvalid('nome')" />
+            </fieldset>
+            <fieldset>
+                <input type="text" placeholder="User do Instagram" formControlName="instagram" />
+                <input type="tel" placeholder="Telefone para Contato" formControlName="telefone"
+                    [class.invalid]="isInvalid('telefone')" inputmode="numeric" maxlength="15" />
+            </fieldset>
+        </div>
+        }
+
+        @if(steps === 3) {
+        <div class="step3">
+            @if(tipoCadastro === 1) {
+            <fieldset class="mt-16">
+                <input type="text" placeholder="CNPJ" formControlName="cnpj" [class.invalid]="isInvalid('cnpj')" />
+                <input type="text" placeholder="Razão Social" formControlName="razaoSocial"
+                    [class.invalid]="isInvalid('razaoSocial')" />
+            </fieldset>
+            }
+
+            <fieldset [ngClass]="{'mt-16': tipoCadastro === 0}">
+                <input type="text" placeholder="CEP" formControlName="enderecoCep"
+                    [class.invalid]="isInvalid('enderecoCep')" />
+                <input type="text" placeholder="Endereço" formControlName="enderecoLogradouro"
+                    [class.invalid]="isInvalid('enderecoLogradouro')" />
+            </fieldset>
+
+            <fieldset>
+                <input type="text" placeholder="Número" formControlName="numero"
+                    [class.invalid]="isInvalid('numero')" />
+                <input type="text" placeholder="Bairro" formControlName="enderecoBairro"
+                    [class.invalid]="isInvalid('enderecoBairro')" />
+                <input type="text" placeholder="UF / Cidade" formControlName="enderecoCidade"
+                    [class.invalid]="isInvalid('enderecoCidade')" />
+            </fieldset>
+
+            <h4>Quais produtos sua empresa comercializa?</h4>
+
+            <div class="event-grid">
+                <label class="evt" *ngFor="let produto of produtos">
+                    <input type="checkbox" [checked]="isChecked(produto.key)"
+                        (change)="toggleOne(produto.key, $event)" />
+                    <span>{{ produto.label }}</span>
+                </label>
+            </div>
+        </div>
+        }
+
+        @if(steps === 4) {
+        <div class="step4">
+            <fieldset class="mt-16">
+                <input type="text" placeholder="Código do Banco" formControlName="codigoBanco"
+                    [class.invalid]="isInvalid('codigoBanco')" />
+                <input type="text" placeholder="Nome do Banco" formControlName="nomeBanco"
+                    [class.invalid]="isInvalid('nomeBanco')" />
+                <app-select-basico style="width: 50%;" formControlName="tipoContaBanco" [placeholder]="'Tipo de Conta'"
+                    [options]="[
+                        { value: 'corrente', label: 'Corrente' },
+                        { value: 'poupanca',  label: 'Poupança' }
+                    ]" [width]="'100%'">
+                </app-select-basico>
+
+            </fieldset>
+
+            <fieldset>
+                <input type="text" placeholder="Agência" formControlName="agencia"
+                    [class.invalid]="isInvalid('agencia')" />
+                <input type="text" placeholder="Número da Conta" formControlName="numeroConta"
+                    [class.invalid]="isInvalid('numeroConta')" />
+                <input type="text" placeholder="UF / Cidade" formControlName="cidadeBanco"
+                    [class.invalid]="isInvalid('cidadeBanco')" />
+            </fieldset>
+
+            <fieldset>
+                <input type="text" placeholder="Chave Pix" formControlName="chavePix"
+                    [class.invalid]="isInvalid('chavePix')" />
+            </fieldset>
+
+            <div class="alerta">
+                <p>A conta bancária deve obrigatoriamente estar no nome do titular, com CPF ou CNPJ idênticos.</p>
+            </div>
+        </div>
+        }
+
+        @if (steps === 5) {
+        <div class="step5">
+            <!-- Frente -->
+            <fieldset class="mt-16">
+                <label class="doc-label">Frente do documento oficial com foto (RG ou CNH).</label>
+                <div class="dropzone" [class.invalid]="isInvalid('frenteDocumento')"
+                    [class.dragover]="dragOver['frenteDocumento']" (click)="openPicker('frenteDocumento', frenteInput)"
+                    (dragover)="onDragOver('frenteDocumento', $event)"
+                    (dragleave)="onDragLeave('frenteDocumento', $event)" (drop)="onDrop('frenteDocumento', $event)">
+                    <img src="assets/icons/icon-jpg.svg" alt="jpg" class="dz-icon" />
+                    <span>{{ fileLabel('frenteDocumento') }}</span>
+                    <input #frenteInput type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/jpg,image/png"
+                        (change)="onFilePicked('frenteDocumento', $event)" />
+                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
+                </div>
+            </fieldset>
+
+            <!-- Verso -->
+            <fieldset>
+                <label class="doc-label">Verso do documento oficial com foto (RG ou CNH).</label>
+                <div class="dropzone" [class.invalid]="isInvalid('versoDocumento')"
+                    [class.dragover]="dragOver['versoDocumento']" (click)="openPicker('versoDocumento', versoInput)"
+                    (dragover)="onDragOver('versoDocumento', $event)"
+                    (dragleave)="onDragLeave('versoDocumento', $event)" (drop)="onDrop('versoDocumento', $event)">
+                    <img src="assets/icons/icon-jpg.svg" alt="jpg" class="dz-icon" />
+                    <span>{{ fileLabel('versoDocumento') }}</span>
+                    <input #versoInput type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/jpg,image/png"
+                        (change)="onFilePicked('versoDocumento', $event)" />
+                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
+                </div>
+            </fieldset>
+
+            <!-- Selfie -->
+            <fieldset>
+                <label class="doc-label">Selfie segurando o documento oficial com foto (RG ou CNH).</label>
+                <div class="dropzone" [class.invalid]="isInvalid('selfie')" [class.dragover]="dragOver['selfie']"
+                    (click)="openPicker('selfie', selfieInput)" (dragover)="onDragOver('selfie', $event)"
+                    (dragleave)="onDragLeave('selfie', $event)" (drop)="onDrop('selfie', $event)">
+                    <img src="assets/icons/icon-jpg.svg" alt="jpg" class="dz-icon" />
+                    <span>{{ fileLabel('selfie') }}</span>
+                    <input #selfieInput type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/jpg,image/png"
+                        (change)="onFilePicked('selfie', $event)" />
+                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
+                </div>
+            </fieldset>
+
+            <!-- Cartão CNPJ (apenas PJ) -->
+            @if (tipoCadastro === 1) {
+            <fieldset>
+                <label class="doc-label">Cartão CNPJ da sua empresa (PDF).</label>
+                <div class="dropzone" [class.invalid]="isInvalid('cartaoCnpj')"
+                    [class.dragover]="dragOver['cartaoCnpj']" (click)="openPicker('cartaoCnpj', cnpjInput)"
+                    (dragover)="onDragOver('cartaoCnpj', $event)" (dragleave)="onDragLeave('cartaoCnpj', $event)"
+                    (drop)="onDrop('cartaoCnpj', $event)">
+                    <img src="assets/icons/icon-pdf.svg" alt="pdf" class="dz-icon" />
+                    <span>{{ fileLabel('cartaoCnpj') }}</span>
+                    <input #cnpjInput type="file" accept=".pdf,application/pdf"
+                        (change)="onFilePicked('cartaoCnpj', $event)" />
+                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
+                </div>
+            </fieldset>
+            }
+        </div>
+        }
+
+        @if (steps === 6) {
+        <div class="step6">
+            <p>Após análise, você receberá um e-mail confirmando seu cadastro e o acesso completo à Verso Pay.</p>
+        </div>
+        }
+    </body>
+
+
+    @if(steps > 1) {
+    <footer>
+        @if(steps !== 6) {
+        <button class="btn-generic voltar" type="button" (click)="onVoltar(steps-1)">Voltar</button>
+        <button class="btn-generic continuar" type="button" (click)="onAvancar(steps+1)">Continuar</button>
+        }
+
+        @if(steps === 6) {
+        <button class="btn-generic continuar" type="button" (click)="fechar()">Fechar</button>
+        }
+
+    </footer>
+    }
+</div>

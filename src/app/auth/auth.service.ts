@@ -49,7 +49,6 @@ export class AuthService {
 
   private persist(resp: AuthResponseDto, remember: boolean) {
     const u: any = resp.usuario ?? {};
-
     const user: AuthUser = {
       id: String(u.id ?? ''),
       email: String(u.email ?? ''),
@@ -79,6 +78,7 @@ export class AuthService {
       enderecoBairro: u.enderecoBairro ?? '',
       enderecoCidade: u.enderecoCidade ?? '',
       enderecoUF: u.enderecoUf ?? u.enderecoUF ?? '',
+      cadastroCompleto: u.cadastroCompleto
     };
 
     let expMs = Number.NaN;

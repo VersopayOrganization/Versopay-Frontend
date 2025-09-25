@@ -16,6 +16,8 @@ import Chart from 'chart.js/auto';
 import { AuthService } from '../../../auth/auth.service';
 import { MockDashService, SeriesPoint } from '../mock-data.service';
 import { CardInfoUsuarioComponent } from '../../../shared/card-info-usuario/card-info-usuario.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalConcluirCadastroComponent } from './modal-concluir-cadastro/modal-concluir-cadastro.component';
 
 type RangeKey = 'today' | 'yesterday' | '7d' | '15d' | '30d' | 'custom';
 
@@ -31,10 +33,12 @@ export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
     private isBrowser = isPlatformBrowser(this.platformId);
     private mock = inject(MockDashService);
     private auth = inject(AuthService);
+    private dialog = inject(MatDialog);
 
     @ViewChild('chartCanvas') chartEl!: ElementRef<HTMLCanvasElement>;
     chart!: Chart;
     userName = computed(() => this.auth.user()?.nome ?? 'Usuário');
+    usuarioPossuiCadastroCompleto = computed(() => this.auth.user()?.cadastroCompleto ?? false);
     iniciaisNome: string = '';
     esconderValores = signal<boolean>(false);
     intervaloDias: RangeKey = '7d';
@@ -51,7 +55,6 @@ export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
         const primeiroNome = this.userName().split(' ')[0].slice(0, 1);
         const segundoNome = this.userName().split(' ')[1].slice(0, 1)
         this.iniciaisNome = `${primeiroNome}${segundoNome}`.toUpperCase();
-        console.log(this.iniciaisNome)
     }
 
     ngAfterViewInit() {
@@ -63,7 +66,7 @@ export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
     ngOnDestroy() {
         if (this.chart) this.chart.destroy();
     }
-    
+
     toggleHide() {
         const v = !this.esconderValores();
         this.esconderValores.set(v);
@@ -227,5 +230,28 @@ export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
         if (typeof (el as any).showPicker === 'function') { (el as any).showPicker(); return; }
         el.focus();
         el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    }
+
+    finalizarCadastro() {
+        const ref = this.dialog.open(ModalConcluirCadastroComponent, {
+            width: '724px',
+            panelClass: 'vp-modal-concluir-cadastro',
+            autoFocus: false,
+        });
+
+        ref.afterClosed().subscribe(async (res: any) => {
+            // if (res === 'confirm') {
+            //     this.loading = true;
+            //     try {
+            //         await this.webhooksService.delete(w.id);
+            //         this.webhooks.update(list => list.filter(x => x.id !== w.id));
+            //         this.toast.show({ message: 'Webhook excluído!', type: 'success', position: 'top-right', offset: { x: 40, y: 40 } });
+            //     } catch (e: any) {
+            //         this.toast.show({ message: e?.message ?? 'Falha ao excluir webhook.', type: 'error', position: 'top-right', offset: { x: 40, y: 40 } });
+            //     } finally {
+            //         this.loading = false;
+            //     }
+            // }
+        });
     }
 }

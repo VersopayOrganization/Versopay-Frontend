@@ -7,6 +7,33 @@
     justify-content: space-between;
     margin-bottom: 18px;
     text-transform: capitalize;
+
+    &.incompleto {
+        gap: 22px;
+    }
+}
+
+.mensagem-completar-cadastro {
+    width: 100%;
+    background: #0D061F;
+    padding: 14px 36px 14px 20px;
+    display: flex;
+    align-items: center;
+    height: 56px;
+    border-radius: 10px;
+    justify-content: space-between;
+    gap: 16px;
+
+    >p {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 156%;
+
+        >span {
+            font-weight: 700;
+        }
+    }
 }
 
 .top h2 {
@@ -16,7 +43,7 @@
     line-height: 156%;
 }
 
-.top p {
+.top>.cadastro-completo>p {
     color: #FFFFFF;
     font-size: 24px;
     font-weight: 400;

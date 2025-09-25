@@ -1,0 +1,15 @@
+<div class="vp-select" [class.open]="open" [class.disabled]="disabled" [style.--select-width]="width || '100%'">
+    <button type="button" class="vp-control" (click)="toggle()" [attr.aria-expanded]="open">
+        <span class="label" [class.placeholder]="!value">{{ currentLabel }}</span>
+        <img src="assets/icons/arrow-redondo.svg" alt="arrow-redondo" [ngClass]="{'aberto': open}" />
+    </button>
+
+    <div class="vp-menu" *ngIf="open">
+        <ul class="vp-list" role="listbox">
+            <li class="vp-item" *ngFor="let o of options" [class.active]="o.value === value" (click)="select(o.value)"
+                role="option">
+                {{ o.label }}
+            </li>
+        </ul>
+    </div>
+</div>
