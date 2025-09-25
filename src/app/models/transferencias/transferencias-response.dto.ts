@@ -1,3 +1,5 @@
+import { MetodoPagamento } from "../../core/enums/metodoPagamento.enum";
+
 export type TransferenciasResponseDto = {
     id: number;
     dataSolicitacao: string;
@@ -14,4 +16,5 @@ export type TransferenciasResponseDto = {
     valorFinal: number;
     dataCadastro: string;
     dataAprovacao: string;
+    metodoPagamento: MetodoPagamento
 };

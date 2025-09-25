@@ -25,7 +25,7 @@ type Transferencia = {
   styleUrl: './transferencias.component.scss'
 })
 export class TransferenciasComponent {
-  private trnasferenciaService = inject(TransferenciaService);
+  private transferenciaService = inject(TransferenciaService);
   private toast = inject(ToastService);
   private safe = inject(DomSanitizer);
   private fb = inject(FormBuilder);
@@ -144,7 +144,7 @@ export class TransferenciasComponent {
     this.page = pagina;
 
     try {
-      const { items, total } = await this.trnasferenciaService.list({
+      const { items, total } = await this.transferenciaService.list({
         page: this.page,
         pageSize: this.pageSize
       });
@@ -203,7 +203,7 @@ export class TransferenciasComponent {
 
       // Aqui você chama seu endpoint de saque quando existir.
       // Exemplo (ajuste para o seu service):
-      // await this.trnasferenciaService.solicitarSaque({
+      // await this.transferenciaService.solicitarSaque({
       //   valorCentavos: this.valorCentavos,
       //   metodo: this.metodo
       // });
