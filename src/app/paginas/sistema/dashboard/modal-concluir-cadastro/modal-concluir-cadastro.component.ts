@@ -39,7 +39,7 @@ export class ModalConcluirCadastroComponent implements OnInit {
   tituloStep = computed(() => {
     switch (this.steps) {
       case 1: return 'Selecione o tipo de Cadastro';
-      case 2:
+      case 2: return 'Sobre Você'
       case 3: return this.tipoCadastro === TipoCadastro.PessoaFisica ? 'Sobre Você' : 'Sobre sua Empresa';
       case 4: return 'Finalizar Cadastro';
       case 5: return 'Documentos';
