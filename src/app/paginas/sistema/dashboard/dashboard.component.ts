@@ -21,6 +21,12 @@ import { ModalConcluirCadastroComponent } from './modal-concluir-cadastro/modal-
 
 type RangeKey = 'today' | 'yesterday' | '7d' | '15d' | '30d' | 'custom';
 
+type MiniCard = {
+    title: string;
+    percent: number;
+    volume: number;
+};
+
 @Component({
     standalone: true,
     selector: 'app-dashboard',
@@ -46,6 +52,16 @@ export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
     to = startOfToday();
     kpis = this.mock.getKpis(this.from, this.to);
     series: SeriesPoint[] = this.mock.getSeries(this.from, this.to);
+
+    // TODO: Alimentar depois dinamicamente
+    cardsMini: MiniCard[] = [
+        { title: 'Conversão PIX', percent: 69.3, volume: 19766.36 },
+        { title: 'Conversão Cartão', percent: 30.7, volume: 8756.52 },
+        { title: 'Conversão Boleto', percent: 0, volume: 0 },
+        { title: 'MED/Reembolso', percent: 0, volume: 0 },
+        { title: 'Chargeback', percent: 0, volume: 0 },
+        { title: 'Pré-Chargeback', percent: 0, volume: 0 },
+    ];
 
     constructor() {
         if (this.isBrowser) this.esconderValores.set(localStorage.getItem('vp_hide_amounts') === '1');
@@ -76,8 +92,13 @@ export class DashboardComponent implements AfterViewInit, OnDestroy, OnInit {
     setarIntervaloData(key: RangeKey) {
         this.intervaloDias = key;
         const today = startOfToday();
+
         const map: Record<Exclude<RangeKey, 'custom'>, number> = {
-            today: 0, yesterday: 1, '7d': 6, '15d': 14, '30d': 29
+            today: 0,
+            yesterday: 1,
+            '7d': 6,
+            '15d': 14,
+            '30d': 29
         };
 
         if (key !== 'custom') {
