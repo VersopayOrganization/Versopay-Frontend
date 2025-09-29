@@ -1,49 +1,34 @@
-import { Component, EventEmitter, Input, Output, inject, signal, effect } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, NavigationEnd, RouterLink, RouterLinkActive } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   standalone: true,
   selector: 'app-sidebar',
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink],
   templateUrl: './siderbar.component.html',
   styleUrls: ['./siderbar.component.scss'],
 })
 export class SidebarComponent {
-  @Input() mini = false;
-  @Output() toggle = new EventEmitter<void>();
-
+  private auth = inject(AuthService);
   private router = inject(Router);
 
-  grupoAberto = signal({ financeiro: false, configuracoes: false });
+  @Input() mini = true;
+  @Output() toggle = new EventEmitter<void>();
 
-  constructor() {
-    effect(() => {
-      if (this.mini) this.grupoAberto.set({ financeiro: false, configuracoes: false });
-    });
+  user = this.auth.user() as any;
+  iniciaisNome = '';
 
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
-      const url = this.router.url;
-
-      const isConfiguracoesFilho =
-        url.startsWith('/configuracoes/perfil') || url.startsWith('/configuracoes/webhooks');
-
-      const isFinanceiroFilho =
-        url.startsWith('/sistema/financeiro') || url.startsWith('/financeiro');
-
-      this.grupoAberto.update(g => ({
-        ...g,
-        configuracoes: !this.mini && (g.configuracoes || isConfiguracoesFilho),
-        financeiro: !this.mini && (g.financeiro || isFinanceiroFilho),
-      }));
-    });
+  ngOnInit(): void {
+    const partes = (this.user?.nome ?? '').split(' ').filter(Boolean);
+    const p1 = partes[0]?.charAt(0) ?? '';
+    const p2 = partes[1]?.charAt(0) ?? '';
+    this.iniciaisNome = `${p1}${p2}`.toUpperCase() || (p1 || '?');
   }
 
-  toggleGroup(key: 'financeiro' | 'configuracoes') {
-    if (this.mini) return;
-    this.grupoAberto.update(g => ({ ...g, [key]: !g[key] }));
-  }
+  expand() { this.mini = false; }
+  collapse() { this.mini = true; }
 
   rotaAtiva(rota: string | string[]) {
     const url = this.router.url;

@@ -11,5 +11,5 @@ import { SidebarComponent } from '../../../shared/siderbar/siderbar.component';
     styleUrl: './shell.component.scss',
 })
 export class ShellComponent {
-    mini = signal(false);
+    mini = signal(true);
 }

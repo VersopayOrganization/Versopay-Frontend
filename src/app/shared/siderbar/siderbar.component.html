@@ -1,12 +1,7 @@
-<aside class="sb" [class.sb--mini]="mini">
-    <div class="sb__brand">
+<aside class="sb" [class.sb--mini]="mini" (mouseenter)="expand()" (mouseleave)="collapse()">
+    <div class="sb__brand" title="VersoPay">
         <img class="logo-completa" src="assets/icons/logo-versopay.svg" alt="VersoPay" />
         <img class="logo-icon" src="assets/icons/logo-verso.svg" alt="icon-VersoPay" />
-
-        <button class="sb__toggle" (click)="toggle.emit()">
-            <img class="arrow-left" src="assets/icons/arrow-left.svg" alt="arrow-left" />
-            <img class="arrow-right" src="assets/icons/arrow-right.svg" alt="arrow-left" />
-        </button>
     </div>
 
     <nav class="sb__nav">
@@ -15,48 +10,45 @@
             <span class="t">Dashboard</span>
         </a>
 
-        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/pedidos')}" routerLink="/sistema/pedidos">
-            <img class="logo" src="assets/icons/icon-pedidos.svg" alt="pedidos" />
-            <span class="t">Pedidos</span>
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/transferencias')}"
+            routerLink="/sistema/transferencias">
+            <img class="logo" src="assets/icons/icon-minhas-vendas.svg" alt="minhas-vendas" />
+            <span class="t">Minhas Vendas</span>
         </a>
 
-        <!-- FINANCEIRO -->
-        <a class="sb__item" (click)="toggleGroup('financeiro')" [ngClass]="{'active': rotaAtiva('/financeiro')}">
-            <img class="logo" src="assets/icons/icon-financeiro.svg" alt="Financeiro" />
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/financeiro')}" routerLink="/sistema/financeiro">
+            <img class="logo" src="assets/icons/icon-financeiro.svg" alt="financeiro" />
             <span class="t">Financeiro</span>
-
-            @if (!grupoAberto().financeiro) {
-            <img class="arrow-unic-right" src="assets/icons/arrow-unic-right.svg" alt="abrir" />
-            }
-            @if (grupoAberto().financeiro) {
-            <img class="arrow-down" src="assets/icons/arrow-down.svg" alt="fechar" />
-            }
         </a>
 
-        <!-- Submenu Financeiro -->
-        <div id="submenu-financeiro" class="sb__submenu" *ngIf="grupoAberto().financeiro && !mini">
-            <a class="sb__subitem" routerLink="/financeiro/transferencias" routerLinkActive="active">
-                Transferências
-            </a>
-        </div>
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/chaves-api')}" routerLink="/sistema/chaves-api">
+            <img class="logo" src="assets/icons/icon-chave-api.svg" alt="chave-api" />
+            <span class="t">Chaves API</span>
+        </a>
 
-        <!-- CONFIGURAÇÕES -->
-        <a class="sb__item" (click)="toggleGroup('configuracoes')" [ngClass]="{'active': rotaAtiva('/configuracoes')}">
-            <img class="logo" src="assets/icons/icon-configuracoes.svg" alt="Configurações" />
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/webhooks')}" routerLink="/sistema/webhooks">
+            <img class="logo" src="assets/icons/icon-webhooks.svg" alt="webhooks" />
+            <span class="t">Webhooks</span>
+        </a>
+
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/configuracoes')}"
+            routerLink="/sistema/configuracoes">
+            <img class="logo" src="assets/icons/icon-configuracoes.svg" alt="configuracoes" />
             <span class="t">Configurações</span>
-
-            @if (!grupoAberto().configuracoes) {
-            <img class="arrow-unic-right" src="assets/icons/arrow-unic-right.svg" alt="abrir" />
-            }
-            @if (grupoAberto().configuracoes) {
-            <img class="arrow-down" src="assets/icons/arrow-down.svg" alt="fechar" />
-            }
         </a>
 
-        <!-- Submenu Configurações -->
-        <div id="submenu-settings" class="sb__submenu" *ngIf="grupoAberto().configuracoes && !mini">
-            <a class="sb__subitem" routerLink="/configuracoes/perfil" routerLinkActive="active">Perfil</a>
-            <a class="sb__subitem" routerLink="/configuracoes/webhooks" routerLinkActive="active">Webhooks</a>
-        </div>
+        <a class="sb__item" [ngClass]="{'active': rotaAtiva('/sistema/indique-ganhe')}"
+            routerLink="/sistema/indique-ganhe">
+            <img class="logo" src="assets/icons/icon-indique-amigos.svg" alt="indique-amigos" />
+            <span class="t">Indique e ganhe</span>
+        </a>
     </nav>
+
+    <div class="perfil" routerLink="/sistema/perfil">
+        <p class="avatar">{{ iniciaisNome }}</p>
+        <div class="info">
+            <p class="name">{{ user?.nome }}</p>
+            <p class="email">{{ user?.email }}</p>
+        </div>
+    </div>
 </aside>

@@ -1,15 +1,15 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../../auth/auth.service';
-import { WebhooksService } from '../../../../services/webhooks.service';
-import { ToastService } from '../../../../shared/toast/toast.service';
-import { WebhooksCreateDto } from '../../../../models/webhooks/webhooks-create.dto';
-import { WebhooksResponseDto } from '../../../../models/webhooks/webhooks-response.dto';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogData, ModalComponent } from '../../../../shared/modal/modal.component';
-import { CardInfoUsuarioComponent } from '../../../../shared/card-info-usuario/card-info-usuario.component';
+import { CardInfoUsuarioComponent } from '../../../shared/card-info-usuario/card-info-usuario.component';
+import { AuthService } from '../../../auth/auth.service';
+import { WebhooksService } from '../../../services/webhooks.service';
+import { ToastService } from '../../../shared/toast/toast.service';
+import { WebhooksResponseDto } from '../../../models/webhooks/webhooks-response.dto';
+import { WebhooksCreateDto } from '../../../models/webhooks/webhooks-create.dto';
+import { ConfirmDialogData, ModalComponent } from '../../../shared/modal/modal.component';
 
 @Component({
   selector: 'app-webhooks',
