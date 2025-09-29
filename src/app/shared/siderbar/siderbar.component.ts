@@ -14,19 +14,21 @@ export class SidebarComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
 
-  @Input() mini = false;
+  @Input() mini = true;
   @Output() toggle = new EventEmitter<void>();
 
   user = this.auth.user() as any;
-  iniciaisNome: string = '';
+  iniciaisNome = '';
 
   ngOnInit(): void {
-    console.log(this.user);
-    const partes = (this.user.nome ?? '').split(' ').filter(Boolean);
+    const partes = (this.user?.nome ?? '').split(' ').filter(Boolean);
     const p1 = partes[0]?.charAt(0) ?? '';
     const p2 = partes[1]?.charAt(0) ?? '';
     this.iniciaisNome = `${p1}${p2}`.toUpperCase() || (p1 || '?');
   }
+
+  expand() { this.mini = false; }
+  collapse() { this.mini = true; }
 
   rotaAtiva(rota: string | string[]) {
     const url = this.router.url;
