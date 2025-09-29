@@ -4,11 +4,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
 
-import { AuthService } from '../../../../auth/auth.service';
-import { UsuarioService } from '../../../../services/usuario.service';
-import { ToastService } from '../../../../shared/toast/toast.service';
-import { TipoCadastro } from '../../../../core/enums/tipo-cadastro.enum';
-import { Utils } from '../../../../shared/utils.service';
+import { AuthService } from '../../../auth/auth.service';
+import { UsuarioService } from '../../../services/usuario.service';
+import { ToastService } from '../../../shared/toast/toast.service';
+import { TipoCadastro } from '../../../core/enums/tipo-cadastro.enum';
+import { Utils } from '../../../shared/utils.service';
 
 type Chave = 'informacoes' | 'endereco' | 'dadosBancarios' | 'saqueCripto';
 
