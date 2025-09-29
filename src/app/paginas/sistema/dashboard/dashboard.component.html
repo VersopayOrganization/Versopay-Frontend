@@ -1,35 +1,55 @@
 <div class="layout-default">
+    @if(!usuarioPossuiCadastroCompleto()) {
+    <div class="mensagem-completar-cadastro">
+        <p><span>Seu cadastro ainda não está completo.</span> Finalize para acessar todos os recursos.</p>
+        <button class="btn-generic" type="button" (click)="finalizarCadastro()">
+            Finalizar cadastro
+        </button>
+    </div>
+    }
     <header class="top" [ngClass]="{'incompleto': !usuarioPossuiCadastroCompleto()}">
-        @if(!usuarioPossuiCadastroCompleto()) {
-        <div class="mensagem-completar-cadastro">
-            <p><span>Seu cadastro ainda não está completo.</span> Finalize para acessar todos os recursos.</p>
-            <button class="btn-generic" type="button" (click)="finalizarCadastro()">
-                Finalizar cadastro
-            </button>
-        </div>
-        }
-        @if(usuarioPossuiCadastroCompleto()) {
         <div class="cadastro-completo">
-            <h2>Olá, {{ userName() }}</h2>
-            <p>Bora escalar?!</p>
+            <h2>Dashboard</h2>
+            <p>Olá, {{ userName() }}!</p>
         </div>
-        }
 
         <app-card-info-usuario></app-card-info-usuario>
     </header>
 
-    <h3 class="title">
-        DASHBOARD
-        <span class="peek" (click)="toggleHide()">
-            @if(!this.esconderValores()) {
-            <img src="assets/icons/olho-aberto.svg" alt="olho-aberto" />
-            }
+    <section class="filters">
+        <div class="datepick">
+            <!-- DE -->
+            <div class="datepick__field" (click)="abriDataPicker(fromRef)">
+                <button type="button" class="datepick__btn" aria-label="Abrir calendário">
+                    <img src="assets/icons/icon-calendar.svg" alt="" />
+                </button>
 
-            @if(this.esconderValores()) {
-            <img src="assets/icons/olho-fechado.svg" alt="olho-fechado" />
-            }
-        </span>
-    </h3>
+                <input #fromRef type="date" [value]="dateFmt(from)" (change)="onDataSelecionada()" />
+            </div>
+
+            <span class="datepick__sep">até</span>
+
+            <!-- ATÉ -->
+            <div class="datepick__field" (click)="abriDataPicker(toRef)">
+                <button type="button" class="datepick__btn" aria-label="Abrir calendário">
+                    <img src="assets/icons/icon-calendar.svg" alt="" />
+                </button>
+
+                <input #toRef type="date" [value]="dateFmt(to)" (change)="onDataSelecionada()" />
+            </div>
+        </div>
+
+        <!-- SELECT de intervalo -->
+        <select class="select-dias" #intervalo [value]="intervaloDias"
+            (change)="setarIntervaloData($any(intervalo.value))">
+            <option value="today">Hoje</option>
+            <option value="yesterday">Ontem</option>
+            <option value="7d">Últimos 7 dias</option>
+            <option value="15d">Últimos 15 dias</option>
+            <option value="30d">Últimos 30 dias</option>
+        </select>
+
+    </section>
 
     <!-- KPIs -->
     <section class="kpis">
@@ -39,105 +59,51 @@
                 <img src="assets/icons/icon-faturamento.svg" alt="icon-faturamento" />
             </span>
             <strong class="kpi__val">{{ mask(kpis.faturamento) }}</strong>
-            <small>67% Cartão | 33% Pix</small>
         </div>
 
         <div class="kpi">
             <span class="kpi__label">
-                Saldo Disponível
-                <img src="assets/icons/icon-saldo-disponivel.svg" alt="icon-saldo-disponivel" />
+                Ticket Médio
+                <img src="assets/icons/icon-porcentagem.svg" alt="icon-porcentagem" />
             </span>
             <strong class="kpi__val">{{ mask(kpis.saldoDisponivel) }}</strong>
-            <small>&nbsp;</small>
         </div>
 
         <div class="kpi">
             <span class="kpi__label">
-                Saldo Pendente
-                <img src="assets/icons/icon-saldo-pendente.svg" alt="icon-saldo-pendente" />
-                <img src="assets/icons/icon-interrogacao.svg" alt="icon-interrogacao" />
+                Pedidos Pagos
+                <img src="assets/icons/icon-pedidos-pagos.svg" alt="icon-pedidos-pagos" />
             </span>
             <strong class="kpi__val">{{ mask(kpis.saldoPendente) }}</strong>
-            <small>&nbsp;</small>
         </div>
-
-        <!-- Filtros -->
-        <section class="filters">
-            <h5>Filtrar data:</h5>
-            <div class="datepick">
-                <!-- DE -->
-                <div class="datepick__field" (click)="abriDataPicker(fromRef)">
-                    <button type="button" class="datepick__btn" aria-label="Abrir calendário">
-                        <img src="assets/icons/icon-calendar.svg" alt="" />
-                    </button>
-
-                    <input #fromRef type="date" [value]="dateFmt(from)" (change)="onDataSelecionada()" />
-                </div>
-
-                <span class="datepick__sep">até</span>
-
-                <!-- ATÉ -->
-                <div class="datepick__field" (click)="abriDataPicker(toRef)">
-                    <button type="button" class="datepick__btn" aria-label="Abrir calendário">
-                        <img src="assets/icons/icon-calendar.svg" alt="" />
-                    </button>
-
-                    <input #toRef type="date" [value]="dateFmt(to)" (change)="onDataSelecionada()" />
-                </div>
-            </div>
-
-            <div class="quick">
-                <button [class.on]="intervaloDias==='today'" (click)="setarIntervaloData('today')">Hoje</button>
-                <button [class.on]="intervaloDias==='yesterday'"
-                    (click)="setarIntervaloData('yesterday')">Ontem</button>
-                <button [class.on]="intervaloDias==='7d'" (click)="setarIntervaloData('7d')">7 dias</button>
-                <button [class.on]="intervaloDias==='15d'" (click)="setarIntervaloData('15d')">15 dias</button>
-                <button [class.on]="intervaloDias==='30d'" (click)="setarIntervaloData('30d')">30 dias</button>
-            </div>
-        </section>
     </section>
 
     <!-- Gráfico -->
     <section class="card chart">
-        <header>GRÁFICO DE FATURAMENTO</header>
-        <p>Mês atual: R$ 34.347,89</p>
-        <p class="anterior">Mês anterior: R$ 28.226,82</p>
+        <div class="chart__head">
+            <h5>Resumo das suas vendas</h5>
+            <p>Acompanhe o gráfico de faturamento da sua operação.</p>
+        </div>
 
+        <hr />
         <div class="chart__wrap">
             <canvas #chartCanvas></canvas>
         </div>
-    </section>
-
-    <section class="cards">
-        <div class="mini">
-            <img src="assets/icons/aprovacao-cartao.svg" alt="aprovacao-cartao" />
-            <div>
-                <span>97,6% Aprovação Cartão</span>
-                <small>873 Pedidos | R$ 28.321,71</small>
-            </div>
-        </div>
-        <div class="mini">
-            <img src="assets/icons/conversao-pix.svg" alt="conversao-pix'" />
-            <div>
-                <span>92,5% Conversão Pix</span>
-                <small>683 Pedidos | R$ 28.321,71</small>
-            </div>
-        </div>
-        <div class="mini">
-            <img src="assets/icons/med.svg" alt="med'" />
-            <div>
-                <span>2,6% MED</span>
-                <small>13 Pedidos | R$ 721,71</small>
-            </div>
-        </div>
-
-        <div class="mini">
-            <img src="assets/icons/chargeback.svg" alt="chargeback'" />
-            <div>
-                <span>0,6% Chargeback</span>
-                <small>5 Pedidos | R$ 219,32</small>
-            </div>
-        </div>
+        <hr />
 
     </section>
+
+    <section class="cards kpis-mini">
+        <div class="mini" *ngFor="let c of cardsMini">
+            <div class="donut" [style.--p]="c.percent">
+                <span>{{ c.percent | number:'1.0-1' }}%</span>
+            </div>
+
+            <div class="info">
+                <strong>{{ c.title }}</strong>
+                <small>Volume total: {{ c.volume | currency:'BRL':'symbol':'1.2-2' }}</small>
+            </div>
+        </div>
+    </section>
+
 </div>
