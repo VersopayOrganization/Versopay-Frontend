@@ -1,13 +1,13 @@
 import { Component, inject } from "@angular/core";
-import { CardInfoUsuarioComponent } from "../../../../shared/card-info-usuario/card-info-usuario.component";
-import { Coluna, TableComponent } from "../../../../shared/table/table.component";
-import { SearchFiltroComponent } from "../../../../shared/search-filtro/search-filtro.component";
-import { ToastService } from "../../../../shared/toast/toast.service";
-import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
-import { StatusPedido } from "../../../../core/enums/status-pedido.enum";
-import { TransferenciaService } from "../../../../services/transferencia.service";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { debounceTime, distinctUntilChanged } from "rxjs";
+import { CardInfoUsuarioComponent } from "../../../shared/card-info-usuario/card-info-usuario.component";
+import { Coluna, TableComponent } from "../../../shared/table/table.component";
+import { SearchFiltroComponent } from "../../../shared/search-filtro/search-filtro.component";
+import { TransferenciaService } from "../../../services/transferencia.service";
+import { ToastService } from "../../../shared/toast/toast.service";
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { StatusPedido } from "../../../core/enums/status-pedido.enum";
 
 type Transferencia = {
   id: number;

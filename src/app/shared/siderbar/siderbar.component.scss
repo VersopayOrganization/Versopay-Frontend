@@ -2,12 +2,14 @@
  @use "../../styles/_mixins" as *;
 
  .sb {
-     width: 240px;
-     background: $color-roxo-siderbar;
+     width: 280px;
+     background: $color-fundo-preto-claro;
      color: #FFF;
-     min-height: 100dvh;
+     min-height: 94dvh;
      padding: 40px 0;
-     transition: width .2s
+     transition: width .2s;
+     display: flex;
+     flex-direction: column;
  }
 
  .sb--mini {
@@ -48,25 +50,12 @@
      left: 25%;
  }
 
- .sb__toggle {
-     background: #2a135e;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     border: 0;
-     border-radius: 50%;
-     width: 30px;
-     height: 30px;
-     cursor: pointer;
-     position: relative;
-     left: 16%;
-     top: 33px;
- }
 
  .sb__nav {
      display: flex;
      flex-direction: column;
-     gap: 6px
+     gap: 6px;
+     flex-grow: 1;
  }
 
  .sb__item {
@@ -114,32 +103,43 @@
      text-align: center
  }
 
-
- /* submenu */
- .sb__submenu {
-     display: grid;
+ .perfil {
+     padding-bottom: 21px;
+     margin-left: auto;
+     margin-right: auto;
+     display: flex;
+     align-items: center;
      gap: 16px;
-     padding: 8px 0 12px;
-     margin-left: 44px;
- }
+     cursor: pointer;
 
- .sb__subitem {
-     display: block;
-     text-decoration: none;
-     color: #fff;
-     margin: 0;
-     padding: 0;
- }
+     >.avatar {
+         margin: 0;
+         background: #5230BB94;
+         padding: 8px;
+         border: 1px solid #5E32E8;
+         border-radius: 9px;
+         width: 38px;
+         height: 38px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         font-weight: bold;
+         font-size: 15px;
+         line-height: 156%;
+     }
 
- .sb__subitem.active,
- .sb__subitem:hover {
-     color: #9376F0;
- }
+     >.info>p {
+         margin: 0;
+         line-height: 156%;
 
- .sb--mini .sb__submenu {
-     display: none;
- }
+         &.name {
+            font-weight: 800;
+            font-size: 16px;
+         }
 
- .sb--mini .sb__group .chev {
-     display: none;
+         &.email {
+            font-weight: 400;
+            font-size: 13px;
+         }
+     }
  }
