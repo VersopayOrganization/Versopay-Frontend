@@ -11,7 +11,7 @@
     position: relative;
     width: var(--select-width, 100%);
     font-size: 16px;
-    background: transparent;
+    background: #FFF;
     color: #908D99;
     border: 1px solid #908D99;
     height: 44px;
@@ -61,7 +61,7 @@
     top: calc(100% + 1px);
     left: 0;
     right: 0;
-    background: #0E0722;
+    background: #FFF;
     border: 1px solid #908D99;
     border-radius: 0 0 10px 10px;
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
