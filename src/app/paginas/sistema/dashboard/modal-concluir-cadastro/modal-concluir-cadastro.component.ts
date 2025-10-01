@@ -35,18 +35,7 @@ export class ModalConcluirCadastroComponent implements OnInit {
   steps = 1;
   tipoCadastro: TipoCadastro = null!;
   loading = false;
-
-  tituloStep = computed(() => {
-    switch (this.steps) {
-      case 1: return 'Selecione o seu Tipo de Cadastro';
-      case 2: return 'Me Conte Sobre Você'
-      case 3: return this.tipoCadastro === TipoCadastro.PessoaFisica ? 'Sobre Você' : 'Sobre sua Empresa';
-      case 4: return 'Finalizar Cadastro';
-      case 5: return 'Documentos';
-      case 6: return 'Obrigado por enviar seus dados!';
-      default: return '';
-    }
-  });
+  tituloStep = 'Selecione o seu Tipo de Cadastro';
 
   readonly produtos = [
     { key: 'infoprodutos', label: 'Infoprodutos' },
@@ -235,11 +224,25 @@ export class ModalConcluirCadastroComponent implements OnInit {
       this.applyTipoValidators();
     }
     this.steps = next;
-    this.tituloStep();
+    this.tituloStep = this.definirNomeStep();
+  }
+
+  definirNomeStep() {
+    switch (this.steps) {
+      case 1: return 'Selecione o seu Tipo de Cadastro';
+      case 2: return 'Me Conte Sobre Você';
+      case 3: return this.tipoCadastro === TipoCadastro.PessoaFisica
+        ? 'Sobre Você' : 'Sobre sua Empresa';
+      case 4: return 'Finalizar Cadastro';
+      case 5: return 'Documentos';
+      case 6: return 'Obrigado por enviar seus dados!';
+      default: return '';
+    }
   }
 
   onVoltar(step: number) {
     this.steps = step;
+    this.tituloStep = this.definirNomeStep();
   }
 
   fechar(result: 'cancel' | 'confirm' | Record<string, any> = 'cancel') {
