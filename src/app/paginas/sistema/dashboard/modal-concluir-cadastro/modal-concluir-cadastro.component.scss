@@ -395,3 +395,21 @@ footer {
         }
     }
 }
+
+.aceite-termo {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.termos-box {
+    background: #FFF;
+    padding: 16px;
+    border-radius: 15px;
+    margin: 32px 0;
+    border: 1px solid #C9C9C9;
+
+    >.conteudo-termo>p {
+        color: #070707;
+    }
+}

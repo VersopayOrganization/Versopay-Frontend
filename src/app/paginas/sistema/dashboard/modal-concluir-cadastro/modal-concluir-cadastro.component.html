@@ -9,7 +9,7 @@
         <h4>{{ tituloStep }}</h4>
 
         <!-- STEP PROGRESS -->
-        <div class="step-progress" [class.hidden]="steps === 1 || steps === 6">
+        <div class="step-progress" [class.hidden]="steps === 1 || steps === 7">
             <div class="track"></div>
             <div class="fill" [style.width.%]="progressFill"></div>
 
@@ -33,7 +33,6 @@
                         <circle cx="115.5" cy="77.0002" r="48.125" />
                     </svg>
                 </div>
-
                 Pessoa Física
             </button>
             <button class="btn-generic" type="button" (click)="onSelectTipoCadastro(1)">
@@ -46,7 +45,6 @@
                             d="M121.628 78.9124C125.768 82.207 130.686 84.5343 136.041 85.5706C138.665 86.0778 141.484 86.1389 144.255 86.152C144.44 90.285 144.469 95.1656 144.469 100.978V153.794C144.469 162.847 144.468 167.374 141.672 170.187C138.876 172.998 134.376 173 125.376 173H98.721V136.595C98.721 131.292 94.4467 126.992 89.1741 126.992H71.6746L70.6957 127.039C65.8846 127.534 62.1278 131.625 62.1278 136.595V173H35.4824C26.4826 173 21.9819 172.998 19.1856 170.187C16.3896 167.374 16.3887 162.847 16.3887 153.794V100.978C16.3887 95.1658 16.4085 90.2849 16.5938 86.152C19.3682 86.1391 22.1901 86.0784 24.8168 85.5706C30.1698 84.5348 35.0821 82.2045 39.2209 78.9124C44.9258 83.4651 52.1036 86.1802 59.8436 86.1802C67.5672 86.1802 74.73 83.4755 80.429 78.9405C86.1281 83.4755 93.2909 86.1802 101.014 86.1802C108.752 86.1802 115.924 83.4623 121.628 78.9124Z" />
                     </svg>
                 </div>
-
                 Pessoa Jurídica
             </button>
         </div>
@@ -66,7 +64,6 @@
                     <input type="text" placeholder="Digite seu nome" formControlName="nome"
                         [class.invalid]="isInvalid('nome')" />
                 </fieldset>
-
             </div>
 
             <div class="row">
@@ -80,7 +77,6 @@
                         [class.invalid]="isInvalid('telefone')" inputmode="numeric" maxlength="15" />
                 </fieldset>
             </div>
-
         </div>
         }
 
@@ -135,7 +131,6 @@
                 </fieldset>
             </div>
 
-
             <h4>Qual é sua operação hoje?</h4>
 
             <div class="event-grid">
@@ -171,7 +166,6 @@
                             { value: 'poupanca',  label: 'Poupança' }
                         ]" [width]="'100%'">
                     </app-select-basico>
-
                 </fieldset>
             </div>
 
@@ -269,30 +263,74 @@
         </div>
         }
 
+        <!-- STEP 6 — Termos -->
         @if (steps === 6) {
-        <div class="step6">
+        <div class="step6-termos">
+            <div class="termos-box">
+                <div class="conteudo-termo">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer consequat, nibh id varius
+                        gravida,
+                        massa mauris aliquet nibh, quis finibus tortor leo vitae justo. Curabitur non sem vitae eros
+                        cursus
+                        malesuada. Etiam dictum, nibh et auctor ultricies, est arcu luctus odio, eget suscipit augue
+                        magna
+                        vitae justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+                        turpis
+                        egestas. Integer in tempor augue. Praesent dapibus, sem in cursus porta, risus augue vehicula
+                        lorem,
+                        ac rhoncus risus lectus in sem. Cras nec odio in neque fermentum placerat. Vestibulum ante ipsum
+                        primis
+                        in faucibus orci luctus et ultrices posuere cubilia curae; Integer congue pharetra leo, vitae
+                        gravida
+                        ipsum mattis nec. (…)
+                    </p>
+                    <p>
+                        Suspendisse potenti. Integer at cursus lectus, feugiat lobortis enim. Nulla a fermentum nibh.
+                        Duis
+                        elementum, mi sit amet feugiat volutpat, ex orci volutpat lacus, vitae vehicula metus urna non
+                        ipsum.
+                        Donec posuere, ex sed consectetur ultricies, arcu sem tempor velit, eget sagittis nunc lorem
+                        quis nisl.
+                        Mauris sed nibh ac risus placerat ullamcorper. (…)
+                    </p>
+                </div>
+            </div>
+
+            <label class="aceite-termo">
+                <input type="checkbox" formControlName="aceitarTermos" />
+                <span>
+                    Eu concordo com os
+                    <a href="#" target="_blank" rel="noopener noreferrer">termos de serviço e políticas de privacidade
+                        da VersoPay</a>
+                    e com os termos de serviço de quaisquer serviços de APIs aplicáveis.
+                </span>
+            </label>
+        </div>
+        }
+
+        @if (steps === 7) {
+        <div class="step7">
             <p>Após análise, você receberá um e-mail confirmando seu cadastro e o acesso completo à Verso Pay.</p>
         </div>
         }
     </body>
 
-
     <footer>
-        @if(steps !== 6) {
-        <button class="btn-generic voltar" type="button" (click)="steps === 1 ? fechar() : onVoltar(steps-1)">
-            @if(steps === 1) {
-            Cancelar
+        @if(steps >= 1 && steps <= 5) { <button class="btn-generic voltar" type="button"
+            (click)="steps === 1 ? fechar() : onVoltar(steps-1)">
+            @if(steps === 1) { Cancelar } @if(steps !== 1) { Voltar }
+            </button>
+            <button class="btn-generic continuar" type="button" (click)="onAvancar(steps+1)">Continuar</button>
             }
-            @if(steps !== 1) {
-            Voltar
+
+            @if(steps === 6) {
+            <button class="btn-generic voltar" type="button" (click)="onVoltar(5)">Voltar</button>
+            <button class="btn-generic continuar" type="button" (click)="onAvancar(7)">Finalizar Cadastro</button>
             }
-        </button>
-        <button class="btn-generic continuar" type="button" (click)="onAvancar(steps+1)">Continuar</button>
-        }
 
-        @if(steps === 6) {
-        <button class="btn-generic continuar" type="button" (click)="fechar()">Fechar</button>
-        }
-
+            @if(steps === 7) {
+            <button class="btn-generic continuar" type="button" (click)="fechar()">Fechar</button>
+            }
     </footer>
 </div>

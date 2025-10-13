@@ -37,7 +37,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
   loading = false;
   tituloStep = 'Selecione o seu Tipo de Cadastro';
 
-  // --- PROGRESS BAR (visível do step 2 ao 5) ---
   readonly progress = [
     { label: 'Sobre você', step: 2 },
     { label: 'Sua Empresa', step: 3 },
@@ -45,52 +44,38 @@ export class ModalConcluirCadastroComponent implements OnInit {
     { label: 'Documentos', step: 5 },
   ];
 
-  // Largura do preenchimento roxo (em %) — preenche segmentos completos até o step atual
   get progressFill(): number {
-    const total = this.progress.length; // 4
+    const total = this.progress.length;
     const done = this.progress.filter(p => p.step < this.steps).length;
     const idxAtual = this.progress.findIndex(p => p.step === this.steps);
-    const parcial = idxAtual >= 0 ? 1 : 0; // preenche também o segmento atual
+    const parcial = idxAtual >= 0 ? 1 : 0;
     const fill = Math.min(done + parcial, total);
     return (fill / total) * 100;
   }
 
-  canClick(targetStep: number): boolean {
-    // voltar sempre pode; avançar pode clicar, mas a navegação só ocorre se validar sequencialmente
-    return true;
-  }
+  canClick(_targetStep: number): boolean { return true; }
 
   async onProgressClick(item: { label: string; step: number }) {
     if (item.step === this.steps) return;
 
-    // voltar não exige validação
     if (item.step < this.steps) {
       this.steps = item.step;
       this.tituloStep = this.definirNomeStep();
       return;
     }
 
-    // avançar: valida cada etapa intermediária (2 -> 3 -> 4 -> 5)
     const origem = this.steps;
     for (let s = origem; s < item.step; s++) {
       const ok = await this.validateStepAsync(s);
       if (!ok) {
-        // falhou na etapa s: para aqui e mostra título correspondente
         this.steps = s;
         this.tituloStep = this.definirNomeStep();
         return;
       }
-
-      // passou na etapa s → avança uma casa
-      if (s === 5 && item.step === 6) {
-        await this.onAvancar(6);
-      } else {
-        this.steps = s + 1;
-        this.tituloStep = this.definirNomeStep();
-      }
+      this.steps = s + 1;
+      this.tituloStep = this.definirNomeStep();
     }
   }
-  // --- FIM PROGRESS ---
 
   readonly produtos = [
     { key: 'infoprodutos', label: 'Infoprodutos' },
@@ -124,6 +109,9 @@ export class ModalConcluirCadastroComponent implements OnInit {
     versoDocumento: [null as File | null, [Validators.required]],
     selfie: [null as File | null, [Validators.required]],
     cartaoCnpj: [null as File | null],
+
+    // STEP 6 — termos
+    aceitarTermos: [false, [Validators.requiredTrue]],
   });
 
   selectedDocs: Record<DocCtrl, File | null> = {
@@ -149,7 +137,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
   get someSelected(): boolean { return this.produtosSelecionados.length > 0 && !this.allSelected; }
 
   ngOnInit() {
-    console.log('Tipo cadastro', this.tipoCadastro);
     this.mascarasEBuscaCEP();
   }
 
@@ -164,7 +151,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
       .subscribe(digits => {
         const masked = this.utils.maskCep(digits);
         if (masked !== cepCtrl.value) cepCtrl.setValue(masked, { emitEvent: false });
-
         if (digits.length === 8 && digits !== this.ultimoCepObtido) {
           this.ultimoCepObtido = digits;
           // this.fetchCepAndAutofill(digits);
@@ -251,14 +237,12 @@ export class ModalConcluirCadastroComponent implements OnInit {
 
     if (!this.validateStep(this.steps)) return;
 
-    if (this.steps === 5 && next === 6) {
+    if (this.steps === 6 && next === 7) {
       try {
         this.loading = true;
         const userId = this.auth.user()?.id;
-
         const payload = await this.buildPayload();
         await this.usuarioService.completarCadastro(userId, payload);
-
         this.steps = next;
       } catch (e: any) {
         this.toast.show({
@@ -289,7 +273,8 @@ export class ModalConcluirCadastroComponent implements OnInit {
         ? 'Sobre Você' : 'Sobre sua Empresa';
       case 4: return 'Finalizar Cadastro';
       case 5: return 'Documentos';
-      case 6: return 'Obrigado por enviar seus dados!';
+      case 6: return 'Termo de uso e Políticas de privacidade';
+      case 7: return 'Obrigado por enviar seus dados!';
       default: return '';
     }
   }
@@ -308,6 +293,7 @@ export class ModalConcluirCadastroComponent implements OnInit {
     const s3 = ['enderecoCep', 'enderecoLogradouro', 'numero', 'enderecoBairro', 'enderecoCidade', 'produtos'];
     const s4 = ['codigoBanco', 'nomeBanco', 'tipoContaBanco', 'agencia', 'numeroConta', 'digitoConta'];
     const s5 = ['frenteDocumento', 'versoDocumento', 'selfie'];
+    const s6 = ['aceitarTermos']; 
 
     if (step === 2) return s2;
     if (step === 3) {
@@ -321,10 +307,10 @@ export class ModalConcluirCadastroComponent implements OnInit {
       if (this.tipoCadastro === TipoCadastro.PessoaJuridica) base.push('cartaoCnpj');
       return base;
     }
+    if (step === 6) return s6;
     return [];
   }
 
-  // Wrapper novo para validar um step específico
   private validateStep(step: number): boolean {
     const required = this.getRequiredForStep(step);
     if (required.length === 0) return true;
@@ -350,12 +336,10 @@ export class ModalConcluirCadastroComponent implements OnInit {
     return ok;
   }
 
-  // Mantém a assinatura async para futuro (ex.: validações remotas)
   private async validateStepAsync(step: number): Promise<boolean> {
     return this.validateStep(step);
   }
 
-  // compatibilidade com chamadas antigas (se existirem)
   private validateCurrentStep(): boolean {
     return this.validateStep(this.steps);
   }
