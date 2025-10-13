@@ -1,7 +1,7 @@
 ::ng-deep .mat-mdc-dialog-surface {
-    background-color: #0D061F !important;
+    background-color: #070707 !important;
     border-radius: 15px !important;
-    border: 1px solid #2A135E !important;
+    border: 1px solid #5E32E8 !important;
 }
 
 ::ng-deep .cdk-overlay-pane.mat-mdc-dialog-panel {
@@ -30,14 +30,40 @@ h4 {
         >.step1 {
             margin-top: 16px;
             display: flex;
-            gap: 8px;
+            gap: 16px;
             align-items: center;
             justify-content: center;
 
             >button {
                 font-size: 24px;
-                width: 257px;
-                height: 54px;
+                width: 310px;
+                height: 324px;
+                flex-direction: column;
+                background: transparent;
+
+                >div {
+                    background: #D9D9D9;
+                    width: 310px;
+                    height: 324px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 15px;
+                    gap: 8px;
+
+                    >.icone {
+                        fill: #222222;
+                    }
+
+                    &.active {
+                        background: #5E32E8;
+                        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+                        >.icone {
+                            fill: #FFF;
+                        }
+                    }
+                }
             }
         }
     }
@@ -45,14 +71,16 @@ h4 {
 
 fieldset {
     display: flex;
+    flex-direction: column;
     color: white;
-    gap: 16px;
+    gap: 8px;
     margin-bottom: 16px;
+    width: 50%;
 
     >input {
-        width: 50%;
-        background: transparent;
-        color: white;
+        width: 90%;
+        background: #FFF;
+        color: #D9D9D9;
         border: 1px solid #908D99;
         height: 20px;
     }
@@ -62,29 +90,29 @@ fieldset {
     border-color: #FF0000 !important;
 }
 
-.step3 {
+.step3>div {
 
-    >fieldset:nth-child(1),
-    >fieldset:nth-child(2) {
+    >.numero {
+        width: 10%;
 
-        >input:nth-child(1),
-        >input:nth-child(2) {
-            width: 30%;
-        }
-
-        >input:nth-child(2),
-        >input:nth-child(2) {
-            width: 70%;
+        >input {
+            width: 50%;
         }
     }
 
-    >fieldset:nth-child(3) {
-        >input:nth-child(1) {
-            width: 25%;
-        }
+    >.bairro {
+        width: 35%;
 
-        >input:nth-child(3) {
-            width: 40%;
+        >input {
+            width: 87%;
+        }
+    }
+
+    >.cidade {
+        width: 48%;
+
+        >input {
+            width: 91%;
         }
     }
 
@@ -96,25 +124,37 @@ fieldset {
 }
 
 .step4 {
-    >fieldset:nth-child(2) {
+    >div {
+        >.cod-banco {
+            width: 26%;
 
-        >input:nth-child(1),
-        >input:nth-child(3) {
-            width: 25%;
+            >input {
+                width: 76%;
+            }
+        }
+
+        >.nome-banco,
+        >.agencia,
+        >.num-conta,
+        >.digito-conta {
+            >input {
+                width: 87%;
+            }
         }
     }
 
-    >fieldset:nth-child(3) {
+    >.chave-pix {
+        width: 100%;
+
         >input {
-            width: 100%;
+            width: 95%;
         }
     }
 
     >.alerta {
-        padding: 14px 36px 14px 20px;
-        background-color: #200F48;
-        border-radius: 9px;
-        margin: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 16px;
 
         >p {
             margin: 0;
@@ -130,13 +170,15 @@ fieldset {
     >fieldset {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 8px;
+        width: 99%;
 
         >label {
-            font-size: 22px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 500;
             line-height: 156%;
             color: #FFF;
+            margin-top: 6px;
         }
 
         >.dropzone {
@@ -147,12 +189,13 @@ fieldset {
             display: flex;
             align-items: center;
             gap: 12px;
+            background: #FFF;
 
             >span {
                 line-height: 156%;
                 font-size: 20px;
                 font-weight: 400;
-                color: #908D99;
+                color: #D9D9D9;
                 flex-grow: 2;
             }
         }
@@ -189,28 +232,23 @@ footer {
 
     >button {
         height: 54px;
-        width: 257px;
+        width: 100%;
         font-size: 24px;
 
         &.voltar {
             background: transparent;
             background: transparent;
-            border: 1px solid #5E596B;
-            color: #5E596B;
-        }
-
-        &.continuar {
-            width: 374px;
-            height: 54px;
+            border: 1px solid #5E32E8;
+            color: #FFF;
         }
     }
 }
 
 .event-grid {
-    display: grid;
-    gap: 12px 10px;
-    grid-template-columns: 175px 275px 105px;
-    grid-auto-rows: 40px;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 16px;
 
     >label:nth-child(5) {
         text-wrap-mode: nowrap;
@@ -230,14 +268,13 @@ footer {
     width: 22px;
     height: 22px;
     border-radius: 6px;
-    border: 2px solid #908D99;
-    background: transparent;
+    border: 1px solid #908D99;
+    background: #FFF;
     position: relative;
     cursor: pointer;
     display: inline-block;
 }
 
-/* miolo preenchido (aparece só quando marcado) */
 .evt input[type="checkbox"]::before {
     content: '';
     position: absolute;
@@ -269,4 +306,110 @@ footer {
 
 .evt input[type="checkbox"]:checked::after {
     opacity: 1;
+}
+
+.step-progress {
+    position: relative;
+    margin: 16px auto 0;
+    width: 100%;
+    max-width: 680px;
+    height: 44px;
+    border-radius: 999px;
+    background: #ffffff;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
+
+    &.hidden {
+        display: none;
+    }
+
+    .track {
+        position: absolute;
+        inset: 0;
+        background: #ffffff;
+        z-index: 0;
+    }
+
+    .fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0%;
+        background: #8967EA;
+        z-index: 1;
+        transition: width .25s ease;
+    }
+
+    .seg {
+        position: relative;
+        z-index: 2;
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: #8A8A8A;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 156%;
+        cursor: pointer;
+        padding: 0 18px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        // separadores suaves entre segmentos
+        &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 8px;
+            bottom: 8px;
+            width: 1px;
+            background: rgba(0, 0, 0, .06);
+        }
+
+        &:last-child::after {
+            display: none;
+        }
+
+        // texto sobre preenchimento roxo
+        &.done,
+        &.active {
+            color: #FFFFFF;
+            text-shadow: 0 1px 0 rgba(0, 0, 0, .12);
+        }
+
+        &.locked {
+            cursor: pointer;
+        }
+
+        // foco/hover
+        &:hover {
+            filter: brightness(0.98);
+        }
+
+        &:focus-visible {
+            outline: 2px solid #5E32E8;
+            outline-offset: 2px;
+        }
+    }
+}
+
+.aceite-termo {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.termos-box {
+    background: #FFF;
+    padding: 16px;
+    border-radius: 15px;
+    margin: 32px 0;
+    border: 1px solid #C9C9C9;
+
+    >.conteudo-termo>p {
+        color: #070707;
+    }
 }

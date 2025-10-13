@@ -5,59 +5,133 @@
             aria-hidden="true" data-slot="icon" class="h-5 w-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
         </svg>
-        <h4>{{ tituloStep() }}</h4>
+
+        <h4>{{ tituloStep }}</h4>
+
+        <!-- STEP PROGRESS -->
+        <div class="step-progress" [class.hidden]="steps === 1 || steps === 7">
+            <div class="track"></div>
+            <div class="fill" [style.width.%]="progressFill"></div>
+
+            <button class="seg" *ngFor="let item of progress; let i = index" type="button"
+                [class.done]="item.step < steps" [class.active]="item.step === steps"
+                [class.locked]="!canClick(item.step)" (click)="onProgressClick(item)">
+                {{ item.label }}
+            </button>
+        </div>
     </header>
 
     <body [formGroup]="form">
         @if(steps === 1) {
         <div class="step1">
-            <button class="btn-generic" type="button" (click)="onSelectTipoCadastro(0)">Pessoa Física</button>
-            <button class="btn-generic" type="button" (click)="onSelectTipoCadastro(1)">Pessoa Jurídica</button>
+            <button class="btn-generic" type="button" (click)="onSelectTipoCadastro(0)">
+                <div [ngClass]="{'active': tipoCadastro === 0}">
+                    <svg class="icone" width="231" height="231" viewBox="0 0 231 231" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M198.062 184.919C198.651 184.796 199 184.184 198.792 183.618C193.692 169.732 182.985 157.477 168.233 148.673C153.105 139.644 134.569 134.75 115.5 134.75C96.4304 134.75 77.8941 139.644 62.7656 148.673C48.0144 157.477 37.307 169.732 32.2066 183.618C31.999 184.183 32.3477 184.796 32.9373 184.919L107.339 200.424C112.721 201.546 118.278 201.546 123.66 200.424L198.062 184.919Z" />
+                        <circle cx="115.5" cy="77.0002" r="48.125" />
+                    </svg>
+                </div>
+                Pessoa Física
+            </button>
+            <button class="btn-generic" type="button" (click)="onSelectTipoCadastro(1)">
+                <div [ngClass]="{'active': tipoCadastro === 1}">
+                    <svg class="icone" width="160" height="173" viewBox="0 0 160 173" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12.0258 14.2739C13.7658 7.41881 14.6358 3.99129 17.2308 1.99577C19.8258 0.000244141 23.4129 0.000244141 30.5872 0.000244141H129.058C136.233 0.000244141 139.82 0.000244141 142.415 1.99577C145.01 3.99129 145.88 7.41881 147.62 14.2739L158.503 57.1507C159.279 60.205 159.666 61.7322 159.645 62.9731C159.572 67.1772 156.681 70.8252 152.557 71.914C151.34 72.2353 149.699 72.2353 146.418 72.2353C142.17 72.2353 140.045 72.2353 138.255 71.896C131.688 70.6517 126.257 66.1205 123.931 59.945C123.297 58.261 122.957 56.2511 122.276 52.2314C122.086 51.1069 121.991 50.5447 121.895 50.3897C121.523 49.785 120.632 49.785 120.26 50.3897C120.164 50.5447 120.069 51.1069 119.879 52.2314L119.131 56.6489C117.609 65.6431 109.708 72.2353 100.45 72.2353C91.1922 72.2353 83.2912 65.6431 81.7691 56.6489L81.0216 52.2314C80.8313 51.1069 80.7362 50.5447 80.6407 50.3897C80.2683 49.785 79.3774 49.785 79.0049 50.3897C78.9095 50.5447 78.8143 51.1069 78.6241 52.2314L77.8765 56.6489C76.3545 65.6431 68.4535 72.2353 59.1955 72.2353C49.9375 72.2353 42.0365 65.6431 40.5145 56.6489L39.7669 52.2314C39.5766 51.1069 39.4815 50.5447 39.3861 50.3897C39.0136 49.785 38.1227 49.785 37.7502 50.3897C37.6548 50.5447 37.5596 51.1069 37.3694 52.2314C36.6891 56.2511 36.349 58.261 35.7148 59.945C33.389 66.1205 27.9581 70.6517 21.3909 71.896C19.6002 72.2353 17.476 72.2353 13.2278 72.2353C9.94641 72.2353 8.30571 72.2353 7.08864 71.914C2.96513 70.8252 0.0731914 67.1772 0.000836705 62.9731C-0.0205192 61.7322 0.367123 60.205 1.14241 57.1507L12.0258 14.2739Z" />
+                        <path
+                            d="M121.628 78.9124C125.768 82.207 130.686 84.5343 136.041 85.5706C138.665 86.0778 141.484 86.1389 144.255 86.152C144.44 90.285 144.469 95.1656 144.469 100.978V153.794C144.469 162.847 144.468 167.374 141.672 170.187C138.876 172.998 134.376 173 125.376 173H98.721V136.595C98.721 131.292 94.4467 126.992 89.1741 126.992H71.6746L70.6957 127.039C65.8846 127.534 62.1278 131.625 62.1278 136.595V173H35.4824C26.4826 173 21.9819 172.998 19.1856 170.187C16.3896 167.374 16.3887 162.847 16.3887 153.794V100.978C16.3887 95.1658 16.4085 90.2849 16.5938 86.152C19.3682 86.1391 22.1901 86.0784 24.8168 85.5706C30.1698 84.5348 35.0821 82.2045 39.2209 78.9124C44.9258 83.4651 52.1036 86.1802 59.8436 86.1802C67.5672 86.1802 74.73 83.4755 80.429 78.9405C86.1281 83.4755 93.2909 86.1802 101.014 86.1802C108.752 86.1802 115.924 83.4623 121.628 78.9124Z" />
+                    </svg>
+                </div>
+                Pessoa Jurídica
+            </button>
         </div>
         }
 
         @if(steps === 2) {
         <div class="step2">
-            <fieldset class="mt-16">
-                <input type="text" placeholder="CPF" formControlName="cpf" [class.invalid]="isInvalid('cpf')" />
-                <input type="text" placeholder="Nome Completo" formControlName="nome"
-                    [class.invalid]="isInvalid('nome')" />
-            </fieldset>
-            <fieldset>
-                <input type="text" placeholder="User do Instagram" formControlName="instagram" />
-                <input type="tel" placeholder="Telefone para Contato" formControlName="telefone"
-                    [class.invalid]="isInvalid('telefone')" inputmode="numeric" maxlength="15" />
-            </fieldset>
+            <div class="mt-16 row">
+                <fieldset>
+                    <label>Digite seu CPF</label>
+                    <input type="text" placeholder="Digite seu CPF" formControlName="cpf"
+                        [class.invalid]="isInvalid('cpf')" />
+                </fieldset>
+
+                <fieldset>
+                    <label>Nome Completo</label>
+                    <input type="text" placeholder="Digite seu nome" formControlName="nome"
+                        [class.invalid]="isInvalid('nome')" />
+                </fieldset>
+            </div>
+
+            <div class="row">
+                <fieldset>
+                    <label [innerHTML]="'Digite o @ do seu instagram'"></label>
+                    <input type="text" placeholder="Digite o seu @" formControlName="instagram" />
+                </fieldset>
+                <fieldset>
+                    <label>Seu Celular (WhatsApp)</label>
+                    <input type="tel" placeholder="(99) 99999-9999" formControlName="telefone"
+                        [class.invalid]="isInvalid('telefone')" inputmode="numeric" maxlength="15" />
+                </fieldset>
+            </div>
         </div>
         }
 
         @if(steps === 3) {
         <div class="step3">
             @if(tipoCadastro === 1) {
-            <fieldset class="mt-16">
-                <input type="text" placeholder="CNPJ" formControlName="cnpj" [class.invalid]="isInvalid('cnpj')" />
-                <input type="text" placeholder="Razão Social" formControlName="razaoSocial"
-                    [class.invalid]="isInvalid('razaoSocial')" />
-            </fieldset>
+            <div class="row">
+                <fieldset class="mt-16">
+                    <label>Digite seu CNPJ</label>
+                    <input type="text" placeholder="Digite seu CNPJ" formControlName="cnpj"
+                        [class.invalid]="isInvalid('cnpj')" />
+                </fieldset>
+
+                <fieldset class="mt-16">
+                    <label>Razão Social</label>
+                    <input type="text" placeholder="Razão Social" formControlName="razaoSocial"
+                        [class.invalid]="isInvalid('razaoSocial')" />
+                </fieldset>
+            </div>
             }
 
-            <fieldset [ngClass]="{'mt-16': tipoCadastro === 0}">
-                <input type="text" placeholder="CEP" formControlName="enderecoCep"
-                    [class.invalid]="isInvalid('enderecoCep')" />
-                <input type="text" placeholder="Endereço" formControlName="enderecoLogradouro"
-                    [class.invalid]="isInvalid('enderecoLogradouro')" />
-            </fieldset>
+            <div class="row">
+                <fieldset [ngClass]="{'mt-16': tipoCadastro === 0}">
+                    <label>Informe o seu CEP</label>
+                    <input type="text" placeholder="" formControlName="enderecoCep"
+                        [class.invalid]="isInvalid('enderecoCep')" />
+                </fieldset>
 
-            <fieldset>
-                <input type="text" placeholder="Número" formControlName="numero"
-                    [class.invalid]="isInvalid('numero')" />
-                <input type="text" placeholder="Bairro" formControlName="enderecoBairro"
-                    [class.invalid]="isInvalid('enderecoBairro')" />
-                <input type="text" placeholder="UF / Cidade" formControlName="enderecoCidade"
-                    [class.invalid]="isInvalid('enderecoCidade')" />
-            </fieldset>
+                <fieldset [ngClass]="{'mt-16': tipoCadastro === 0}">
+                    <label>Seu Endereço</label>
+                    <input type="text" placeholder="" formControlName="enderecoLogradouro"
+                        [class.invalid]="isInvalid('enderecoLogradouro')" />
+                </fieldset>
+            </div>
 
-            <h4>Quais produtos sua empresa comercializa?</h4>
+            <div class="row">
+                <fieldset class="numero">
+                    <label>Número</label>
+                    <input type="text" placeholder="" formControlName="numero" [class.invalid]="isInvalid('numero')" />
+                </fieldset>
+
+                <fieldset class="bairro">
+                    <label>Bairro</label>
+                    <input type="text" placeholder="" formControlName="enderecoBairro"
+                        [class.invalid]="isInvalid('enderecoBairro')" />
+                </fieldset>
+
+                <fieldset class="cidade">
+                    <label>UF/Cidade</label>
+                    <input type="text" placeholder="" formControlName="enderecoCidade"
+                        [class.invalid]="isInvalid('enderecoCidade')" />
+                </fieldset>
+            </div>
+
+            <h4>Qual é sua operação hoje?</h4>
 
             <div class="event-grid">
                 <label class="evt" *ngFor="let produto of produtos">
@@ -71,36 +145,59 @@
 
         @if(steps === 4) {
         <div class="step4">
-            <fieldset class="mt-16">
-                <input type="text" placeholder="Código do Banco" formControlName="codigoBanco"
-                    [class.invalid]="isInvalid('codigoBanco')" />
-                <input type="text" placeholder="Nome do Banco" formControlName="nomeBanco"
-                    [class.invalid]="isInvalid('nomeBanco')" />
-                <app-select-basico style="width: 50%;" formControlName="tipoContaBanco" [placeholder]="'Tipo de Conta'"
-                    [options]="[
-                        { value: 'corrente', label: 'Corrente' },
-                        { value: 'poupanca',  label: 'Poupança' }
-                    ]" [width]="'100%'">
-                </app-select-basico>
+            <div class="row mt-16">
+                <fieldset class="cod-banco">
+                    <label>Código do banco:</label>
+                    <input type="text" placeholder="Digite o código" formControlName="codigoBanco"
+                        [class.invalid]="isInvalid('codigoBanco')" />
+                </fieldset>
 
-            </fieldset>
+                <fieldset class="nome-banco">
+                    <label>Nome do banco:</label>
+                    <input type="text" placeholder="Digite o nome" formControlName="nomeBanco"
+                        [class.invalid]="isInvalid('nomeBanco')" />
+                </fieldset>
 
-            <fieldset>
-                <input type="text" placeholder="Agência" formControlName="agencia"
-                    [class.invalid]="isInvalid('agencia')" />
-                <input type="text" placeholder="Número da Conta" formControlName="numeroConta"
-                    [class.invalid]="isInvalid('numeroConta')" />
-                <input type="text" placeholder="UF / Cidade" formControlName="cidadeBanco"
-                    [class.invalid]="isInvalid('cidadeBanco')" />
-            </fieldset>
+                <fieldset class="tipo-conta">
+                    <label>Tipo de conta</label>
+                    <app-select-basico style="width: 99%;" formControlName="tipoContaBanco" [placeholder]="'Selecione'"
+                        [options]="[
+                            { value: 'corrente', label: 'Corrente' },
+                            { value: 'poupanca',  label: 'Poupança' }
+                        ]" [width]="'100%'">
+                    </app-select-basico>
+                </fieldset>
+            </div>
 
-            <fieldset>
+            <div class="row">
+                <fieldset class="agencia">
+                    <label>Agência</label>
+                    <input type="text" placeholder="Digite sua agência" formControlName="agencia"
+                        [class.invalid]="isInvalid('agencia')" />
+                </fieldset>
+
+                <fieldset class="num-conta">
+                    <label>Número da conta</label>
+                    <input type="text" placeholder="Número da Conta" formControlName="numeroConta"
+                        [class.invalid]="isInvalid('numeroConta')" />
+                </fieldset>
+
+                <fieldset class="digito-conta">
+                    <label>Digito da conta</label>
+                    <input type="text" placeholder="Digite o dígito" formControlName="digitoConta"
+                        [class.invalid]="isInvalid('digitoConta')" />
+                </fieldset>
+            </div>
+
+            <fieldset class="chave-pix">
+                <label>Chave pix</label>
                 <input type="text" placeholder="Chave Pix" formControlName="chavePix"
                     [class.invalid]="isInvalid('chavePix')" />
             </fieldset>
 
             <div class="alerta">
-                <p>A conta bancária deve obrigatoriamente estar no nome do titular, com CPF ou CNPJ idênticos.</p>
+                <img src="assets/icons/alerta-chave-pix.svg" alt="jpg" class="dz-icon" />
+                <p>A chave PIX deve ser em nome do titular do cadastro.</p>
             </div>
         </div>
         }
@@ -114,11 +211,10 @@
                     [class.dragover]="dragOver['frenteDocumento']" (click)="openPicker('frenteDocumento', frenteInput)"
                     (dragover)="onDragOver('frenteDocumento', $event)"
                     (dragleave)="onDragLeave('frenteDocumento', $event)" (drop)="onDrop('frenteDocumento', $event)">
-                    <img src="assets/icons/icon-jpg.svg" alt="jpg" class="dz-icon" />
+                    <img src="assets/icons/icon-jpg-colorido.svg" alt="jpg" class="dz-icon" />
                     <span>{{ fileLabel('frenteDocumento') }}</span>
                     <input #frenteInput type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/jpg,image/png"
                         (change)="onFilePicked('frenteDocumento', $event)" />
-                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
                 </div>
             </fieldset>
 
@@ -129,11 +225,10 @@
                     [class.dragover]="dragOver['versoDocumento']" (click)="openPicker('versoDocumento', versoInput)"
                     (dragover)="onDragOver('versoDocumento', $event)"
                     (dragleave)="onDragLeave('versoDocumento', $event)" (drop)="onDrop('versoDocumento', $event)">
-                    <img src="assets/icons/icon-jpg.svg" alt="jpg" class="dz-icon" />
+                    <img src="assets/icons/icon-jpg-colorido.svg" alt="jpg" class="dz-icon" />
                     <span>{{ fileLabel('versoDocumento') }}</span>
                     <input #versoInput type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/jpg,image/png"
                         (change)="onFilePicked('versoDocumento', $event)" />
-                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
                 </div>
             </fieldset>
 
@@ -143,11 +238,10 @@
                 <div class="dropzone" [class.invalid]="isInvalid('selfie')" [class.dragover]="dragOver['selfie']"
                     (click)="openPicker('selfie', selfieInput)" (dragover)="onDragOver('selfie', $event)"
                     (dragleave)="onDragLeave('selfie', $event)" (drop)="onDrop('selfie', $event)">
-                    <img src="assets/icons/icon-jpg.svg" alt="jpg" class="dz-icon" />
+                    <img src="assets/icons/icon-jpg-colorido.svg" alt="jpg" class="dz-icon" />
                     <span>{{ fileLabel('selfie') }}</span>
                     <input #selfieInput type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/jpg,image/png"
                         (change)="onFilePicked('selfie', $event)" />
-                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
                 </div>
             </fieldset>
 
@@ -159,36 +253,84 @@
                     [class.dragover]="dragOver['cartaoCnpj']" (click)="openPicker('cartaoCnpj', cnpjInput)"
                     (dragover)="onDragOver('cartaoCnpj', $event)" (dragleave)="onDragLeave('cartaoCnpj', $event)"
                     (drop)="onDrop('cartaoCnpj', $event)">
-                    <img src="assets/icons/icon-pdf.svg" alt="pdf" class="dz-icon" />
+                    <img src="assets/icons/icon-pdf-colorido.svg" alt="pdf" class="dz-icon" />
                     <span>{{ fileLabel('cartaoCnpj') }}</span>
                     <input #cnpjInput type="file" accept=".pdf,application/pdf"
                         (change)="onFilePicked('cartaoCnpj', $event)" />
-                    <img src="assets/icons/icon-plus.svg" alt="plus" class="dz-icon" />
                 </div>
             </fieldset>
             }
         </div>
         }
 
+        <!-- STEP 6 — Termos -->
         @if (steps === 6) {
-        <div class="step6">
+        <div class="step6-termos">
+            <div class="termos-box">
+                <div class="conteudo-termo">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer consequat, nibh id varius
+                        gravida,
+                        massa mauris aliquet nibh, quis finibus tortor leo vitae justo. Curabitur non sem vitae eros
+                        cursus
+                        malesuada. Etiam dictum, nibh et auctor ultricies, est arcu luctus odio, eget suscipit augue
+                        magna
+                        vitae justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+                        turpis
+                        egestas. Integer in tempor augue. Praesent dapibus, sem in cursus porta, risus augue vehicula
+                        lorem,
+                        ac rhoncus risus lectus in sem. Cras nec odio in neque fermentum placerat. Vestibulum ante ipsum
+                        primis
+                        in faucibus orci luctus et ultrices posuere cubilia curae; Integer congue pharetra leo, vitae
+                        gravida
+                        ipsum mattis nec. (…)
+                    </p>
+                    <p>
+                        Suspendisse potenti. Integer at cursus lectus, feugiat lobortis enim. Nulla a fermentum nibh.
+                        Duis
+                        elementum, mi sit amet feugiat volutpat, ex orci volutpat lacus, vitae vehicula metus urna non
+                        ipsum.
+                        Donec posuere, ex sed consectetur ultricies, arcu sem tempor velit, eget sagittis nunc lorem
+                        quis nisl.
+                        Mauris sed nibh ac risus placerat ullamcorper. (…)
+                    </p>
+                </div>
+            </div>
+
+            <label class="aceite-termo">
+                <input type="checkbox" formControlName="aceitarTermos" />
+                <span>
+                    Eu concordo com os
+                    <a href="#" target="_blank" rel="noopener noreferrer">termos de serviço e políticas de privacidade
+                        da VersoPay</a>
+                    e com os termos de serviço de quaisquer serviços de APIs aplicáveis.
+                </span>
+            </label>
+        </div>
+        }
+
+        @if (steps === 7) {
+        <div class="step7">
             <p>Após análise, você receberá um e-mail confirmando seu cadastro e o acesso completo à Verso Pay.</p>
         </div>
         }
     </body>
 
-
-    @if(steps > 1) {
     <footer>
-        @if(steps !== 6) {
-        <button class="btn-generic voltar" type="button" (click)="onVoltar(steps-1)">Voltar</button>
-        <button class="btn-generic continuar" type="button" (click)="onAvancar(steps+1)">Continuar</button>
-        }
+        @if(steps >= 1 && steps <= 5) { <button class="btn-generic voltar" type="button"
+            (click)="steps === 1 ? fechar() : onVoltar(steps-1)">
+            @if(steps === 1) { Cancelar } @if(steps !== 1) { Voltar }
+            </button>
+            <button class="btn-generic continuar" type="button" (click)="onAvancar(steps+1)">Continuar</button>
+            }
 
-        @if(steps === 6) {
-        <button class="btn-generic continuar" type="button" (click)="fechar()">Fechar</button>
-        }
+            @if(steps === 6) {
+            <button class="btn-generic voltar" type="button" (click)="onVoltar(5)">Voltar</button>
+            <button class="btn-generic continuar" type="button" (click)="onAvancar(7)">Finalizar Cadastro</button>
+            }
 
+            @if(steps === 7) {
+            <button class="btn-generic continuar" type="button" (click)="fechar()">Fechar</button>
+            }
     </footer>
-    }
 </div>

@@ -33,27 +33,56 @@ export class ModalConcluirCadastroComponent implements OnInit {
   private ultimoCepObtido: string | null = null;
 
   steps = 1;
-  tipoCadastro: TipoCadastro = TipoCadastro.PessoaFisica;
+  tipoCadastro: TipoCadastro = null!;
   loading = false;
+  tituloStep = 'Selecione o seu Tipo de Cadastro';
 
-  tituloStep = computed(() => {
-    switch (this.steps) {
-      case 1: return 'Selecione o tipo de Cadastro';
-      case 2: return 'Sobre Você'
-      case 3: return this.tipoCadastro === TipoCadastro.PessoaFisica ? 'Sobre Você' : 'Sobre sua Empresa';
-      case 4: return 'Finalizar Cadastro';
-      case 5: return 'Documentos';
-      case 6: return 'Obrigado por enviar seus dados!';
-      default: return '';
+  readonly progress = [
+    { label: 'Sobre você', step: 2 },
+    { label: 'Sua Empresa', step: 3 },
+    { label: 'Dados de pagamento', step: 4 },
+    { label: 'Documentos', step: 5 },
+  ];
+
+  get progressFill(): number {
+    const total = this.progress.length;
+    const done = this.progress.filter(p => p.step < this.steps).length;
+    const idxAtual = this.progress.findIndex(p => p.step === this.steps);
+    const parcial = idxAtual >= 0 ? 1 : 0;
+    const fill = Math.min(done + parcial, total);
+    return (fill / total) * 100;
+  }
+
+  canClick(_targetStep: number): boolean { return true; }
+
+  async onProgressClick(item: { label: string; step: number }) {
+    if (item.step === this.steps) return;
+
+    if (item.step < this.steps) {
+      this.steps = item.step;
+      this.tituloStep = this.definirNomeStep();
+      return;
     }
-  });
+
+    const origem = this.steps;
+    for (let s = origem; s < item.step; s++) {
+      const ok = await this.validateStepAsync(s);
+      if (!ok) {
+        this.steps = s;
+        this.tituloStep = this.definirNomeStep();
+        return;
+      }
+      this.steps = s + 1;
+      this.tituloStep = this.definirNomeStep();
+    }
+  }
 
   readonly produtos = [
     { key: 'infoprodutos', label: 'Infoprodutos' },
-    { key: 'ecommerceTradicional', label: 'Ecommerce Tradicional' },
-    { key: 'saas', label: 'SaaS' },
     { key: 'dropshipping', label: 'Dropshipping' },
-    { key: 'nutraceutico', label: 'Nútraceutico (Encapsulados, gotas, etc...)' },
+    { key: 'saas', label: 'SaaS' },
+    { key: 'subaquirente', label: 'Subaquirente' },
+    { key: 'ecommerce', label: 'Ecommerce' },
   ];
 
   form = this.fb.group({
@@ -74,12 +103,15 @@ export class ModalConcluirCadastroComponent implements OnInit {
     tipoContaBanco: ['', [Validators.required]],
     agencia: ['', [Validators.required]],
     numeroConta: ['', [Validators.required]],
-    cidadeBanco: ['', [Validators.required]],
+    digitoConta: ['', [Validators.required]],
     chavePix: [''],
     frenteDocumento: [null as File | null, [Validators.required]],
     versoDocumento: [null as File | null, [Validators.required]],
     selfie: [null as File | null, [Validators.required]],
     cartaoCnpj: [null as File | null],
+
+    // STEP 6 — termos
+    aceitarTermos: [false, [Validators.requiredTrue]],
   });
 
   selectedDocs: Record<DocCtrl, File | null> = {
@@ -119,7 +151,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
       .subscribe(digits => {
         const masked = this.utils.maskCep(digits);
         if (masked !== cepCtrl.value) cepCtrl.setValue(masked, { emitEvent: false });
-
         if (digits.length === 8 && digits !== this.ultimoCepObtido) {
           this.ultimoCepObtido = digits;
           // this.fetchCepAndAutofill(digits);
@@ -171,7 +202,6 @@ export class ModalConcluirCadastroComponent implements OnInit {
   onSelectTipoCadastro(tipoCadastro: TipoCadastro) {
     this.tipoCadastro = tipoCadastro;
     this.applyTipoValidators();
-    this.steps = 2;
   }
 
   private applyTipoValidators() {
@@ -195,16 +225,24 @@ export class ModalConcluirCadastroComponent implements OnInit {
   }
 
   async onAvancar(next: number) {
-    if (!this.validateCurrentStep()) return;
+    if (this.steps === 1 && this.tipoCadastro === null) {
+      this.toast.show({
+        message: 'Deve selecionar um tipo de cadastro.',
+        type: 'warning',
+        position: 'top-right',
+        offset: { x: 40, y: 40 },
+      });
+      return;
+    }
 
-    if (this.steps === 5 && next === 6) {
+    if (!this.validateStep(this.steps)) return;
+
+    if (this.steps === 6 && next === 7) {
       try {
         this.loading = true;
         const userId = this.auth.user()?.id;
-
         const payload = await this.buildPayload();
         await this.usuarioService.completarCadastro(userId, payload);
-
         this.steps = next;
       } catch (e: any) {
         this.toast.show({
@@ -224,10 +262,26 @@ export class ModalConcluirCadastroComponent implements OnInit {
       this.applyTipoValidators();
     }
     this.steps = next;
+    this.tituloStep = this.definirNomeStep();
+  }
+
+  definirNomeStep() {
+    switch (this.steps) {
+      case 1: return 'Selecione o seu Tipo de Cadastro';
+      case 2: return 'Me Conte Sobre Você';
+      case 3: return this.tipoCadastro === TipoCadastro.PessoaFisica
+        ? 'Sobre Você' : 'Sobre sua Empresa';
+      case 4: return 'Finalizar Cadastro';
+      case 5: return 'Documentos';
+      case 6: return 'Termo de uso e Políticas de privacidade';
+      case 7: return 'Obrigado por enviar seus dados!';
+      default: return '';
+    }
   }
 
   onVoltar(step: number) {
     this.steps = step;
+    this.tituloStep = this.definirNomeStep();
   }
 
   fechar(result: 'cancel' | 'confirm' | Record<string, any> = 'cancel') {
@@ -237,8 +291,9 @@ export class ModalConcluirCadastroComponent implements OnInit {
   private getRequiredForStep(step: number): string[] {
     const s2 = ['cpf', 'nome', 'telefone'];
     const s3 = ['enderecoCep', 'enderecoLogradouro', 'numero', 'enderecoBairro', 'enderecoCidade', 'produtos'];
-    const s4 = ['codigoBanco', 'nomeBanco', 'tipoContaBanco', 'agencia', 'numeroConta', 'cidadeBanco'];
+    const s4 = ['codigoBanco', 'nomeBanco', 'tipoContaBanco', 'agencia', 'numeroConta', 'digitoConta'];
     const s5 = ['frenteDocumento', 'versoDocumento', 'selfie'];
+    const s6 = ['aceitarTermos']; 
 
     if (step === 2) return s2;
     if (step === 3) {
@@ -252,11 +307,12 @@ export class ModalConcluirCadastroComponent implements OnInit {
       if (this.tipoCadastro === TipoCadastro.PessoaJuridica) base.push('cartaoCnpj');
       return base;
     }
+    if (step === 6) return s6;
     return [];
   }
 
-  private validateCurrentStep(): boolean {
-    const required = this.getRequiredForStep(this.steps);
+  private validateStep(step: number): boolean {
+    const required = this.getRequiredForStep(step);
     if (required.length === 0) return true;
     this.applyTipoValidators();
 
@@ -278,6 +334,14 @@ export class ModalConcluirCadastroComponent implements OnInit {
       });
     }
     return ok;
+  }
+
+  private async validateStepAsync(step: number): Promise<boolean> {
+    return this.validateStep(step);
+  }
+
+  private validateCurrentStep(): boolean {
+    return this.validateStep(this.steps);
   }
 
   isInvalid(name: string) {
@@ -403,7 +467,7 @@ export class ModalConcluirCadastroComponent implements OnInit {
       tipoContaBanco: tipoContaEnum,
       agencia: raw.agencia ?? '',
       numeroConta: raw.numeroConta ?? '',
-      cidadeBanco: raw.cidadeBanco ?? '',
+      digitoConta: raw.digitoConta ?? '',
       chavePix: raw.chavePix ?? '',
       frenteDocumento: frenteB64,
       versoDocumento: versoB64,
