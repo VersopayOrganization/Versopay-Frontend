@@ -5,7 +5,20 @@
             aria-hidden="true" data-slot="icon" class="h-5 w-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
         </svg>
+
         <h4>{{ tituloStep }}</h4>
+
+        <!-- STEP PROGRESS -->
+        <div class="step-progress" [class.hidden]="steps === 1 || steps === 6">
+            <div class="track"></div>
+            <div class="fill" [style.width.%]="progressFill"></div>
+
+            <button class="seg" *ngFor="let item of progress; let i = index" type="button"
+                [class.done]="item.step < steps" [class.active]="item.step === steps"
+                [class.locked]="!canClick(item.step)" (click)="onProgressClick(item)">
+                {{ item.label }}
+            </button>
+        </div>
     </header>
 
     <body [formGroup]="form">

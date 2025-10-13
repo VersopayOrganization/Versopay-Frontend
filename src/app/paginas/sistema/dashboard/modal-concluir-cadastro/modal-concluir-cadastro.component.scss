@@ -275,7 +275,6 @@ footer {
     display: inline-block;
 }
 
-/* miolo preenchido (aparece só quando marcado) */
 .evt input[type="checkbox"]::before {
     content: '';
     position: absolute;
@@ -307,4 +306,92 @@ footer {
 
 .evt input[type="checkbox"]:checked::after {
     opacity: 1;
+}
+
+.step-progress {
+    position: relative;
+    margin: 16px auto 0;
+    width: 100%;
+    max-width: 680px;
+    height: 44px;
+    border-radius: 999px;
+    background: #ffffff;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
+
+    &.hidden {
+        display: none;
+    }
+
+    .track {
+        position: absolute;
+        inset: 0;
+        background: #ffffff;
+        z-index: 0;
+    }
+
+    .fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0%;
+        background: #8967EA;
+        z-index: 1;
+        transition: width .25s ease;
+    }
+
+    .seg {
+        position: relative;
+        z-index: 2;
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: #8A8A8A;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 156%;
+        cursor: pointer;
+        padding: 0 18px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        // separadores suaves entre segmentos
+        &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 8px;
+            bottom: 8px;
+            width: 1px;
+            background: rgba(0, 0, 0, .06);
+        }
+
+        &:last-child::after {
+            display: none;
+        }
+
+        // texto sobre preenchimento roxo
+        &.done,
+        &.active {
+            color: #FFFFFF;
+            text-shadow: 0 1px 0 rgba(0, 0, 0, .12);
+        }
+
+        &.locked {
+            cursor: pointer;
+        }
+
+        // foco/hover
+        &:hover {
+            filter: brightness(0.98);
+        }
+
+        &:focus-visible {
+            outline: 2px solid #5E32E8;
+            outline-offset: 2px;
+        }
+    }
 }
