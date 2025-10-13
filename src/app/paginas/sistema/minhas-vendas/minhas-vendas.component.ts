@@ -4,7 +4,7 @@ import { debounceTime, distinctUntilChanged } from "rxjs";
 import { CardInfoUsuarioComponent } from "../../../shared/card-info-usuario/card-info-usuario.component";
 import { Coluna, TableComponent } from "../../../shared/table/table.component";
 import { SearchFiltroComponent } from "../../../shared/search-filtro/search-filtro.component";
-import { TransferenciaService } from "../../../services/transferencia.service";
+import { MinhasVendasService } from "../../../services/transferencia.service";
 import { ToastService } from "../../../shared/toast/toast.service";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { StatusPedido } from "../../../core/enums/status-pedido.enum";
@@ -19,13 +19,13 @@ type Transferencia = {
 };
 
 @Component({
-  selector: 'app-transferencias',
+  selector: 'app-minhas-vendas',
   imports: [CardInfoUsuarioComponent, TableComponent, SearchFiltroComponent, ReactiveFormsModule],
-  templateUrl: './transferencias.component.html',
-  styleUrl: './transferencias.component.scss'
+  templateUrl: './minhas-vendas.component.html',
+  styleUrl: './minhas-vendas.component.scss'
 })
-export class TransferenciasComponent {
-  private transferenciaService = inject(TransferenciaService);
+export class MinhasVendasComponent {
+  private MinhasVendasService = inject(MinhasVendasService);
   private toast = inject(ToastService);
   private safe = inject(DomSanitizer);
   private fb = inject(FormBuilder);
@@ -144,7 +144,7 @@ export class TransferenciasComponent {
     this.page = pagina;
 
     try {
-      const { items, total } = await this.transferenciaService.list({
+      const { items, total } = await this.MinhasVendasService.list({
         page: this.page,
         pageSize: this.pageSize
       });
@@ -203,7 +203,7 @@ export class TransferenciasComponent {
 
       // Aqui você chama seu endpoint de saque quando existir.
       // Exemplo (ajuste para o seu service):
-      // await this.transferenciaService.solicitarSaque({
+      // await this.MinhasVendasService.solicitarSaque({
       //   valorCentavos: this.valorCentavos,
       //   metodo: this.metodo
       // });

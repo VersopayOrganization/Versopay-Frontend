@@ -2,12 +2,12 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environment';
-import { TransferenciasResponseDto } from '../models/transferencias/transferencias-response.dto';
-import { TransferenciasCreateDto } from '../models/transferencias/transferencias-create.dto';
+import { MinhasVendasResponseDto } from '../models/minhas-vendas/minhas-vendas-response.dto';
+import { MinhasVendasCreateDto } from '../models/minhas-vendas/minhas-vendas-create.dto';
 
 const API_BASE = `${environment.apiUrl}/api/transferencias`;
 
-export interface TransferenciaListParams {
+export interface MinhasVendasListParams {
     status?: string;
     solicitanteId?: number;
     dataInicio?: string;
@@ -22,10 +22,10 @@ export interface Paginated<T> {
 }
 
 @Injectable({ providedIn: 'root' })
-export class TransferenciaService {
+export class MinhasVendasService {
     private http = inject(HttpClient);
 
-    async list(paramsIn: TransferenciaListParams): Promise<Paginated<TransferenciasResponseDto>> {
+    async list(paramsIn: MinhasVendasListParams): Promise<Paginated<MinhasVendasResponseDto>> {
         let params = new HttpParams()
             .set('page', String(paramsIn.page))
             .set('pageSize', String(paramsIn.pageSize));
@@ -46,7 +46,7 @@ export class TransferenciaService {
                 return { items: body.pedidos ?? [], total: body.totalRegistros };
             }
 
-            const items: TransferenciasResponseDto[] = Array.isArray(body) ? body : [];
+            const items: MinhasVendasResponseDto[] = Array.isArray(body) ? body : [];
             const totalHeader =
                 resp.headers.get('x-total-count') ||
                 resp.headers.get('X-Total-Count') ||
@@ -60,18 +60,18 @@ export class TransferenciaService {
         }
     }
 
-    async create(payload: TransferenciasCreateDto): Promise<TransferenciasResponseDto> {
+    async create(payload: MinhasVendasCreateDto): Promise<MinhasVendasResponseDto> {
         try {
-            const obs = this.http.post<TransferenciasResponseDto>(API_BASE, payload, { withCredentials: true });
+            const obs = this.http.post<MinhasVendasResponseDto>(API_BASE, payload, { withCredentials: true });
             return await firstValueFrom(obs);
         } catch (err) {
             throw this.parseHttpError(err);
         }
     }
 
-    async getById(id: number): Promise<TransferenciasResponseDto | null> {
+    async getById(id: number): Promise<MinhasVendasResponseDto | null> {
         try {
-            const obs = this.http.get<TransferenciasResponseDto>(`${API_BASE}/${id}`, { withCredentials: true });
+            const obs = this.http.get<MinhasVendasResponseDto>(`${API_BASE}/${id}`, { withCredentials: true });
             return await firstValueFrom(obs);
         } catch (err) {
             if (err instanceof HttpErrorResponse && err.status === 404) return null;
@@ -79,9 +79,9 @@ export class TransferenciaService {
         }
     }
 
-    async update(id: number, payload: TransferenciasCreateDto): Promise<TransferenciasResponseDto> {
+    async update(id: number, payload: MinhasVendasCreateDto): Promise<MinhasVendasResponseDto> {
         try {
-            const obs = this.http.put<TransferenciasResponseDto>(`${API_BASE}/${id}/status`, payload, {
+            const obs = this.http.put<MinhasVendasResponseDto>(`${API_BASE}/${id}/status`, payload, {
                 withCredentials: true,
             });
             return await firstValueFrom(obs);
