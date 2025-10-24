@@ -102,7 +102,7 @@ export class MinhasVendasComponent {
   ];
 
   ngOnInit() {
-    this.carregarPagina(1);
+    // this.carregarPagina(1);
 
     const ctrl = this.saqueForm.get('valor')!;
     ctrl.valueChanges.pipe(distinctUntilChanged(), debounceTime(0)).subscribe(v => {
