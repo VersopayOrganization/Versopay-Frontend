@@ -1,64 +1,54 @@
 # ==========================================================
-# 🚀 Build and Deploy Angular Frontend to Azure Static Web App (DEV)
+# 🚀 Azure Static Web Apps CI/CD - Versopay Frontend (DEV)
 # Ambiente: Desenvolvimento
 # Serviço destino: web-versopay-dev (Azure Static Web App)
 # ==========================================================
 
-name: Build and deploy Angular app to Azure Static Web App - web-versopay-dev
+name: Azure Static Web Apps CI/CD - web-versopay-dev
 
 on:
   push:
     branches:
-      - main # ou 'develop' se preferir deploy do ambiente de dev nessa branch
-  workflow_dispatch:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
 
 jobs:
   build_and_deploy_job:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Angular Frontend
 
     steps:
-      # -------------------------------
-      # 1️⃣ Clonar repositório
-      # -------------------------------
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # -------------------------------
-      # 2️⃣ Configurar Node.js (v18 LTS recomendado)
-      # -------------------------------
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
         with:
-          node-version: '18.x'
-          cache: 'npm'
+          submodules: true
+          lfs: false
 
-      # -------------------------------
-      # 3️⃣ Instalar dependências
-      # -------------------------------
-      - name: Install dependencies
-        run: npm ci
-
-      # -------------------------------
-      # 4️⃣ Buildar o projeto Angular
-      # -------------------------------
-      - name: Build Angular app
-        run: npm run build --if-present
-
-      # -------------------------------
-      # 5️⃣ Deploy no Azure Static Web App
-      # -------------------------------
-      - name: Deploy to Azure Static Web Apps
+      - name: Build and Deploy
         id: builddeploy
-        uses: Azure/static-web-apps-deploy@v2
+        uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WEB_VERSOPAY_DEV }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Necessário para pull requests
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Usado para PR comments e integração GitHub
           action: "upload"
-          ###### Caminhos de build ######
-          app_location: "/"                    # Raiz do projeto Angular
-          api_location: ""                     # Sem backend aqui
-          output_location: "dist/VersopayFrontend" # Pasta gerada pelo ng build
-          ###### Opções adicionais ######
-          skip_app_build: false
-          production_branch: main
+          ###### Repository/Build Configurations ######
+          app_location: "/" # Caminho do projeto Angular
+          api_location: ""  # Não há API nesse repositório
+          output_location: "dist/VersopayFrontend" # Caminho gerado pelo ng build
+          ###### End of Repository/Build Configurations ######
+
+  close_pull_request_job:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close Pull Request Job
+
+    steps:
+      - name: Close Pull Request
+        id: closepullrequest
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WEB_VERSOPAY_DEV }}
+          action: "close"
