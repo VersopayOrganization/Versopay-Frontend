@@ -37,7 +37,7 @@ jobs:
           ###### Repository/Build Configurations ######
           app_location: "/" # Caminho do projeto Angular
           api_location: ""  # Não há API nesse repositório
-          output_location: "dist/VersopayFrontend" # Caminho gerado pelo ng build
+          output_location: "dist/versopay-web" # Caminho gerado pelo ng build
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
@@ -52,3 +52,4 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WEB_VERSOPAY_DEV }}
           action: "close"
+
