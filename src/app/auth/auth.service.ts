@@ -1,12 +1,12 @@
 import { Injectable, computed, signal, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { environment } from '../../environment';
 import { AuthUser } from '../models/auth/auth-user.dto';
 import { LoginPayload } from '../models/auth/login-payload.dto';
 import { AuthResponseDto } from '../models/auth/auth-response.dto';
 import { firstValueFrom } from 'rxjs';
 import { TipoCadastro } from '../core/enums/tipo-cadastro.enum';
+import { environment } from '../../environment';
 
 const API_BASE = `${environment.apiUrl}/api/auth`;
 type Persist = { user: AuthUser; token: string; exp: number };
@@ -122,6 +122,8 @@ export class AuthService {
   // LOGIN INTELIGENTE: tenta usar bypass. Pode retornar 200 (tokens) OU 202 (requires2fa).
   async loginSmart(payload: LoginPayload): Promise<LoginSmartOk> {
     // NÃO passe AuthResponseDto aqui, use unknown para não “poluir” o tipo do body
+    console.log('[ENV] apiUrl =', environment.apiUrl);
+
     const res = await firstValueFrom(
       this.http.post<unknown>(`${API_BASE}/login`, payload, {
         withCredentials: true,
