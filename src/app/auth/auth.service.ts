@@ -1,14 +1,15 @@
 import { Injectable, computed, signal, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environment';
+import { firstValueFrom } from 'rxjs';
 import { AuthUser } from '../models/auth/auth-user.dto';
 import { LoginPayload } from '../models/auth/login-payload.dto';
 import { AuthResponseDto } from '../models/auth/auth-response.dto';
-import { firstValueFrom } from 'rxjs';
 import { TipoCadastro } from '../core/enums/tipo-cadastro.enum';
-import { environment } from '../../environment';
 
 const API_BASE = `${environment.apiUrl}/api/auth`;
+
 type Persist = { user: AuthUser; token: string; exp: number };
 
 // Tipos auxiliares
@@ -21,6 +22,14 @@ export type Login2FARequired = {
 export type LoginSmartOk =
   | { status: 200; body: AuthResponseDto }
   | { status: 202; body: Login2FARequired };
+
+// Resposta do /login/2fa/confirm
+export type Confirm2FAResponse = {
+  auth: AuthResponseDto;
+  perfil: any;
+  dashboard: any;
+  taxas: any;
+};
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -37,6 +46,7 @@ export class AuthService {
   private get local(): Storage | null { return this.isBrowser ? window.localStorage : null; }
   private get session(): Storage | null { return this.isBrowser ? window.sessionStorage : null; }
 
+  // Restaura sessão do storage
   private restore() {
     const raw = this.local?.getItem('vp_auth') ?? this.session?.getItem('vp_auth');
     if (!raw) return;
@@ -47,6 +57,7 @@ export class AuthService {
     } catch { this.clear(); }
   }
 
+  // Persiste a partir do DTO "plano" (shape do /login e também de auth dentro do /confirm)
   private persist(resp: AuthResponseDto, remember: boolean) {
     const u: any = resp.usuario ?? {};
     const user: AuthUser = {
@@ -60,16 +71,15 @@ export class AuthService {
         ? (typeof u.createdAt === 'string' ? u.createdAt : new Date(u.createdAt).toISOString())
         : '',
       isAdmin: !!u.isAdmin,
-      instagram: u.instagram ?? u.instagram ?? '',
+      instagram: u.instagram ?? '',
       nome: u.nome ?? '',
       nomeCompletoBanco: u.nomeCompletoBanco ?? '',
       nomeFantasia: u.nomeFantasia ?? '',
       razaoSocial: u.razaoSocial ?? '',
       site: u.site ?? '',
       telefone: u.telefone ?? '',
-      tipoCadastro: (typeof u.tipoCadastro === 'number'
-        ? u.tipoCadastro
-        : Number(u.tipoCadastro)) as TipoCadastro,
+      // cuidado com null/undefined para não virar 0 indevidamente:
+      tipoCadastro: (u.tipoCadastro ?? undefined) as TipoCadastro,
       enderecoCep: u.enderecoCep ?? '',
       enderecoLogradouro: u.enderecoLogradouro ?? '',
       enderecoNumero: u.enderecoNumero ?? '',
@@ -78,9 +88,10 @@ export class AuthService {
       enderecoBairro: u.enderecoBairro ?? '',
       enderecoCidade: u.enderecoCidade ?? '',
       enderecoUF: u.enderecoUf ?? u.enderecoUF ?? '',
-      cadastroCompleto: u.cadastroCompleto
+      cadastroCompleto: !!u.cadastroCompleto
     };
 
+    // Determina expiração (1) por expiresAtUtc; (2) por exp do JWT; (3) fallback 55min
     let expMs = Number.NaN;
 
     if (resp.expiresAtUtc) {
@@ -90,17 +101,19 @@ export class AuthService {
       if (!Number.isNaN(parsed)) expMs = parsed;
     }
 
-    if (Number.isNaN(expMs) && resp.accessToken) {
+    if (Number.isNaN(expMs) && resp.accessToken && this.isBrowser) {
       try {
         const [, payloadB64] = resp.accessToken.split('.');
         const json = atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/'));
         const payload = JSON.parse(json);
         if (payload?.exp) expMs = payload.exp * 1000;
-      } catch { }
+      } catch {
+        // ignora - usaremos fallback
+      }
     }
 
     if (Number.isNaN(expMs)) {
-      expMs = Date.now() + 55 * 60 * 1000;
+      expMs = Date.now() + 55 * 60 * 1000; // fallback 55min
     }
 
     const persist: Persist = { user, token: resp.accessToken, exp: expMs };
@@ -112,6 +125,30 @@ export class AuthService {
     store?.setItem('vp_auth', raw);
   }
 
+  private persistFromLogin(body: AuthResponseDto, remember: boolean) {
+    // /login retorna outcome.Auth (AuthResponseDto "plano")
+    this.persist(body, remember);
+  }
+
+  private persistFromConfirm(body: Confirm2FAResponse, remember: boolean) {
+    // 1) Usa "auth" (token + usuario + exp) para persistir sessão
+    this.persist(body.auth, remember);
+
+    // 2) (Opcional) também salva perfil/dashboard/taxas junto ao mesmo registro
+    try {
+      const store = (this.local?.getItem('vp_auth') ? this.local : this.session);
+      const raw = store?.getItem('vp_auth');
+      if (raw) {
+        const parsed = JSON.parse(raw) as Persist & { perfil?: any; dashboard?: any; taxas?: any };
+        parsed.perfil = body.perfil;
+        parsed.dashboard = body.dashboard;
+        parsed.taxas = body.taxas;
+        store?.setItem('vp_auth', JSON.stringify(parsed));
+      }
+    } catch {
+      // ignore
+    }
+  }
 
   private clear() {
     this._user.set(null);
@@ -119,56 +156,52 @@ export class AuthService {
     this.session?.removeItem('vp_auth');
   }
 
-  // LOGIN INTELIGENTE: tenta usar bypass. Pode retornar 200 (tokens) OU 202 (requires2fa).
+  // LOGIN inteligente: tenta com bypass e pode retornar 200 (tokens) OU 202 (requires2fa)
   async loginSmart(payload: LoginPayload): Promise<LoginSmartOk> {
-    // NÃO passe AuthResponseDto aqui, use unknown para não “poluir” o tipo do body
-    console.log('[ENV] apiUrl =', environment.apiUrl);
-
     const res = await firstValueFrom(
       this.http.post<unknown>(`${API_BASE}/login`, payload, {
         withCredentials: true,
-        observe: 'response',
+        observe: 'response'
       })
     );
 
     if (res.status === 200) {
       const body = res.body as AuthResponseDto;
-      this.persist(body, !!payload.lembrar7Dias);
+      this.persistFromLogin(body, !!payload.lembrar7Dias);
       return { status: 200, body };
     }
 
     if (res.status === 202) {
-      // Normaliza a forma como o back pode retornar o challenge
       const raw: any = res.body;
       const b: Login2FARequired = raw?.challenge
         ? {
           requires2fa: true,
           challengeId: String(raw.challenge.challengeId),
-          maskedEmail: String(raw.challenge.maskedEmail),
+          maskedEmail: String(raw.challenge.maskedEmail)
         }
         : {
           requires2fa: true,
           challengeId: String(raw.challengeId),
-          maskedEmail: String(raw.maskedEmail),
+          maskedEmail: String(raw.maskedEmail)
         };
-
       return { status: 202, body: b };
     }
+
     throw new Error('Resposta inesperada do servidor.');
   }
 
-  // força 2FA, ignorando bypass (se quiser usar em algum lugar)
+  // Força 2FA (ignora bypass). Útil se quiser um botão "Entrar com 2FA" explícito.
   async start2fa(payload: LoginPayload) {
     const res = await firstValueFrom(
       this.http.post<unknown>(`${API_BASE}/login/2fa/start`, payload, {
         withCredentials: true,
-        observe: 'response',
+        observe: 'response'
       })
     );
 
     if (res.status === 200) {
       const body = res.body as AuthResponseDto;
-      this.persist(body, !!payload.lembrar7Dias);
+      this.persistFromLogin(body, !!payload.lembrar7Dias);
       return { challengeId: null, maskedEmail: null, tokens: true };
     }
 
@@ -177,48 +210,46 @@ export class AuthService {
       ? {
         requires2fa: true,
         challengeId: String(raw.challenge.challengeId),
-        maskedEmail: String(raw.challenge.maskedEmail),
+        maskedEmail: String(raw.challenge.maskedEmail)
       }
       : {
         requires2fa: true,
         challengeId: String(raw.challengeId),
-        maskedEmail: String(raw.maskedEmail),
+        maskedEmail: String(raw.maskedEmail)
       };
 
     return out;
   }
 
-  async confirm2fa(challengeId: string, code: string): Promise<boolean> {
+  // CONFIRMA 2FA e já persiste (não precisa chamar /login novamente)
+  async confirm2fa(challengeId: string, code: string, remember?: boolean): Promise<Confirm2FAResponse> {
     try {
       const normalized = (code ?? '').replace(/\D/g, '').slice(0, 6);
 
       const res = await firstValueFrom(
-        this.http.post(`${API_BASE}/login/2fa/confirm`,
+        this.http.post<Confirm2FAResponse>(
+          `${API_BASE}/login/2fa/confirm`,
           { challengeId: String(challengeId), code: normalized },
           { withCredentials: true, observe: 'response' }
         )
       );
 
-      return res.status >= 200 && res.status < 300;
+      if (res.status !== 200 || !res.body) {
+        throw new Error('Falha ao confirmar 2FA.');
+      }
+
+      // Persistência direta a partir da resposta do confirm
+      this.persistFromConfirm(res.body, !!remember);
+      return res.body;
     } catch (err: any) {
       const status = err?.status;
       const body = err?.error;
       console.error('confirm2fa ERROR', { status, body, challengeId, code });
-
-      throw new Error(
-        body?.message ?? body?.detail ?? `Falha no 2FA (status ${status ?? '??'})`
-      );
+      throw new Error(body?.message ?? body?.detail ?? `Falha no 2FA (status ${status ?? '??'})`);
     }
   }
 
-
-  async loginFinal(payload: LoginPayload) {
-    // segundo passo após 2FA: agora o /login deve retornar 200 com tokens (bypass cookie presente)
-    const done = await this.loginSmart(payload);
-    if (done.status !== 200) throw new Error('Falha ao concluir login.');
-    return true;
-  }
-
+  // Refresh silencioso (usa cookie HttpOnly)
   async refresh(): Promise<boolean> {
     try {
       const resp = await firstValueFrom(
@@ -242,6 +273,7 @@ export class AuthService {
     });
   }
 
+  // Lê o token do storage (para Authorization: Bearer em chamadas da API)
   get token(): string | null {
     if (!this.isBrowser) return null;
     const raw = this.local?.getItem('vp_auth') ?? this.session?.getItem('vp_auth');
@@ -251,7 +283,7 @@ export class AuthService {
       const data = JSON.parse(raw) as Persist;
       if (!data?.token) return null;
 
-      // só invalida se exp existir E estiver claramente vencido
+      // invalida só se exp existir e estiver vencido
       if (typeof data.exp === 'number' && !Number.isNaN(data.exp) && Date.now() >= data.exp) {
         return null;
       }
