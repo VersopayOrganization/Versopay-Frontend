@@ -184,9 +184,8 @@ export class LoginComponent {
     }
 
     try {
-      await this.authService.confirm2fa(this.challengeId!, this.code);
-
-      const done = await this.authService.loginFinal(this.lastPayload);
+      // Agora o confirm já persiste token/usuario/perfil/dashboard/taxas
+      await this.authService.confirm2fa(this.challengeId!, this.code, this.remember);
 
       await this.router.navigateByUrl('/sistema', { replaceUrl: true });
     } catch (e: any) {
@@ -198,5 +197,4 @@ export class LoginComponent {
       });
     }
   }
-
 }
