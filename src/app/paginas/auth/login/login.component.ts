@@ -167,7 +167,7 @@ export class LoginComponent {
 
     } catch (e: any) {
       this.toast.show({
-        message: e?.message ?? 'Falha no login',
+        message: 'Falha no login',
         type: 'error',
         position: 'bottom-left',
         offset: { x: 40, y: 40 }
@@ -190,7 +190,7 @@ export class LoginComponent {
       await this.router.navigateByUrl('/sistema', { replaceUrl: true });
     } catch (e: any) {
       this.toast.show({
-        message: e?.message ?? 'Código inválido ou expirado',
+        message: 'Código inválido ou expirado',
         type: 'error',
         position: 'bottom-left',
         offset: { x: 40, y: 40 }
